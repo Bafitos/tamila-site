@@ -5,6 +5,7 @@ const links = [
   ['/buy-a-home', 'Buy'],
   ['/mortgage', 'Mortgage'],
   ['/va-loans-pcs', 'VA & Military'],
+  ['/areas', 'Areas'],
   ['/#stories', 'Reviews'],
   ['/ru', 'Русский'],
 ];
@@ -36,6 +37,7 @@ const links = [
   .brand__name { font-size: 1.45rem; font-weight: 400; letter-spacing: .01em; }
   .brand__sub { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
   .hdr__nav { display: flex; align-items: center; gap: 4px; }
+  .hdr__nav a { white-space: nowrap; }
   .hdr__nav a:not(.pill) { text-decoration: none; padding: 8px 10px; font-size: .95rem; font-weight: 400; border-radius: 6px; }
   .hdr__nav a:not(.pill):hover { background: var(--green-mist); }
   .hdr__call { min-height: 44px; padding: 8px 18px; margin-left: 8px; }
@@ -46,5 +48,5 @@ const links = [
   .menu__panel { position: absolute; left: 0; right: 0; top: 72px; background: var(--white); border-bottom: 1px solid var(--green-soft); padding: 12px 20px 20px; display: grid; gap: 4px; box-shadow: 0 16px 30px rgba(0,0,0,.08); }
   .menu__panel a:not(.pill) { padding: 12px 4px; text-decoration: none; font-size: 1.1rem; border-bottom: 1px solid var(--green-soft); }
   .menu__panel .pill { margin-top: 12px; }
-  @media (max-width: 980px) { .hdr__nav { display: none; } .menu { display: block; } }
+  @media (max-width: 1120px) { .hdr__nav { display: none; } .menu { display: block; } }
 </style>

@@ -1,0 +1,148 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Faq from '../../components/Faq.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { site } from '../../data/site.js';
+import { cities } from '../../data/cities.js';
+import walking from '../../assets/tamila-aspen-walking.jpg';
+import portrait from '../../assets/tamila-aspen-portrait.jpg';
+import onPhone from '../../assets/tamila-aspen-on-phone.jpg';
+import fullLength from '../../assets/tamila-aspen-full-length.jpg';
+
+export function getStaticPaths() {
+  return cities.map((c) => ({ params: { city: c.slug }, props: { c } }));
+}
+const { c } = Astro.props;
+const photos = { walking, portrait, 'on-phone': onPhone, 'full-length': fullLength };
+const others = cities.filter((x) => x.slug !== c.slug);
+const url = `${site.url}/areas/${c.slug}`;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateAgent',
+    '@id': `${url}#agent`,
+    name: `Tamila Aspen, real estate agent in ${c.name}, CO`,
+    url,
+    telephone: site.phoneHref,
+    email: site.email,
+    image: `${site.url}/og.jpg`,
+    address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.city, addressRegion: site.address.region, postalCode: site.address.zip, addressCountry: 'US' },
+    areaServed: { '@type': 'City', name: `${c.name}, CO` },
+    knowsLanguage: site.languages,
+    employee: { '@id': `${site.url}/#tamila` },
+    parentOrganization: { '@type': 'Organization', name: site.brokerage },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Areas', item: `${site.url}/areas` },
+      { '@type': 'ListItem', position: 3, name: c.name, item: url },
+    ],
+  },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: c.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+];
+---
+<Base title={`${c.title} | Tamila Aspen`} description={`${c.lead} REALTOR® and mortgage loan officer. Call ${site.phone}.`} schema={schema}>
+  <nav class="crumbs wrap" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/areas">Areas</a> › <span>{c.name}</span></nav>
+  <PageHero
+    eyebrow={`${c.name}, Colorado`}
+    title={c.title.replace(' & Lender', ' and lender').replace(' & Mortgage Lender', ' and mortgage lender')}
+    lead={c.lead}
+    image={photos[c.photo]}
+    imageAlt="Tamila Aspen, real estate agent and mortgage loan officer"
+    cta2={['#contact', `Free consultation in ${c.name}`]}
+  />
+
+  <section class="section mist">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>What to know about {c.name}</h2>
+        <p class="lead">{c.intro}</p>
+      </div>
+      <div class="facts">
+        {c.facts.map(([h, p]) => <div class="fact"><h3>{h}</h3><p>{p}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>Tamila’s advice for {c.name}</h2>
+      <ul class="checks">{c.tips.map((t) => <li>{t}</li>)}</ul>
+      <h3>Where her clients bought and sold</h3>
+      <ul class="chips">{c.neighborhoods.map((n) => <li>{n}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="section mist">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>{c.reviewsTitle ?? `Clients in ${c.name}, in their own words`}</h2>
+      </div>
+      <div class={`rv ${c.reviews.length === 1 ? 'rv--one' : ''}`}>
+        {c.reviews.map((r) => (
+          <figure class="gcard">
+            <p class="gcard__where">{r.role}</p>
+            <blockquote>“{r.text}”</blockquote>
+            <figcaption>{r.who} · {r.src}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap narrow center stack">
+      {c.military ? (
+        <>
+          <h2>VA loan and the house, with one person</h2>
+          <p class="lead">Tamila is a Military Relocation Professional (MRP) and a mortgage loan officer. She handles your VA pre-approval, the home search and the closing, and she keeps you informed while you are still at your current duty station.</p>
+          <div class="btns"><a class="pill" href="/va-loans-pcs">VA loans &amp; PCS moves</a><a class="pill pill--line" href={site.applyUrl} target="_blank" rel="noopener">Apply for pre-approval</a></div>
+        </>
+      ) : (
+        <>
+          <h2>Selling in {c.name} and buying your next home?</h2>
+          <p class="lead">When you sell and buy with Tamila, her listing fee is 1% instead of the usual up to 3%. You still get professional photos (paid by Tamila), MLS, marketing and full support to closing.</p>
+          <div class="btns"><a class="pill" href="/sell-for-1-percent">How the 1% works</a><a class="pill pill--line" href="/mortgage">Mortgage &amp; pre-approval</a></div>
+        </>
+      )}
+    </div>
+  </section>
+
+  <Faq items={c.faq} title={`${c.name} questions`} />
+
+  <section class="section">
+    <div class="wrap narrow center stack">
+      <h2>Other areas Tamila serves</h2>
+      <ul class="chips chips--center">
+        {others.map((o) => <li><a href={`/areas/${o.slug}`}>{o.name}</a></li>)}
+        <li><a href="/areas">All areas</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <ContactBand title={`Buying or selling in ${c.name}?`} lead="Tell Tamila the address or the area you like. She will call you back, usually the same day, in English, Russian or Ukrainian." goal={c.military ? 'VA loan / PCS move' : 'Sell my home and buy another (1%)'} />
+</Base>
+
+<style>
+  .crumbs { padding-top: 18px; font-size: .9rem; opacity: .8; }
+  .crumbs a { text-decoration: none; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; }
+  .fact { background: var(--white); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+  .fact h3 { color: var(--green); font-size: 1.1rem; }
+  .fact p { font-weight: 400; font-size: 1rem; }
+  .chips { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .chips--center { justify-content: center; }
+  .chips li { padding: 8px 16px; border-radius: 999px; background: var(--green-mist); border: 1px solid var(--green-soft); font-weight: 400; }
+  .chips li:has(a) { padding: 0; }
+  .chips a { display: block; padding: 8px 16px; text-decoration: none; }
+  .chips a:hover { background: var(--green-soft); border-radius: 999px; }
+  .rv { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+  .rv--one { grid-template-columns: 1fr; max-width: 760px; margin-inline: auto; }
+  @media (max-width: 960px) { .facts { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 700px) { .rv, .facts { grid-template-columns: 1fr; } }
+</style>

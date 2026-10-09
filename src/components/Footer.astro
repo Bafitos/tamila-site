@@ -1,5 +1,7 @@
 ---
 import { site } from '../data/site.js';
+import { cities } from '../data/cities.js';
+const pages = Object.fromEntries(cities.map((c) => [c.name, `/areas/${c.slug}`]));
 import { Image } from 'astro:assets';
 import equityLogo from '../assets/equity-logo.jpg';
 const a = site.address;
@@ -17,8 +19,8 @@ const a = site.address;
       </ul>
     </div>
     <div class="ftr__col">
-      <p class="ftr__h">Real estate service areas</p>
-      <ul class="areas">{site.areas.map((c) => <li>{c}</li>)}</ul>
+      <p class="ftr__h"><a href="/areas">Real estate service areas</a></p>
+      <ul class="areas">{site.areas.map((c) => <li>{pages[c] ? <a href={pages[c]}>{c}</a> : c}</li>)}</ul>
       <p class="ftr__note">Mortgage lending available statewide in Colorado.</p>
     </div>
     <div class="ftr__col stack">

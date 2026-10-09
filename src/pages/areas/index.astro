@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { site } from '../../data/site.js';
+import { cities } from '../../data/cities.js';
+const withPage = new Set(cities.map((c) => c.name));
+const rest = site.areas.filter((a) => !withPage.has(a));
+---
+<Base title="Areas Tamila Aspen Serves: Denver Metro & Colorado Springs" description="Tamila Aspen helps buyers and sellers in Aurora, Centennial, Denver, Thornton, Parker, Brighton, Colorado Springs and across the Denver metro. Mortgage lending statewide in Colorado.">
+  <section class="section">
+    <div class="wrap narrow center stack">
+      <p class="eyebrow">Service areas</p>
+      <h1>Where Tamila helps buyers and sellers</h1>
+      <p class="lead">Each page below covers what matters in that city: counties, school districts, taxes to watch for, and real reviews from clients who bought or sold there.</p>
+    </div>
+    <div class="wrap cards areas-grid">
+      {cities.map((c) => (
+        <a class="card area" href={`/areas/${c.slug}`}>
+          <h2>{c.name}</h2>
+          <p>{c.lead}</p>
+          <span class="area__more">Read about {c.name} →</span>
+        </a>
+      ))}
+    </div>
+    <div class="wrap narrow center stack more">
+      <h2>Also serving</h2>
+      <p>{rest.join(' · ')}</p>
+      <p>Mortgage lending is available statewide in Colorado.</p>
+    </div>
+  </section>
+  <ContactBand />
+</Base>
+
+<style>
+  .areas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .area { text-decoration: none; display: flex; flex-direction: column; gap: 10px; }
+  .area h2 { font-size: 1.5rem; color: var(--green); }
+  .area p { font-weight: 400; font-size: 1rem; }
+  .area__more { margin-top: auto; font-weight: 700; color: var(--green); }
+  .area:hover { box-shadow: 0 12px 28px rgba(0,0,0,.08); }
+  .more { margin-top: 56px; }
+  @media (max-width: 900px) { .areas-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .areas-grid { grid-template-columns: 1fr; } }
+</style>
