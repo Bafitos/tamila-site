@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site.js';
+---
+<Base title="Page not found | Tamila Aspen" description="This page does not exist.">
+  <section class="section"><div class="wrap narrow center stack">
+    <h1>This page doesn't exist</h1>
+    <p class="lead">The link may be old. Here is where to go next.</p>
+    <div class="btns">
+      <a class="pill" href="/">Home</a>
+      <a class="pill pill--line" href="/sell-for-1-percent">Sell for 1%</a>
+      <a class="pill pill--line" href={`tel:${site.phoneHref}`}>Call {site.phone}</a>
+    </div>
+  </div></section>
+</Base>

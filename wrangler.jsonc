@@ -1,0 +1,10 @@
+{
+  // Static Astro site served by Cloudflare Workers static assets
+  "name": "tamila-aspen",
+  "compatibility_date": "2026-10-09",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
