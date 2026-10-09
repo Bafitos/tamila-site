@@ -25,6 +25,7 @@ export const site = {
   languages: ['English', 'Russian', 'Ukrainian'],
   profiles: {
     google: 'https://maps.app.goo.gl/bqLEfX3poe5yKR4f9',
+    apple: 'https://maps.apple.com/place?place-id=I43A6641BF3C258BE',
     zillow: 'https://www.zillow.com/profile/TamilaAspen',
     realtor: 'https://www.realtor.com/realestateagents/5b99edae2248680010a0876a',
     homes: 'https://www.homes.com/real-estate-agents/tamila-aspen/jjxzqm6/',
