@@ -1,10 +1,17 @@
 {
-  // Static Astro site served by Cloudflare Workers static assets
+  // Static Astro site on Cloudflare Workers static assets
   "name": "tamila-site",
+  "main": "worker/index.js",
   "compatibility_date": "2026-10-09",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash"
-  }
+  },
+  "routes": [
+    { "pattern": "www.denver-real-estates.com", "custom_domain": true },
+    { "pattern": "denver-real-estates.com", "custom_domain": true }
+  ]
 }
