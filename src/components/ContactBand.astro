@@ -5,11 +5,16 @@ const {
   lead = 'Tell Tamila a little about your plans. She will call you back, usually the same day, in English, Russian or Ukrainian.',
   goal = 'Sell my home and buy another (1%)',
   ru = false,
+  uk = false,
 } = Astro.props;
-const goals = ru
+const goals = uk
+  ? ['Продати і купити будинок (1%)', 'Продати будинок', 'Купити будинок', 'Отримати попереднє схвалення іпотеки', 'Рефінансування', 'Інше']
+  : ru
   ? ['Продать и купить дом (1%)', 'Продать дом', 'Купить дом', 'Получить предодобрение по ипотеке', 'Рефинансирование', 'Другое']
   : ['Sell my home and buy another (1%)', 'Sell my home', 'Buy a home', 'Get pre-approved for a loan', 'VA loan / PCS move', 'Selling during a divorce', 'Behind on payments', 'Refinance', 'Something else'];
-const t = ru
+const t = uk
+  ? { name: 'Ваше ім’я', phone: 'Телефон', email: 'Email', want: 'Я хочу', msg: 'Адреса або повідомлення', send: 'Надіслати заявку' }
+  : ru
   ? { name: 'Ваше имя', phone: 'Телефон', email: 'Email', want: 'Я хочу', msg: 'Адрес или сообщение', send: 'Отправить заявку' }
   : { name: 'Your name', phone: 'Phone', email: 'Email', want: 'I want to', msg: 'Address or message', send: 'Request a free consultation' };
 ---
@@ -21,8 +26,8 @@ const t = ru
       <p class="cband__big"><a href={`tel:${site.phoneHref}`}>{site.phone}</a></p>
       <p>{site.email}</p>
     </div>
-    <form class="cform" action={site.formEndpoint} method="POST" data-endpoint={site.formEndpoint} data-ru={ru ? '1' : ''}>
-      <input type="hidden" name="_subject" value={ru ? 'Новая заявка с сайта (RU)' : 'New website inquiry'} />
+    <form class="cform" action={site.formEndpoint} method="POST" data-endpoint={site.formEndpoint} data-lang={uk ? 'uk' : ru ? 'ru' : 'en'}>
+      <input type="hidden" name="_subject" value={uk ? 'Нова заявка з сайту (UA)' : ru ? 'Новая заявка с сайта (RU)' : 'New website inquiry'} />
       <input type="hidden" name="page" value={Astro.url.pathname} />
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
       <label for="f-name">{t.name}<input id="f-name" name="name" autocomplete="name" required /></label>
@@ -42,14 +47,14 @@ const t = ru
   document.querySelectorAll<HTMLFormElement>('form.cform').forEach((form) => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const ru = form.dataset.ru === '1';
+      const lang = form.dataset.lang || 'en';
       const st = form.querySelector('.cform__status')!;
-      const msg = {
-        off: ru ? 'Онлайн-форма подключается. Пожалуйста, позвоните или напишите: (720) 975-6206.' : 'The online form is being connected. Please call or text (720) 975-6206.',
-        sending: ru ? 'Отправляю…' : 'Sending…',
-        ok: ru ? 'Спасибо! Тамила скоро свяжется с вами.' : 'Thank you! Tamila will contact you shortly.',
-        err: ru ? 'Не удалось отправить. Позвоните или напишите: (720) 975-6206.' : 'Could not send. Please call or text (720) 975-6206.',
-      };
+      const all = {
+        en: { off: 'The online form is being connected. Please call or text (720) 975-6206.', sending: 'Sending…', ok: 'Thank you! Tamila will contact you shortly.', err: 'Could not send. Please call or text (720) 975-6206.' },
+        ru: { off: 'Онлайн-форма подключается. Пожалуйста, позвоните или напишите: (720) 975-6206.', sending: 'Отправляю…', ok: 'Спасибо! Тамила скоро свяжется с вами.', err: 'Не удалось отправить. Позвоните или напишите: (720) 975-6206.' },
+        uk: { off: 'Онлайн-форма підключається. Будь ласка, зателефонуйте або напишіть: (720) 975-6206.', sending: 'Надсилаю…', ok: 'Дякуємо! Таміла скоро з вами зв’яжеться.', err: 'Не вдалося надіслати. Зателефонуйте або напишіть: (720) 975-6206.' },
+      } as const;
+      const msg = all[lang as keyof typeof all] ?? all.en;
       const ep = form.dataset.endpoint;
       if (!ep) { st.textContent = msg.off; return; }
       if (!form.reportValidity()) return;

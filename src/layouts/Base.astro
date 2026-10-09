@@ -6,6 +6,7 @@ import ogImage from '../assets/tamila-aspen-on-phone.jpg';
 import { getImage } from 'astro:assets';
 
 const { title, description, schema = [], lang = 'en' } = Astro.props;
+const bar = { en: ['Call Tamila', 'Text'], ru: ['Позвонить', 'Написать'], uk: ['Зателефонувати', 'Написати'] }[lang] ?? ['Call Tamila', 'Text'];
 const canonical = new URL(Astro.url.pathname.replace(/\/index$/, '/'), site.url).href;
 const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
 ---
@@ -41,8 +42,8 @@ const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7" /></svg>
   </a>
   <nav class="callbar" aria-label="Quick contact">
-    <a class="pill" href={`tel:${site.phoneHref}`}>Call Tamila</a>
-    <a class="pill pill--line" href={`sms:${site.phoneHref}`}>Text</a>
+    <a class="pill" href={`tel:${site.phoneHref}`}>{bar[0]}</a>
+    <a class="pill pill--line" href={`sms:${site.phoneHref}`}>{bar[1]}</a>
   </nav>
 </body>
 </html>

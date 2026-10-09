@@ -13,7 +13,7 @@ const a = site.address;
       <p>Real Estate Agent &amp; Mortgage Loan Officer</p>
       <p><a href={`tel:${site.phoneHref}`}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
       <p>{a.street}<br />{a.city}, {a.region} {a.zip}</p>
-      <p>English · <a href="/ru">Русский</a> · Українська</p>
+      <p>English · <a href="/ru">Русский</a> · <a href="/uk">Українська</a></p>
       <ul class="social" aria-label="Social media">
         {Object.entries(site.social).map(([n, u]) => <li><a href={u} target="_blank" rel="noopener">{n}</a></li>)}
       </ul>

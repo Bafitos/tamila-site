@@ -1,8 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import { site } from '../data/site.js';
-const { eyebrow, title, lead, image, imageAlt, pos = '50% 25%', ru = false, cta2 = null } = Astro.props;
-const second = cta2 ?? (ru ? ['#contact', 'Бесплатная консультация'] : ['#contact', 'Free consultation']);
+const { eyebrow, title, lead, image, imageAlt, pos = '50% 25%', ru = false, uk = false, cta2 = null } = Astro.props;
+const second = cta2 ?? (uk ? ['#contact', 'Безкоштовна консультація'] : ru ? ['#contact', 'Бесплатная консультация'] : ['#contact', 'Free consultation']);
+const callWord = uk ? 'Подзвонити' : ru ? 'Позвонить' : 'Call';
 ---
 <section class="phero">
   <div class="wrap phero__in">
@@ -11,7 +12,7 @@ const second = cta2 ?? (ru ? ['#contact', 'Бесплатная консульт
       <h1>{title}</h1>
       <p class="lead">{lead}</p>
       <div class="btns phero__btns">
-        <a class="pill" href={`tel:${site.phoneHref}`}>{ru ? 'Позвонить' : 'Call'} {site.phone}</a>
+        <a class="pill" href={`tel:${site.phoneHref}`}>{callWord} {site.phone}</a>
         <a class="pill pill--line" href={second[0]}>{second[1]}</a>
       </div>
       <slot />
