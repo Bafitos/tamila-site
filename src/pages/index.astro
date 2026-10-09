@@ -1,0 +1,382 @@
+---
+import Base from '../layouts/Base.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { Image } from 'astro:assets';
+import { site, stories, reviews, faq } from '../data/site.js';
+import heroImg from '../assets/tamila-aspen-on-phone.jpg';
+import portrait from '../assets/tamila-aspen-portrait.jpg';
+import award from '../assets/tamila-aspen-2024-outstanding-sales-award.jpg';
+import powerAward from '../assets/power-professional-award-2024.jpg';
+import gAgentLender from '../assets/gallery/we-love-our-agent-and-lender.jpg';
+import gFirstAm from '../assets/gallery/closing-day-family-first-american.jpg';
+import gDhi from '../assets/gallery/family-closing-dhi-title-key.jpg';
+import gBought from '../assets/gallery/we-bought-a-house.jpg';
+import gRealtor from '../assets/gallery/i-love-my-realtor.jpg';
+import gSold from '../assets/gallery/sold-paramount-title.jpg';
+import gSign from '../assets/gallery/for-sale-sign-autumn.jpg';
+import gHomeowner from '../assets/gallery/colorado-homeowner-frame.jpg';
+
+const gallery = [
+  { src: gAgentLender, cap: 'One person, two roles: agent and lender', alt: 'Client holding a "We love our agent" sign next to Tamila Aspen holding "We love our lender" at the title company' },
+  { src: gFirstAm, cap: 'Closing day for a young family', alt: 'Young family with a toddler at their closing with Tamila Aspen, holding a First American "Thank you for your business" frame' },
+  { src: gDhi, cap: 'A family gets the keys', alt: 'Family with children holding a giant key and a "We just closed on our home" frame at the title company' },
+  { src: gBought, cap: '“We bought a house!”', alt: 'Happy couple holding a "We bought a house" frame at closing' },
+  { src: gSold, cap: 'Sold', alt: 'Tamila Aspen and a client holding a Sold sign at Paramount Title' },
+  { src: gRealtor, cap: '“I love my REALTOR”', alt: 'Client holding an "I love my REALTOR" sign with Tamila Aspen' },
+  { src: gHomeowner, cap: 'A new Colorado homeowner', alt: 'New homeowner with flowers in a "Colorado Homeowner" frame with Tamila Aspen' },
+  { src: gSign, cap: 'Another listing on the market', alt: 'Tamila Aspen next to her Equity Colorado Real Estate For Sale sign in autumn' },
+];
+
+const a = site.address;
+const schema = [{
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${site.url}/#agent`,
+      name: 'Tamila Aspen — Real Estate Agent & Mortgage Loan Officer',
+      url: `${site.url}/`,
+      telephone: site.phoneHref,
+      email: site.email,
+      image: `${site.url}/og.jpg`,
+      priceRange: '1% listing fee when you sell and buy with Tamila',
+      address: { '@type': 'PostalAddress', streetAddress: a.street, addressLocality: a.city, addressRegion: a.region, postalCode: a.zip, addressCountry: 'US' },
+      areaServed: site.areas.map((c) => ({ '@type': 'City', name: `${c}, CO` })),
+      knowsLanguage: ['en', 'ru', 'uk'],
+      openingHours: 'Mo-Su 00:00-23:59',
+      parentOrganization: { '@type': 'Organization', name: site.brokerage },
+      employee: { '@id': `${site.url}/#tamila` },
+      sameAs: [site.profiles.zillow, site.profiles.realtor, site.profiles.homes, site.profiles.equity, ...Object.values(site.social)],
+    },
+    {
+      '@type': 'Person',
+      '@id': `${site.url}/#tamila`,
+      name: 'Tamila Aspen',
+      jobTitle: ['Real Estate Agent', 'Mortgage Loan Originator'],
+      worksFor: [{ '@type': 'Organization', name: site.brokerage }, { '@type': 'Organization', name: site.lender }],
+      alumniOf: "Master's degree in Economics",
+      knowsLanguage: ['English', 'Russian', 'Ukrainian'],
+      hasCredential: [
+        { '@type': 'EducationalOccupationalCredential', credentialCategory: 'license', name: `Colorado Real Estate License #${site.license}` },
+        { '@type': 'EducationalOccupationalCredential', credentialCategory: 'license', name: `NMLS #${site.nmls}` },
+        ...site.designations.map(([abbr, n]) => ({ '@type': 'EducationalOccupationalCredential', credentialCategory: 'certification', name: `${n} (${abbr})` })),
+      ],
+      award: ['2024 Outstanding Sales Performance, Equity Colorado Real Estate'],
+      sameAs: [site.profiles.zillow, site.profiles.realtor, site.profiles.homes, site.profiles.barrett],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faq.map(([q, ans]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: ans } })),
+    },
+  ],
+}];
+
+const help = [
+  { href: '/sell-for-1-percent', tag: 'SRS', h: 'Selling your home', p: 'Pricing that sells, professional photos paid by Tamila, MLS and social media, negotiation and support until closing.' },
+  { href: '/buy-a-home', tag: 'ABR', h: 'Buying a home', p: 'Showings, honest advice about each house, and strong negotiation. Clients have won seller-paid closing costs and price reductions.' },
+  { href: '/mortgage', tag: 'NMLS', h: 'Mortgage and credit', p: 'FHA, VA, USDA, Conventional, Jumbo and Non-QM loans. Credit scores from about 570. Pre-approval often within 24 hours.' },
+  { href: '/va-loans-pcs', tag: 'MRP', h: 'Military and VA', p: 'VA loans with 0% down, PCS moves and buying from out of state. Tamila is a Military Relocation Professional, and her son serves in the U.S. Air Force.' },
+  { href: '/selling-house-during-divorce', tag: 'RCS-D', h: 'Selling during a divorce', p: 'Calm, neutral help for both spouses and their attorneys, even when the house has repairs, HOA or insurance problems.' },
+  { href: '/short-sale-foreclosure', tag: 'SFR', h: 'Short sale or foreclosure', p: 'Behind on payments? Tamila explains your options early, before the bank decides for you.' },
+];
+---
+<Base
+  title="Tamila Aspen | 1% Commission Real Estate Agent & Mortgage Loan Officer in Denver"
+  description="Sell your Denver home for 1% when you buy your next one with Tamila Aspen. Real estate agent and mortgage loan officer in one person. English, Russian, Ukrainian."
+  schema={schema}
+>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero__in">
+      <div class="hero__text stack">
+        <p class="eyebrow">Denver real estate agent &amp; mortgage loan officer</p>
+        <h1>Sell your home for 1% when you buy your next one with Tamila</h1>
+        <p class="lead">One person for your sale, your purchase and your loan. Professional photos, MLS, negotiation and full support until closing, the same service as a 3% agent.</p>
+        <div class="btns btns--left">
+          <a class="pill" href={`tel:${site.phoneHref}`}>Call {site.phone}</a>
+          <a class="pill pill--line" href="#contact">Free home valuation</a>
+        </div>
+        <ul class="creds">
+          <li>Master's in Economics</li>
+          <li>23 years in finance</li>
+          <li>10 years in real estate &amp; lending</li>
+        </ul>
+        <p class="rating"><span aria-hidden="true">★★★★★</span> 5.0 on <a href={site.profiles.google} target="_blank" rel="noopener">Google</a> · 80+ reviews on Google, Zillow &amp; Realtor.com</p>
+      </div>
+      <div class="hero__photo">
+        <Image src={heroImg} alt="Tamila Aspen, Denver real estate agent and mortgage loan officer, on the phone with a client" widths={[360, 560, 760]} sizes="(max-width: 860px) 300px, 440px" class="circle" loading="eager" fetchpriority="high" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 1% EXPLAINED -->
+  <section id="sell" class="section mist">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>Same full service. A smaller fee.</h2>
+        <p class="lead">Many people think a 1% agent does less. Here is exactly what you get.</p>
+      </div>
+      <div class="compare">
+        <div class="tbl" role="region" aria-label="Service comparison" tabindex="0">
+          <table>
+            <thead><tr><th scope="col">What the seller gets</th><th scope="col">Typical agent</th><th scope="col" class="me">Tamila</th></tr></thead>
+            <tbody>
+              <tr><td>Professional photography</td><td>✓</td><td class="me">✓ paid by Tamila</td></tr>
+              <tr><td>MLS listing (Zillow, Realtor.com, Redfin)</td><td>✓</td><td class="me">✓</td></tr>
+              <tr><td>Social media marketing</td><td>✓</td><td class="me">✓</td></tr>
+              <tr><td>Pricing strategy and negotiation</td><td>✓</td><td class="me">✓</td></tr>
+              <tr><td>Full support until closing</td><td>✓</td><td class="me">✓</td></tr>
+              <tr><td>Mortgage for your next home in-house</td><td>—</td><td class="me">✓</td></tr>
+              <tr class="fee"><td>Listing fee</td><td>up to 3%</td><td class="me">1%*</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">*When you sell and buy your next home with Tamila. Listing only: standard rate, up to 3%. The buyer's agent for your home is paid separately and is negotiable.</p>
+      </div>
+
+      <div class="calc" data-calc>
+        <div class="calc__in">
+          <label for="price">Your home's price</label>
+          <output id="price-out" class="calc__price">$600,000</output>
+          <input id="price" type="range" min="250000" max="2000000" step="5000" value="600000" />
+          <div class="calc__rows">
+            <div><span>Typical listing fee (3%)</span><b id="c-trad">$18,000</b></div>
+            <div><span>Tamila's listing fee (1%)</span><b id="c-me">$6,000</b></div>
+          </div>
+          <div class="calc__save"><span>You keep</span><strong id="c-save">$12,000</strong></div>
+          <p class="note">Buyer's agent compensation is the same in both cases and not included.</p>
+        </div>
+      </div>
+
+      <div class="narrow why stack">
+        <h3>How can Tamila work for 1%?</h3>
+        <p>When you also buy your next home with her, Tamila earns her buyer-agent commission on that purchase. It is typically paid by the seller of the home you buy. That lets her take less on your sale, so you save on both moves.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW I HELP -->
+  <section id="help" class="section">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>Real estate and mortgage help for every situation</h2>
+        <p class="lead">Tamila holds six national designations. Each one stands for a kind of client she is trained to help.</p>
+      </div>
+      <div class="cards">
+        {help.map((c) => (
+          <a class="card" href={c.href}>
+            <span class="tag">{c.tag}</span>
+            <h3>{c.h}</h3>
+            <p>{c.p}</p>
+            <span class="more">Learn more →</span>
+          </a>
+        ))}
+      </div>
+      <div class="btns" style="margin-top:36px">
+        <a class="pill" href={site.applyUrl} target="_blank" rel="noopener">Check my loan options</a>
+        <a class="pill pill--line" href="#contact">Ask Tamila a question</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="wrap about">
+      <Image src={portrait} alt="Portrait of Tamila Aspen" widths={[360, 560, 760]} sizes="(max-width: 860px) 90vw, 440px" class="about__img" />
+      <div class="stack about__text">
+        <p class="eyebrow">Meet Tamila</p>
+        <h2>An accountant's eye for your biggest purchase</h2>
+        <p>Tamila Aspen was born in Kyiv and grew up in a small town in western Ukraine. She moved to the United States in 2001, earned a Master's degree in Economics and a Bachelor's in Accounting, and worked in finance and accounting for 23 years.</p>
+        <p>For the last 10 years she has helped Colorado families buy, sell and finance homes, as a REALTOR® with {site.brokerage} and a mortgage loan officer with {site.lender}. Because she does both, she sees problems with a deal or a loan before they cost you money.</p>
+        <p>Clients say she explains every step patiently and answers the phone day and night. She is a mother of three, a grandmother, and a photographer at heart.</p>
+        <ul class="badges">
+          {site.designations.map(([abbr, n]) => <li title={n}><b>{abbr}</b> {n}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORIES -->
+  <section id="stories" class="section mist">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>Real stories. Real savings.</h2>
+        <p class="lead">In the clients' own words.</p>
+      </div>
+      <div class="stories">
+        {stories.map((s) => (
+          <figure class="gcard">
+            <p class="gcard__where">{s.where}</p>
+            <h3>{s.title}</h3>
+            <blockquote>“{s.text}”</blockquote>
+            <figcaption>{s.who}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="section">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>What clients say</h2>
+        <p class="lead"><span class="stars" aria-hidden="true">★★★★★</span> 5.0 on Google. 41 reviews on Zillow. 10 on Realtor.com.</p>
+      </div>
+      <div class="reviews">
+        {reviews.map((r) => (
+          <figure class="gcard gcard--sm">
+            <blockquote>“{r.text}”</blockquote>
+            <figcaption>{r.name} · {r.src}</figcaption>
+          </figure>
+        ))}
+      </div>
+      <div class="btns" style="margin-top:32px">
+        <a class="pill" href={site.profiles.google} target="_blank" rel="noopener">Google reviews</a>
+        <a class="pill" href={site.profiles.zillow} target="_blank" rel="noopener">Zillow reviews</a>
+      </div>
+      <div class="awards">
+        <div class="award">
+          <Image src={award} alt="Tamila Aspen holding her 2024 Outstanding Sales Performance award from Equity Colorado Real Estate" widths={[240, 400]} sizes="160px" class="award__img" />
+          <p><b>2024 Outstanding Sales Performance</b><br />{site.brokerage}</p>
+        </div>
+        <div class="award">
+          <Image src={powerAward} alt="Power Professional Award, October 2024, Equity Colorado Real Estate, presented to Tamila Aspen" widths={[320, 520]} sizes="220px" class="award__img award__img--wide" />
+          <p><b>Power Professional Award, October 2024</b><br />{site.brokerage}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING DAYS GALLERY -->
+  <section class="section mist">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>Closing days</h2>
+        <p class="lead">Real clients, real keys, real smiles.</p>
+      </div>
+      <div class="gallery">
+        {gallery.map((g) => (
+          <figure>
+            <Image src={g.src} alt={g.alt} widths={[320, 520]} sizes="(max-width: 700px) 46vw, 260px" class="gallery__img" />
+            <figcaption>{g.cap}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <!-- FAQ -->
+  <section id="faq" class="section">
+    <div class="wrap narrow">
+      <h2 class="center" style="margin-bottom:32px">Honest answers to common questions</h2>
+      <div class="faq">
+        {faq.map(([q, ans]) => (
+          <details>
+            <summary>{q}</summary>
+            <p>{ans}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ContactBand />
+</Base>
+
+<script>
+  const fmt = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+  const c = document.querySelector('[data-calc]');
+  if (c) {
+    const p = c.querySelector('#price') as HTMLInputElement;
+    const upd = () => {
+      const v = +p.value;
+      c.querySelector('#price-out')!.textContent = fmt(v);
+      c.querySelector('#c-trad')!.textContent = fmt(v * 0.03);
+      c.querySelector('#c-me')!.textContent = fmt(v * 0.01);
+      c.querySelector('#c-save')!.textContent = fmt(v * 0.02);
+    };
+    p.addEventListener('input', upd);
+    upd();
+  }
+</script>
+
+<style>
+  .hero { padding-block: 56px 72px; }
+  .hero__in { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; }
+  .hero__in > * { min-width: 0; }
+  .hero__photo { display: flex; justify-content: center; }
+  :global(.circle) { width: min(440px, 100%); aspect-ratio: 1; object-fit: cover; object-position: 62% 30%; border-radius: 50%; }
+  .btns--left { justify-content: flex-start; }
+  .creds { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .creds li { padding: 6px 14px; border: 1px solid var(--green); border-radius: 999px; font-size: .92rem; font-weight: 400; }
+  .rating { font-size: .95rem; font-weight: 400; }
+  .rating span, .stars { color: #C9952B; letter-spacing: 2px; }
+  @media (max-width: 860px) {
+    .hero { padding-block: 32px 56px; }
+    .hero__in { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+    .hero__photo { order: -1; }
+    :global(.circle) { width: min(300px, 80%); }
+    .btns--left, .creds { justify-content: center; }
+  }
+
+  .compare { max-width: 860px; margin: 40px auto 0; }
+  .tbl { overflow-x: auto; background: var(--white); border-radius: 20px; box-shadow: 0 10px 30px rgba(37,90,79,.08); }
+  table { width: 100%; min-width: 520px; border-collapse: collapse; font-weight: 400; }
+  th, td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--green-soft); }
+  th { font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+  td.me, th.me { background: var(--green); color: var(--white); }
+  tr.fee td { font-weight: 800; font-size: 1.15rem; border-bottom: 0; }
+  .note { font-size: .88rem; font-weight: 400; margin-top: 12px; opacity: .85; }
+
+  .calc { max-width: 560px; margin: 48px auto 0; background: var(--green); color: var(--white); border-radius: 24px; padding: 32px; }
+  .calc__in { display: flex; flex-direction: column; gap: 14px; }
+  .calc label { font-weight: 700; }
+  .calc__price { font-size: 2.2rem; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .calc input[type=range] { width: 100%; accent-color: var(--white); }
+  .calc__rows { display: grid; gap: 8px; }
+  .calc__rows div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.25); padding-bottom: 8px; }
+  .calc__rows b { font-variant-numeric: tabular-nums; }
+  .calc__save { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .calc__save strong { font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .calc .note { color: var(--white); }
+  .why { margin-top: 48px; text-align: left; }
+
+
+  .about { display: grid; grid-template-columns: .8fr 1.2fr; gap: 56px; align-items: center; }
+  .about > * { min-width: 0; }
+  :global(.about__img) { width: 100%; aspect-ratio: 4/5; object-fit: cover; object-position: 50% 25%; border-radius: 24px; }
+  .about__text p { font-weight: 400; }
+  .badges { list-style: none; padding: 0; margin: 8px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: .9rem; font-weight: 400; }
+  .badges li { display: grid; grid-template-columns: 3.6em 1fr; gap: 8px; }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; gap: 28px; } .badges { grid-template-columns: 1fr; } }
+
+  .stories { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 44px; }
+  .reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  @media (max-width: 960px) { .reviews { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 700px) { .stories, .reviews { grid-template-columns: 1fr; } }
+
+  .awards { display: flex; flex-wrap: wrap; justify-content: center; gap: 32px 56px; margin-top: 56px; }
+  .award { display: flex; align-items: center; gap: 20px; text-align: left; max-width: 460px; }
+  .award p { font-weight: 400; }
+  :global(.award__img) { width: 140px; aspect-ratio: 3/4; object-fit: cover; border-radius: 16px; flex: none; }
+  :global(.award__img--wide) { width: 200px; aspect-ratio: 1748/1240; object-fit: contain; }
+  .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; }
+  .gallery figure { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  :global(.gallery__img) { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 18px; }
+  .gallery figcaption { font-weight: 700; font-size: .95rem; text-align: center; }
+  @media (max-width: 860px) { .gallery { grid-template-columns: 1fr 1fr; gap: 14px; } .award { flex-direction: column; text-align: center; } }
+
+  .faq { display: grid; gap: 10px; }
+  .faq details { border: 1px solid var(--green-soft); border-radius: 16px; padding: 4px 22px; }
+  .faq summary { cursor: pointer; list-style: none; padding: 16px 0; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: '+'; font-size: 1.4rem; line-height: 1; font-weight: 300; }
+  .faq details[open] summary::after { content: '–'; }
+  .faq details p { padding-bottom: 18px; font-weight: 400; }
+
+</style>

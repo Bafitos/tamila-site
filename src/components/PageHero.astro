@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import { site } from '../data/site.js';
+const { eyebrow, title, lead, image, imageAlt, pos = '50% 25%', ru = false, cta2 = null } = Astro.props;
+const second = cta2 ?? (ru ? ['#contact', 'Бесплатная консультация'] : ['#contact', 'Free consultation']);
+---
+<section class="phero">
+  <div class="wrap phero__in">
+    <div class="stack phero__text">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      <p class="lead">{lead}</p>
+      <div class="btns phero__btns">
+        <a class="pill" href={`tel:${site.phoneHref}`}>{ru ? 'Позвонить' : 'Call'} {site.phone}</a>
+        <a class="pill pill--line" href={second[0]}>{second[1]}</a>
+      </div>
+      <slot />
+    </div>
+    {image && (
+      <div class="phero__img">
+        <Image src={image} alt={imageAlt} widths={[360, 560, 760]} sizes="(max-width: 860px) 90vw, 440px" loading="eager" fetchpriority="high" style={`object-position:${pos}`} />
+      </div>
+    )}
+  </div>
+</section>
+<style>
+  .phero { padding-block: 56px 72px; }
+  .phero__in { display: grid; grid-template-columns: 1.2fr .8fr; gap: 48px; align-items: center; }
+  .phero__in > * { min-width: 0; }
+  .phero__btns { justify-content: flex-start; }
+  .phero__img :global(img) { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 28px; }
+  @media (max-width: 860px) {
+    .phero { padding-block: 32px 48px; }
+    .phero__in { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+    .phero__img { order: -1; max-width: 340px; margin-inline: auto; width: 100%; }
+    .phero__btns { justify-content: center; }
+  }
+</style>

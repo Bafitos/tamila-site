@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Stories from '../components/Stories.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { Image } from 'astro:assets';
+import img from '../assets/tamila-aspen-portrait.jpg';
+import son from '../assets/gallery/military-family.jpg';
+import { stories } from '../data/site.js';
+
+const faq = [
+  ['How much do I need for a down payment with a VA loan?', 'Eligible borrowers can buy with 0% down. Tamila checks your eligibility and explains the funding fee and closing costs up front.'],
+  ['Can I buy before I arrive in Colorado?', 'Yes. Tamila has helped buyers who toured on short visits and closed while still living in another state. Video tours and electronic signing make it possible.'],
+  ['I have PCS orders and need to sell. Can you help?', 'Yes. Tamila prices your home to sell on your timeline and can handle the sale after you have already left.'],
+  ['Does the house need to be in good condition for a VA loan?', 'VA loans have minimum property requirements. Tamila checks the home early so repairs do not surprise you right before closing.'],
+  ['Do you work near military bases?', 'Yes, across the Denver metro and Colorado Springs, including near Buckley Space Force Base in Aurora, Fort Carson, Peterson and Schriever Space Force Bases, and the U.S. Air Force Academy.'],
+];
+---
+<Base title="VA Loans & PCS Moves in Colorado | Military Relocation Professional | Tamila Aspen" description="VA home loans with 0% down and PCS moves in Denver and Colorado Springs. Tamila Aspen is a military mom, a Military Relocation Professional (MRP) and a mortgage loan officer." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+  <PageHero
+    eyebrow="Military & veterans · Military Relocation Professional (MRP)"
+    title="VA loans and PCS moves, from a military mom"
+    lead="Tamila's son serves in the U.S. Air Force. She knows what orders, deployments and short timelines mean for a family, and she handles both the home and the VA loan."
+    image={img}
+    imageAlt="Tamila Aspen, Military Relocation Professional"
+    cta2={['#contact', 'Talk about my move']}
+  />
+
+  <section class="section mist">
+    <div class="wrap mom">
+      <Image src={son} alt="Tamila Aspen with her son Alexey in his U.S. Air Force uniform" widths={[360, 560]} sizes="(max-width: 860px) 80vw, 380px" class="mom__img" />
+      <div class="prose mom__text">
+        <h2>Why this matters to Tamila</h2>
+        <p>When your family serves, moving is part of life. Tamila has lived it as a mother. She understands report dates, last-minute changes and buying a home from far away.</p>
+        <ul class="checks">
+          <li><b>VA loans with 0% down</b> for eligible buyers, handled by Tamila herself as your loan officer.</li>
+          <li><b>Buying from out of state</b> with video tours and electronic signing.</li>
+          <li><b>Selling on PCS orders</b>, even after you have moved.</li>
+          <li><b>VA property requirements</b> checked early, so repairs do not surprise you.</li>
+          <li><b>Deployment-friendly scheduling</b>, seven days a week.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>Near Colorado's bases</h2>
+      <p>Tamila helps military families across the Denver metro and Colorado Springs, including Aurora near Buckley Space Force Base, and Colorado Springs near Fort Carson, Peterson and Schriever Space Force Bases and the U.S. Air Force Academy.</p>
+    </div>
+  </section>
+
+  <Stories items={[stories[2]]} title="Buying from another state" />
+  <Faq items={faq} title="VA and PCS questions" />
+  <ContactBand title="Got orders? Let's make a plan." lead="Tell Tamila your report date and what you need. She will call you back, usually the same day." goal="VA loan / PCS move" />
+</Base>
+<style>
+  .mom { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; align-items: center; }
+  .mom > * { min-width: 0; }
+  .mom :global(.mom__img) { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 24px; }
+  .mom__text { margin: 0; }
+  @media (max-width: 860px) { .mom { grid-template-columns: 1fr; gap: 28px; } .mom :global(.mom__img) { max-width: 340px; margin-inline: auto; } }
+</style>

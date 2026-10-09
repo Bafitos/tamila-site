@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Stories from '../components/Stories.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import img from '../assets/tamila-aspen-full-length.jpg';
+import { site, stories } from '../data/site.js';
+
+const faq = [
+  ['How much house can I afford?', 'It depends on your income, debts, credit and down payment, and on the neighborhood. Prices differ a lot from one area to the next. The fastest way to know is a pre-approval, which Tamila can often do within 24 hours.'],
+  ['What does it cost me to use a buyer’s agent?', "In most Denver-area purchases, the buyer's agent is paid from the sale, typically by the seller. Tamila explains exactly how it works for your home before you sign anything."],
+  ['Can I buy if I live in another state?', 'Yes. Tamila has helped buyers who toured homes on short visits and closed while still living out of state.'],
+  ['What if I have bad credit?', 'Tamila works with buyers with credit scores starting around 570. Below that, she can show you how to get ready, starting with a soft credit check that does not affect your score.'],
+  ['What is the first step?', 'A short call. Tamila asks what you need, checks what you can afford and explains the whole process in plain words.'],
+];
+const steps = [
+  ['Talk and get pre-approved', 'Know your real budget before you fall in love with a house. Tamila is a loan officer, so this often takes less than a day.'],
+  ['Find the right areas', 'Tell her the bedrooms, bathrooms and budget you need. She tells you honestly where that is realistic.'],
+  ['Tour homes', 'She points out the good and the potential problems in every house.'],
+  ['Make a strong offer', 'Price, terms and timing based on real recent sales. Clients have won seller-paid closing costs and price reductions.'],
+  ['Inspection and appraisal', 'She reads the inspection report with you and negotiates repairs.'],
+  ['Close and get the keys', 'Your loan, your contract and your closing, managed by the same person.'],
+];
+---
+<Base title="Buy a Home in Denver with an Agent Who Is Also Your Lender | Tamila Aspen" description="Buying a home in the Denver metro? Tamila Aspen is a REALTOR® and mortgage loan officer: pre-approval, honest advice, strong negotiation and one person from first showing to closing." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+  <PageHero
+    eyebrow="Buying · Accredited Buyer's Representative (ABR)"
+    title="Buy your home with one person who handles the house and the loan"
+    lead="First home, bigger home or a move from another state. Tamila explains every step in plain words and negotiates hard for you."
+    image={img}
+    imageAlt="Tamila Aspen standing in a hotel lobby in a blue suit"
+    pos="50% 15%"
+    cta2={['#contact', 'Start with a free call']}
+  />
+
+  <section class="section mist">
+    <div class="wrap">
+      <h2 class="center">How buying with Tamila works</h2>
+      <ol class="steps">
+        {steps.map(([h, p]) => <li><h3>{h}</h3><p>{p}</p></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>“I want 2 bedrooms and 2 baths.” Where is that realistic?</h2>
+      <p>Prices in the Denver metro change a lot from one neighborhood to the next. The same budget that buys a family home in one suburb may not buy a condo near the Tech Center. Instead of guessing, tell Tamila your budget and what you need, and she will tell you honestly which areas fit.</p>
+      <p>Remember that your monthly payment matters more than the price. Taxes, insurance, HOA fees and the loan program all change it. Tamila calculates the real payment for each home you like.</p>
+      <h2>First-time buyers</h2>
+      <p>Clients say Tamila treats them like family and explains difficult contract terms patiently. She also knows the loan side: FHA, VA, USDA and down payment assistance programs.</p>
+      <p><a class="pill" href="/mortgage">See loan options</a></p>
+    </div>
+  </section>
+
+  <Stories items={[stories[1], stories[2]]} title="Buyers in their own words" />
+  <Faq items={faq} title="Buyer questions" />
+  <ContactBand title="Tell Tamila what you are looking for" lead="Budget, bedrooms, areas you like. She will call you back, usually the same day." goal="Buy a home" />
+</Base>
+
+<style>
+  .steps { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: s; }
+  .steps li { counter-increment: s; background: var(--white); border-radius: 20px; padding: 26px; display: flex; flex-direction: column; gap: 8px; }
+  .steps li::before { content: counter(s); width: 38px; height: 38px; border-radius: 50%; background: var(--green); color: var(--white); display: grid; place-items: center; font-weight: 800; }
+  .steps p { font-weight: 400; font-size: 1rem; }
+  @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
+</style>

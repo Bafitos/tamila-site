@@ -1,0 +1,20 @@
+---
+const { items, title = 'Questions people ask' } = Astro.props;
+---
+<section id="faq" class="section">
+  <div class="wrap narrow">
+    <h2 class="center" style="margin-bottom:32px">{title}</h2>
+    <div class="faq">
+      {items.map(([q, a]) => (<details><summary>{q}</summary><p>{a}</p></details>))}
+    </div>
+  </div>
+</section>
+<style>
+  .faq { display: grid; gap: 10px; }
+  .faq details { border: 1px solid var(--green-soft); border-radius: 16px; padding: 4px 22px; }
+  .faq summary { cursor: pointer; list-style: none; padding: 16px 0; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: '+'; font-size: 1.4rem; line-height: 1; font-weight: 300; }
+  .faq details[open] summary::after { content: '–'; }
+  .faq details p { padding-bottom: 18px; font-weight: 400; }
+</style>

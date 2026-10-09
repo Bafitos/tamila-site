@@ -1,0 +1,70 @@
+---
+import { site } from '../data/site.js';
+import { Image } from 'astro:assets';
+import equityLogo from '../assets/equity-logo.jpg';
+const a = site.address;
+---
+<footer class="ftr">
+  <div class="wrap ftr__grid">
+    <div class="stack ftr__col">
+      <p class="ftr__name">Tamila Aspen</p>
+      <p>Real Estate Agent &amp; Mortgage Loan Officer</p>
+      <p><a href={`tel:${site.phoneHref}`}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <p>{a.street}<br />{a.city}, {a.region} {a.zip}</p>
+      <p>English · <a href="/ru">Русский</a> · Українська</p>
+      <ul class="social" aria-label="Social media">
+        {Object.entries(site.social).map(([n, u]) => <li><a href={u} target="_blank" rel="noopener">{n}</a></li>)}
+      </ul>
+    </div>
+    <div class="ftr__col">
+      <p class="ftr__h">Real estate service areas</p>
+      <ul class="areas">{site.areas.map((c) => <li>{c}</li>)}</ul>
+      <p class="ftr__note">Mortgage lending available statewide in Colorado.</p>
+    </div>
+    <div class="ftr__col stack">
+      <p class="ftr__h">Help with</p>
+      <ul class="plain">
+        <li><a href="/sell-for-1-percent">Selling for 1%</a></li>
+        <li><a href="/buy-a-home">Buying a home</a></li>
+        <li><a href="/mortgage">Mortgage &amp; credit</a></li>
+        <li><a href="/va-loans-pcs">VA loans &amp; PCS</a></li>
+        <li><a href="/selling-house-during-divorce">Selling during a divorce</a></li>
+        <li><a href="/short-sale-foreclosure">Short sale &amp; foreclosure</a></li>
+      </ul>
+      <p class="ftr__h" style="margin-top:20px">Find Tamila on</p>
+      <ul class="plain">
+        <li><a href={site.profiles.google} target="_blank" rel="noopener">Google reviews</a></li>
+        <li><a href={site.profiles.zillow} target="_blank" rel="noopener">Zillow</a></li>
+        <li><a href={site.profiles.realtor} target="_blank" rel="noopener">Realtor.com</a></li>
+        <li><a href={site.profiles.homes} target="_blank" rel="noopener">Homes.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <div class="logo-chip"><Image src={equityLogo} alt="Equity Colorado Real Estate" widths={[240, 480]} sizes="200px" /></div>
+    <p><b>Real estate:</b> Tamila Aspen, REALTOR®, Colorado license #{site.license}. Brokered by {site.brokerage}.</p>
+    <p><b>Mortgage:</b> Tamila Aspen, Mortgage Loan Originator, NMLS #{site.nmls}. {site.lender}, NMLS #{site.lenderNmls}. Loan approval is not guaranteed and depends on credit, income, property and program guidelines.</p>
+    <p>Equal Housing Opportunity · <a href="/privacy">Privacy Policy</a> · <a href="/accessibility">Accessibility</a></p>
+    <p>© {new Date().getFullYear()} Tamila Aspen. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .ftr { background: var(--charcoal); color: #F1F3F2; padding-block: 64px 32px; font-size: 1rem; font-weight: 400; }
+  .ftr a { text-decoration: none; }
+  .ftr a:hover { text-decoration: underline; }
+  .ftr__grid { display: grid; grid-template-columns: 1.2fr 1fr .8fr; gap: 40px; }
+  .ftr__col { min-width: 0; }
+  .ftr__name { font-size: 1.5rem; font-weight: 300; }
+  .ftr__h { font-weight: 700; margin-bottom: 12px; }
+  .ftr__note { margin-top: 12px; opacity: .75; font-size: .92rem; }
+  .areas { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 20px; }
+  .areas li { padding: 2px 0; }
+  .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  .social { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .social a { display: inline-block; padding: 6px 12px; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; font-size: .88rem; }
+  .logo-chip { background: #fff; border-radius: 12px; padding: 10px 16px; width: fit-content; margin-bottom: 8px; }
+  .logo-chip :global(img) { width: 180px; height: auto; }
+  .legal { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.15); display: grid; gap: 8px; font-size: .85rem; opacity: .8; }
+  @media (max-width: 860px) { .ftr__grid { grid-template-columns: 1fr; gap: 32px; } }
+</style>

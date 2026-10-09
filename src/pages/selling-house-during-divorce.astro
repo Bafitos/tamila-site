@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Stories from '../components/Stories.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import img from '../assets/tamila-aspen-on-phone.jpg';
+import { stories } from '../data/site.js';
+
+const faq = [
+  ['Who does Tamila represent in a divorce sale?', 'She works with both spouses as a neutral professional and keeps everyone, including the attorneys, informed with the same information.'],
+  ['Can one spouse keep the house?', 'Often, if that spouse can qualify for a loan on their own. Because Tamila is also a loan officer, she can check early whether a buyout refinance is realistic.'],
+  ['What if the house has problems?', 'Repairs, HOA issues and insurance problems are common in these sales. Tamila has sold homes with all three at once.'],
+  ['Do you give legal advice?', 'No. Decisions about dividing property belong with your attorneys. Tamila handles the real estate and the financing side and works alongside them.'],
+];
+---
+<Base title="Selling a House During a Divorce in Denver | Tamila Aspen, RCS-D" description="Selling a home during a divorce in the Denver metro. Tamila Aspen is a Real Estate Collaboration Specialist – Divorce (RCS-D) and a mortgage loan officer who works calmly with both spouses and their attorneys." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+  <PageHero
+    eyebrow="Divorce · Real Estate Collaboration Specialist – Divorce (RCS-D)"
+    title="Selling a house during a divorce"
+    lead="A hard time is not the moment for a pushy agent. Tamila stays calm, neutral and organized, and keeps both of you and your attorneys informed."
+    image={img}
+    imageAlt="Tamila Aspen on the phone with a client"
+    pos="62% 30%"
+    cta2={['#contact', 'Confidential consultation']}
+  />
+
+  <section class="section mist">
+    <div class="wrap prose">
+      <h2>Your options with the house</h2>
+      <ul class="checks">
+        <li><b>Sell and divide the proceeds.</b> Tamila prices the home on real recent sales, so neither side has to argue about the number.</li>
+        <li><b>One spouse keeps the house.</b> This usually means a refinance in one name. As a loan officer, Tamila can check early whether that is realistic.</li>
+        <li><b>Wait and sell later.</b> Sometimes it makes sense. Tamila explains what it means for the payment and the market.</li>
+      </ul>
+      <p class="callout">Tamila works with both spouses and their attorneys. She does not give legal advice; property decisions belong with your attorneys.</p>
+    </div>
+  </section>
+
+  <Stories items={[stories[0]]} title="When the first agent gave up" />
+  <Faq items={faq} title="Divorce sale questions" />
+  <ContactBand title="Talk to Tamila in confidence" lead="Tell her a little about the situation. She will call you back and explain your options calmly, in English, Russian or Ukrainian." goal="Selling during a divorce" />
+</Base>

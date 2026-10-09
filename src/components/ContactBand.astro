@@ -1,0 +1,75 @@
+---
+import { site } from '../data/site.js';
+const {
+  title = 'What is your home worth? What can you afford?',
+  lead = 'Tell Tamila a little about your plans. She will call you back, usually the same day, in English, Russian or Ukrainian.',
+  goal = 'Sell my home and buy another (1%)',
+  ru = false,
+} = Astro.props;
+const goals = ru
+  ? ['Продать и купить дом (1%)', 'Продать дом', 'Купить дом', 'Получить предодобрение по ипотеке', 'Рефинансирование', 'Другое']
+  : ['Sell my home and buy another (1%)', 'Sell my home', 'Buy a home', 'Get pre-approved for a loan', 'VA loan / PCS move', 'Selling during a divorce', 'Behind on payments', 'Refinance', 'Something else'];
+const t = ru
+  ? { name: 'Ваше имя', phone: 'Телефон', email: 'Email', want: 'Я хочу', msg: 'Адрес или сообщение', send: 'Отправить заявку' }
+  : { name: 'Your name', phone: 'Phone', email: 'Email', want: 'I want to', msg: 'Address or message', send: 'Request a free consultation' };
+---
+<section id="contact" class="section cband">
+  <div class="wrap cband__in">
+    <div class="stack">
+      <h2>{title}</h2>
+      <p class="lead">{lead}</p>
+      <p class="cband__big"><a href={`tel:${site.phoneHref}`}>{site.phone}</a></p>
+      <p>{site.email}</p>
+    </div>
+    <form class="cform" data-endpoint={site.formEndpoint} data-ru={ru ? '1' : ''} novalidate>
+      <label for="f-name">{t.name}<input id="f-name" name="name" autocomplete="name" required /></label>
+      <label for="f-phone">{t.phone}<input id="f-phone" name="phone" type="tel" autocomplete="tel" required /></label>
+      <label for="f-email">{t.email}<input id="f-email" name="email" type="email" autocomplete="email" /></label>
+      <label for="f-goal">{t.want}
+        <select id="f-goal" name="goal">{goals.map((g) => <option selected={g === goal}>{g}</option>)}</select>
+      </label>
+      <label for="f-msg">{t.msg}<textarea id="f-msg" name="message" rows="3"></textarea></label>
+      <button class="pill pill--dark" type="submit">{t.send}</button>
+      <p class="cform__status" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form.cform').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ru = form.dataset.ru === '1';
+      const st = form.querySelector('.cform__status')!;
+      const msg = {
+        off: ru ? 'Онлайн-форма подключается. Пожалуйста, позвоните или напишите: (720) 975-6206.' : 'The online form is being connected. Please call or text (720) 975-6206.',
+        sending: ru ? 'Отправляю…' : 'Sending…',
+        ok: ru ? 'Спасибо! Тамила скоро свяжется с вами.' : 'Thank you! Tamila will contact you shortly.',
+        err: ru ? 'Не удалось отправить. Позвоните или напишите: (720) 975-6206.' : 'Could not send. Please call or text (720) 975-6206.',
+      };
+      const ep = form.dataset.endpoint;
+      if (!ep) { st.textContent = msg.off; return; }
+      st.textContent = msg.sending;
+      try {
+        const r = await fetch(ep, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+        st.textContent = r.ok ? msg.ok : msg.err;
+        if (r.ok) form.reset();
+      } catch { st.textContent = msg.err; }
+    });
+  });
+</script>
+
+<style>
+  .cband { background: var(--sage); color: var(--ink); }
+  .cband__in { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .cband__in > * { min-width: 0; }
+  .cband h2 { color: var(--green); }
+  .cband__big { font-size: 2rem; font-weight: 300; }
+  .cband__big a { text-decoration: none; }
+  .cform { display: grid; gap: 18px; }
+  .cform label { display: flex; flex-direction: column; gap: 4px; font-weight: 400; font-size: .95rem; }
+  .cform input, .cform select, .cform textarea { font: 400 1.05rem var(--font); color: var(--ink); background: transparent; border: 0; border-bottom: 1.5px solid #111; padding: 10px 2px; border-radius: 0; width: 100%; }
+  .cform input:focus, .cform select:focus, .cform textarea:focus { outline: none; border-bottom-color: var(--green); }
+  .cform__status { font-weight: 700; min-height: 1.5em; }
+  @media (max-width: 860px) { .cband__in { grid-template-columns: 1fr; gap: 32px; } }
+</style>

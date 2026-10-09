@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import img from '../assets/tamila-aspen-portrait.jpg';
+
+const faq = [
+  ['I missed a payment. What should I do first?', 'Call your lender and call Tamila. The earlier you act, the more options you have.'],
+  ['What is a short sale?', 'A sale where the lender agrees to accept less than the amount owed on the loan. It needs the lender’s approval and usually takes longer than a normal sale.'],
+  ['Is it better to sell before foreclosure?', 'Often, yes, especially if you have equity. Selling on your terms usually leaves you in a better position. Tamila looks at the numbers with you.'],
+  ['Do you give legal or tax advice?', 'No. Tamila explains the real estate and mortgage options. For legal and tax questions, she will recommend that you speak with an attorney or a tax professional.'],
+];
+---
+<Base title="Behind on Mortgage Payments? Short Sale & Foreclosure Help in Denver | Tamila Aspen, SFR" description="Behind on your mortgage in Colorado? Tamila Aspen, Short Sales & Foreclosure Resource (SFR) and loan officer, explains your options early: refinance, selling with equity, or a short sale." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+  <PageHero
+    eyebrow="Short sales & foreclosure · SFR"
+    title="Behind on your mortgage? You have more options than you think."
+    lead="The worst thing to do is wait. Tamila explains your choices calmly and without judgment, before the bank decides for you."
+    image={img}
+    imageAlt="Portrait of Tamila Aspen"
+    cta2={['#contact', 'Confidential call']}
+  />
+
+  <section class="section mist">
+    <div class="wrap prose">
+      <h2>Possible options</h2>
+      <ul class="checks">
+        <li><b>Talk to your lender</b> about a repayment plan or loan modification.</li>
+        <li><b>Refinance</b>, if your credit and income allow it. Tamila is a loan officer and can check quickly.</li>
+        <li><b>Sell with your equity</b> before the situation gets worse.</li>
+        <li><b>A short sale</b>, if you owe more than the home is worth and the lender agrees.</li>
+      </ul>
+      <p class="callout">Every situation is different. Tamila explains the real estate and mortgage side. For legal or tax questions, please speak with an attorney or a tax professional.</p>
+    </div>
+  </section>
+
+  <Faq items={faq} title="Questions" />
+  <ContactBand title="Let's look at your options" lead="Everything you share stays private. Tamila will call you back and explain where you stand." goal="Behind on payments" />
+</Base>

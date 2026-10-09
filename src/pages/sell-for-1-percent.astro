@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Stories from '../components/Stories.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import img from '../assets/tamila-aspen-walking.jpg';
+import { site, stories } from '../data/site.js';
+
+const faq = [
+  ['When does the 1% listing fee apply?', 'When you sell your home and buy your next one with Tamila. If you only sell, the listing fee is the standard rate, up to 3%.'],
+  ['Do I still pay the buyer’s agent?', "Usually yes. The agent who brings the buyer for your home is paid separately, typically up to 3%, and that amount is negotiable. The 1% covers Tamila's side only."],
+  ['Why can Tamila charge 1%?', 'When you also buy your next home with her, she earns her buyer-agent commission on that purchase, which is typically paid by the seller of the home you buy. That lets her take less on your sale.'],
+  ['Who pays for the listing photos?', 'Tamila hires a professional photography company and pays for it herself in almost every case.'],
+  ['Should I renovate before I sell?', "Usually no. Buyers have their own taste and will redo it anyway. Spend your energy on pricing it right and on being ready for the buyer's inspection."],
+  ['Should I do an inspection before I list?', "Tamila usually doesn't recommend it. The buyer will do their own inspection. What matters is knowing what buyers typically ask to fix, so nothing surprises you."],
+];
+const schema = [
+  { '@context': 'https://schema.org', '@type': 'Service', name: '1% listing fee when you sell and buy with Tamila Aspen', serviceType: 'Real estate listing', provider: { '@id': `${site.url}/#agent` }, areaServed: 'Denver metro, Colorado', description: 'Full-service home listing for 1% when the seller also buys their next home with Tamila Aspen. Listing only: standard rate up to 3%.' },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+];
+---
+<Base title="Sell Your Denver Home for 1% | Tamila Aspen, REALTOR®" description="Sell your Denver-area home for a 1% listing fee when you buy your next one with Tamila Aspen. Professional photos paid by Tamila, MLS, negotiation and full support until closing." schema={schema}>
+  <PageHero
+    eyebrow="Selling · Seller Representative Specialist (SRS)"
+    title="Sell your home for 1% when you buy your next one with Tamila"
+    lead="You get the same full service as with a 3% agent. You simply keep more of your equity for your next home."
+    image={img}
+    imageAlt="Tamila Aspen walking down a Denver street"
+    pos="50% 20%"
+    cta2={['#contact', 'Free home valuation']}
+  />
+
+  <section class="section mist">
+    <div class="wrap prose">
+      <h2 class="center">What you get for 1%</h2>
+      <ul class="checks">
+        <li><b>Pricing based on real recent sales</b> near your home, so it sells instead of sitting.</li>
+        <li><b>Professional photography</b>, paid by Tamila.</li>
+        <li><b>MLS listing</b>, which sends your home to Zillow, Realtor.com, Redfin and other sites.</li>
+        <li><b>Social media marketing</b> on Tamila's channels.</li>
+        <li><b>Showings, offers and negotiation</b> with buyers' agents.</li>
+        <li><b>Full support until closing</b>: inspection, appraisal, title and paperwork.</li>
+        <li><b>A mortgage for your next home</b> from the same person, if you want it. Tamila is also a loan officer.</li>
+      </ul>
+      <p class="callout"><b>The condition:</b> the 1% listing fee applies when you sell and buy your next home with Tamila. Listing only: standard rate, up to 3%. The buyer's agent for your home is paid separately and is negotiable.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>How fast will my home sell?</h2>
+      <p><b>Price decides speed.</b> A home priced at the market can sell in days, sometimes over the first weekend. A home listed about 10% above the market can sit for months, and the price usually comes down anyway. Tamila is a Pricing Strategy Advisor (PSA). She shows you the recent sales she uses, so you can see the price for yourself.</p>
+
+      <h2>Should I renovate before selling?</h2>
+      <p>Usually no. New paint colors, counters or floors are a matter of taste, and most buyers will change them anyway. You rarely get that money back.</p>
+
+      <h2>What to expect from the buyer's inspection</h2>
+      <p>Every buyer does an inspection. The items they most often ask the seller to fix are:</p>
+      <ul class="checks">
+        <li>Sewer line</li>
+        <li>Heating and air conditioning (HVAC)</li>
+        <li>Foundation</li>
+        <li>Roof</li>
+      </ul>
+      <p>Some loans, such as FHA and VA, cannot be used to buy a home in poor condition. If your buyer has one of these loans, certain repairs may be required before closing. Because Tamila is also a loan officer, she spots these issues early and explains your options.</p>
+
+      <h2>Selling and buying at the same time</h2>
+      <p>Most of Tamila's sellers are also buying. She plans both closings together and, if you want, handles the loan for your next home too. One person, one plan, one schedule.</p>
+    </div>
+  </section>
+
+  <Stories items={[stories[0], stories[3]]} title="Sellers in their own words" />
+  <Faq items={faq} title="Seller questions" />
+  <ContactBand title="What is your home worth?" lead="Get a free, honest price estimate based on real recent sales. No pressure, no obligation." />
+</Base>

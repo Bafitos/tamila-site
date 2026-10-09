@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import img from '../assets/tamila-aspen-loan-officer-laptop.jpg';
+import { site } from '../data/site.js';
+
+const loans = [
+  ['Conventional', 'For buyers with steady income and fair or good credit. Some programs start at a low down payment.'],
+  ['FHA', 'Flexible credit rules and a low down payment. Popular with first-time buyers.'],
+  ['VA', '0% down for eligible service members, veterans and some surviving spouses.'],
+  ['USDA', '0% down in eligible rural and suburban areas.'],
+  ['Jumbo', 'For higher-priced homes above standard loan limits.'],
+  ['Non-QM', 'For self-employed buyers, investors and others whose income does not fit standard rules.'],
+  ['Down payment assistance', 'Colorado programs that can help with the down payment or closing costs.'],
+  ['Refinance', 'Lower your rate or payment, or take cash out, when it makes sense.'],
+];
+const faq = [
+  ['What credit score do I need?', 'Tamila works with buyers with credit scores starting around 570. The loan program and the down payment depend on your score.'],
+  ['My score is below 570. What now?', 'Start with a soft credit check. It does not affect your score. Tamila looks at what you have and tells you exactly what to fix and in what order.'],
+  ['How fast can I get pre-approved?', 'Often within 24 hours once Tamila has your documents.'],
+  ['Why use a loan officer who is also a REALTOR®?', 'Your offer, your loan and your closing dates are managed by one person, so nothing falls between two offices. Sellers also trust an offer when the agent and the lender are the same person.'],
+  ['Can you guarantee a rate?', 'No one honestly can before you apply. Rates depend on your credit, down payment, loan program, property and the market on the day you lock.'],
+];
+---
+<Base title="Denver Mortgage Loan Officer | Credit from 570, VA, FHA | Tamila Aspen" description="Home loans in Colorado with Tamila Aspen, mortgage loan officer (NMLS #2490507, Barrett Financial Group NMLS #181106). FHA, VA, USDA, Conventional, Jumbo, Non-QM, down payment assistance." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+  <PageHero
+    eyebrow={`Mortgage · NMLS #${site.nmls}`}
+    title="Home loans explained in plain words"
+    lead="Tamila spent 23 years in finance and accounting before real estate. She looks at your whole picture and finds the loan that fits, not just the one that is easiest to sell."
+    image={img}
+    imageAlt="Tamila Aspen working on a laptop in a hotel lounge"
+    pos="50% 30%"
+    cta2={[site.applyUrl, 'Apply online']}
+  />
+
+  <section class="section mist">
+    <div class="wrap">
+      <h2 class="center">Loan programs</h2>
+      <div class="cards">
+        {loans.map(([h, p]) => <article class="card"><h3>{h}</h3><p>{p}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>Can I buy a home with bad credit?</h2>
+      <p>Often, yes. Tamila works with buyers with credit scores starting around <b>570</b>. The lower the score, the more the program and down payment matter, so she compares the options side by side for you.</p>
+      <p class="callout"><b>Below 570?</b> Don't give up. Tamila will look at your situation and show you how to get ready to buy. It starts with a soft credit check that does not affect your score.</p>
+      <h2>Your real monthly payment</h2>
+      <p>The price of a home is only part of the story. Your payment also includes property taxes, insurance, HOA fees and, on some loans, mortgage insurance. Tamila calculates the full payment for each home you are considering, so there are no surprises.</p>
+      <p class="small">Loans offered through {site.lender}, NMLS #{site.lenderNmls}. Tamila Aspen, NMLS #{site.nmls}. Licensed in Colorado and Florida. Not a commitment to lend. Loan approval depends on credit, income, assets, property and program guidelines.</p>
+    </div>
+  </section>
+
+  <Faq items={faq} title="Mortgage questions" />
+  <ContactBand title="Find out what you qualify for" lead="A short call and a soft credit check, which doesn't affect your score. Tamila will explain your options the same day." goal="Get pre-approved for a loan" />
+</Base>
+<style>.small { font-size: .85rem; opacity: .8; }</style>
