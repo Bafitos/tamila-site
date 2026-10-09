@@ -13,7 +13,7 @@ export const site = {
   lender: 'Barrett Financial Group, LLC',
   lenderNmls: '181106',
   applyUrl: 'https://www.barrettfinancial.com/taspen/apply-now',
-  formEndpoint: '', // TODO: Formspree endpoint
+  formEndpoint: 'https://formspree.io/f/mrpekgaa',
   designations: [
     ['ABR', "Accredited Buyer's Representative"],
     ['SRS', 'Seller Representative Specialist'],

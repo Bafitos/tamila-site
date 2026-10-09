@@ -21,7 +21,10 @@ const t = ru
       <p class="cband__big"><a href={`tel:${site.phoneHref}`}>{site.phone}</a></p>
       <p>{site.email}</p>
     </div>
-    <form class="cform" data-endpoint={site.formEndpoint} data-ru={ru ? '1' : ''} novalidate>
+    <form class="cform" action={site.formEndpoint} method="POST" data-endpoint={site.formEndpoint} data-ru={ru ? '1' : ''}>
+      <input type="hidden" name="_subject" value={ru ? 'Новая заявка с сайта (RU)' : 'New website inquiry'} />
+      <input type="hidden" name="page" value={Astro.url.pathname} />
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
       <label for="f-name">{t.name}<input id="f-name" name="name" autocomplete="name" required /></label>
       <label for="f-phone">{t.phone}<input id="f-phone" name="phone" type="tel" autocomplete="tel" required /></label>
       <label for="f-email">{t.email}<input id="f-email" name="email" type="email" autocomplete="email" /></label>
@@ -49,12 +52,20 @@ const t = ru
       };
       const ep = form.dataset.endpoint;
       if (!ep) { st.textContent = msg.off; return; }
+      if (!form.reportValidity()) return;
       st.textContent = msg.sending;
+      const btn = form.querySelector('button');
+      btn?.setAttribute('disabled', '');
       try {
         const r = await fetch(ep, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
-        st.textContent = r.ok ? msg.ok : msg.err;
-        if (r.ok) form.reset();
+        if (r.ok) { st.textContent = msg.ok; form.reset(); }
+        else {
+          const data = await r.json().catch(() => null);
+          const detail = data?.errors?.map((x: { message: string }) => x.message).join(' ');
+          st.textContent = detail ? `${msg.err} (${detail})` : msg.err;
+        }
       } catch { st.textContent = msg.err; }
+      finally { btn?.removeAttribute('disabled'); }
     });
   });
 </script>
@@ -70,6 +81,7 @@ const t = ru
   .cform label { display: flex; flex-direction: column; gap: 4px; font-weight: 400; font-size: .95rem; }
   .cform input, .cform select, .cform textarea { font: 400 1.05rem var(--font); color: var(--ink); background: transparent; border: 0; border-bottom: 1.5px solid #111; padding: 10px 2px; border-radius: 0; width: 100%; }
   .cform input:focus, .cform select:focus, .cform textarea:focus { outline: none; border-bottom-color: var(--green); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
   .cform__status { font-weight: 700; min-height: 1.5em; }
   @media (max-width: 860px) { .cband__in { grid-template-columns: 1fr; gap: 32px; } }
 </style>
