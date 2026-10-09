@@ -26,6 +26,7 @@ export const site = {
   profiles: {
     google: 'https://www.google.com/maps?cid=12427625558005067913',
     apple: 'https://maps.apple.com/place?place-id=I43A6641BF3C258BE',
+    yelp: 'https://www.yelp.com/biz/tamila-aspen-realtor-centennial',
     zillow: 'https://www.zillow.com/profile/TamilaAspen',
     realtor: 'https://www.realtor.com/realestateagents/5b99edae2248680010a0876a',
     homes: 'https://www.homes.com/real-estate-agents/tamila-aspen/jjxzqm6/',
