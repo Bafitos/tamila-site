@@ -1,0 +1,142 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { site } from '../../data/site.js';
+import { posts } from '../../data/posts.js';
+
+export function getStaticPaths() {
+  return posts.map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+const { post } = Astro.props;
+const url = `${site.url}/blog/${post.slug}`;
+const dateText = new Date(post.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+const c = post.compare;
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// Embed code: a self-contained card with a credited link back to the original article.
+const embed = `<div style="font-family:Arial,Helvetica,sans-serif;border:1px solid #D0DEDC;border-radius:12px;padding:16px;max-width:680px;color:#1B2421">
+<p style="margin:0 0 10px;font-weight:bold;font-size:18px;color:#255A4F">${esc(c.a)} vs ${esc(c.b)}, Colorado</p>
+<table style="width:100%;border-collapse:collapse;font-size:14px">
+<tr><th style="text-align:left;padding:6px;border-bottom:2px solid #255A4F"></th><th style="text-align:left;padding:6px;border-bottom:2px solid #255A4F">${esc(c.a)}</th><th style="text-align:left;padding:6px;border-bottom:2px solid #255A4F">${esc(c.b)}</th></tr>
+${c.rows.map(([l, a, b]) => `<tr><td style="padding:6px;border-bottom:1px solid #D0DEDC;font-weight:bold">${esc(l)}</td><td style="padding:6px;border-bottom:1px solid #D0DEDC">${esc(a)}</td><td style="padding:6px;border-bottom:1px solid #D0DEDC">${esc(b)}</td></tr>`).join('\n')}
+</table>
+<p style="margin:10px 0 0;font-size:13px">Source: <a href="${url}">${esc(post.title)}</a> by Tamila Aspen, Denver real estate agent and mortgage loan officer.</p>
+</div>`;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.updated ?? post.date,
+    mainEntityOfPage: url,
+    image: `${site.url}/og.jpg`,
+    author: { '@type': 'Person', '@id': `${site.url}/#tamila`, name: 'Tamila Aspen', url: site.url },
+    publisher: { '@type': 'Person', '@id': `${site.url}/#tamila`, name: 'Tamila Aspen' },
+    about: post.cities.map((s) => ({ '@type': 'City', name: `${s.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase())}, CO` })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site.url}/blog` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: url },
+    ],
+  },
+];
+---
+<Base title={`${post.title} | Tamila Aspen`} description={post.description} schema={schema}>
+  <article class="post">
+    <header class="section post__head">
+      <div class="wrap narrow stack">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blog">Blog</a></nav>
+        <h1>{post.title}</h1>
+        <p class="post__meta">By <a href="/#about">Tamila Aspen</a>, real estate agent and mortgage loan officer · <time datetime={post.date}>{dateText}</time></p>
+        <p class="lead">{post.lead}</p>
+      </div>
+    </header>
+
+    <section class="wrap compare-wrap">
+      <div class="compare" id="compare">
+        <table>
+          <caption>{c.a} vs {c.b} at a glance</caption>
+          <thead><tr><th scope="col"><span class="sr">Topic</span></th><th scope="col">{c.a}</th><th scope="col">{c.b}</th></tr></thead>
+          <tbody>
+            {c.rows.map(([l, a, b]) => <tr><th scope="row">{l}</th><td data-label={c.a}>{a}</td><td data-label={c.b}>{b}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap narrow prose">
+        {post.body.map((b) =>
+          b.h ? <h2>{b.h}</h2> :
+          b.list ? <ul class="checks">{b.list.map((i) => <li>{i}</li>)}</ul> :
+          <p>{b.p}</p>
+        )}
+
+        <div class="btns post__links">
+          {post.links.map(([t, h], i) => <a class={i === 0 ? 'pill' : 'pill pill--line'} href={h}>{t}</a>)}
+        </div>
+
+        <h2 class="small-h">Sources</h2>
+        <ul class="sources">{post.sources.map(([t, h]) => <li><a href={h} target="_blank" rel="noopener">{t}</a></li>)}</ul>
+        <p class="small">Facts checked {dateText}. Taxes, school boundaries and programs change; verify for a specific address.</p>
+      </div>
+    </section>
+
+    <section class="section mist">
+      <div class="wrap narrow stack">
+        <h2>Share this comparison on your website</h2>
+        <p>You are welcome to republish the comparison table above on your own site, blog or newsletter, free of charge. Please keep the source line with the link to this article. Copy the code below and paste it into your page.</p>
+        <textarea class="embed" id="embed" readonly rows="7">{embed}</textarea>
+        <div class="btns embed__btns"><button type="button" class="pill" id="copyEmbed">Copy embed code</button></div>
+        <p class="small">Want to quote more than the table? Quote a short excerpt with a link to this page, or ask Tamila for permission.</p>
+      </div>
+    </section>
+  </article>
+
+  <ContactBand title={`Thinking about ${c.a} or ${c.b}?`} lead="Tell Tamila your budget and what matters most to you. She will tell you honestly which neighborhoods fit, usually the same day." goal="Buy a home" />
+</Base>
+
+<script>
+  document.getElementById('copyEmbed')?.addEventListener('click', async (e) => {
+    const t = document.getElementById('embed') as HTMLTextAreaElement;
+    const btn = e.target as HTMLElement;
+    try { await navigator.clipboard.writeText(t.value); btn.textContent = 'Copied'; }
+    catch { t.select(); btn.textContent = 'Press Ctrl+C / Cmd+C to copy'; }
+  });
+</script>
+
+<style>
+  .post__head { padding-bottom: 24px; }
+  .crumbs { font-size: .9rem; opacity: .8; }
+  .crumbs a { text-decoration: none; }
+  .post__meta { font-size: .95rem; opacity: .85; }
+  .compare-wrap { max-width: 920px; }
+  .compare { overflow-x: auto; border: 1px solid var(--green-soft); border-radius: 20px; }
+  .compare table { width: 100%; border-collapse: collapse; font-size: 1rem; }
+  .compare caption { text-align: left; padding: 16px 18px 4px; font-weight: 700; color: var(--green); }
+  .compare th, .compare td { text-align: left; vertical-align: top; padding: 12px 18px; border-top: 1px solid var(--green-soft); font-weight: 400; }
+  .compare thead th { font-weight: 800; color: var(--green); border-top: 0; }
+  .compare tbody th { font-weight: 700; width: 26%; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .post__links { justify-content: flex-start; margin-top: 24px; }
+  .small-h { font-size: 1.2rem; margin-top: 40px; }
+  .sources { padding-left: 1.2em; }
+  .small { font-size: .9rem; opacity: .8; }
+  .embed { width: 100%; font: 400 .85rem ui-monospace, SFMono-Regular, Menlo, monospace; border: 1.5px solid var(--green-soft); border-radius: 12px; padding: 12px; background: var(--white); color: var(--ink); resize: vertical; }
+  .embed__btns { justify-content: flex-start; }
+  @media (max-width: 640px) {
+    .compare table, .compare tbody, .compare tr, .compare th, .compare td { display: block; width: 100%; }
+    .compare thead { display: none; }
+    .compare tbody tr { border-top: 1px solid var(--green-soft); padding: 10px 0; }
+    .compare tbody th { border: 0; padding: 4px 16px; color: var(--green); width: 100%; }
+    .compare tbody td { border: 0; padding: 2px 16px; }
+    .compare tbody td::before { content: attr(data-label) ': '; font-weight: 700; }
+  }
+</style>

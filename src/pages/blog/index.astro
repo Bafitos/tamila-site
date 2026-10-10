@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { posts } from '../../data/posts.js';
+const fmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+---
+<Base title="Denver Real Estate Blog: Neighborhood Comparisons | Tamila Aspen" description="Honest side-by-side comparisons of Denver-area cities and neighborhoods: schools, taxes, transit and housing. A new guide every week from Tamila Aspen.">
+  <section class="section">
+    <div class="wrap narrow center stack">
+      <p class="eyebrow">Blog · New every week</p>
+      <h1>Where to buy around Denver</h1>
+      <p class="lead">Side-by-side comparisons of cities and neighborhoods, written from verified facts: counties, school districts, taxes, transit and what to watch for when you buy.</p>
+      <p><a href="/rss.xml">Subscribe via RSS</a></p>
+    </div>
+    <div class="wrap posts">
+      {posts.map((p) => (
+        <a class="card post-card" href={`/blog/${p.slug}`}>
+          <p class="post-card__date"><time datetime={p.date}>{fmt(p.date)}</time></p>
+          <h2>{p.title}</h2>
+          <p>{p.description}</p>
+          <span class="post-card__more">Read the comparison →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+  <ContactBand />
+</Base>
+<style>
+  .posts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 40px; }
+  .post-card { text-decoration: none; display: flex; flex-direction: column; gap: 10px; }
+  .post-card h2 { font-size: 1.45rem; color: var(--green); }
+  .post-card p { font-weight: 400; }
+  .post-card__date { font-size: .9rem; opacity: .75; }
+  .post-card__more { margin-top: auto; font-weight: 700; color: var(--green); }
+  .post-card:hover { box-shadow: 0 12px 28px rgba(0,0,0,.08); }
+  @media (max-width: 760px) { .posts { grid-template-columns: 1fr; } }
+</style>
