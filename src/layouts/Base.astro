@@ -7,7 +7,9 @@ import { getImage } from 'astro:assets';
 
 const { title, description, schema = [], lang = 'en' } = Astro.props;
 const bar = { en: ['Call Tamila', 'Text'], ru: ['Позвонить', 'Написать'], uk: ['Зателефонувати', 'Написати'] }[lang] ?? ['Call Tamila', 'Text'];
-const canonical = new URL(Astro.url.pathname.replace(/\/index$/, '/'), site.url).href;
+// build.format 'file' gives paths like /areas/aurora.html; the live site serves clean URLs.
+const cleanPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/^$/, '/');
+const canonical = new URL(cleanPath, site.url).href;
 const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
 ---
 <!doctype html>

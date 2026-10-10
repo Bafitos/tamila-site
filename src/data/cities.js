@@ -168,7 +168,7 @@ export const cities = [
   {
     slug: 'colorado-springs',
     name: 'Colorado Springs',
-    title: 'Colorado Springs Real Estate Agent for Military Families',
+    title: 'Colorado Springs Agent for Military Families',
     lead: 'PCS to Fort Carson, Peterson, Schriever or the Air Force Academy? Tamila is a Military Relocation Professional and a VA loan officer, and a military mom herself.',
     intro: 'Colorado Springs is the seat of El Paso County and one of the biggest military communities in the country. Many buyers here arrive on orders with a short window to find a home, often while still living in another state.',
     facts: [
