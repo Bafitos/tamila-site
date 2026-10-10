@@ -12,7 +12,7 @@ const a = site.address;
       <p class="ftr__name">Tamila Aspen</p>
       <p>Real Estate Agent &amp; Mortgage Loan Officer</p>
       <p><a href={`tel:${site.phoneHref}`}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
-      <p>{a.street}<br />{a.city}, {a.region} {a.zip}</p>
+      <p><a href={site.profiles.google} target="_blank" rel="noopener" aria-label="Office location on Google Maps">{a.street}<br />{a.city}, {a.region} {a.zip}</a><br /><a class="ftr__dir" href={site.profiles.google} target="_blank" rel="noopener">Directions &amp; reviews on Google Maps →</a></p>
       <p>English · <a href="/ru">Русский</a> · <a href="/uk">Українська</a></p>
       <ul class="social" aria-label="Social media">
         {Object.entries(site.social).map(([n, u]) => <li><a href={u} target="_blank" rel="noopener">{n}</a></li>)}
@@ -61,6 +61,7 @@ const a = site.address;
   .ftr__col { min-width: 0; }
   .ftr__name { font-size: 1.5rem; font-weight: 300; }
   .ftr__h { font-weight: 700; margin-bottom: 12px; }
+  .ftr__dir { font-size: .9rem; opacity: .85; text-decoration: underline !important; }
   .ftr__note { margin-top: 12px; opacity: .75; font-size: .92rem; }
   .areas { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 20px; }
   .areas li { padding: 2px 0; }
