@@ -5,6 +5,7 @@
 export const cities = [
   {
     slug: 'aurora',
+    desc: 'Aurora, CO real estate agent and loan officer Tamila Aspen. Counties, schools, metro district taxes and real reviews from Aurora clients.',
     name: 'Aurora',
     title: 'Aurora, CO Real Estate Agent & Lender',
     lead: 'Most of Tamila’s recent clients bought or sold in Aurora: from first townhomes in Rangeview to a hard divorce sale in Heritage Eagle Bend.',
@@ -34,6 +35,7 @@ export const cities = [
   },
   {
     slug: 'centennial',
+    desc: 'Centennial, CO real estate agent and loan officer Tamila Aspen, office on Belleview Ave. School districts, local tips and client reviews.',
     name: 'Centennial',
     title: 'Centennial, CO Real Estate Agent & Lender',
     lead: 'Tamila’s office is in Centennial, on Belleview Avenue near the Tech Center. Clients here bought, sold, and some did both with her.',
@@ -61,6 +63,7 @@ export const cities = [
   },
   {
     slug: 'denver',
+    desc: 'Denver real estate agent and mortgage loan officer Tamila Aspen. Condos, older homes, sewer scopes and HOA documents explained simply.',
     name: 'Denver',
     title: 'Denver Real Estate Agent & Mortgage Lender',
     lead: 'Condos, bungalows, first homes and investment properties in the city. Tamila handles the house and the loan, in English, Russian or Ukrainian.',
@@ -89,6 +92,7 @@ export const cities = [
   },
   {
     slug: 'thornton',
+    desc: 'Thornton, CO real estate agent and loan officer Tamila Aspen. School districts, N Line stations and how a buyer got $30,000 off in Grange Creek.',
     name: 'Thornton',
     title: 'Thornton, CO Real Estate Agent & Lender',
     lead: 'In Grange Creek, Tamila negotiated for her buyer until the seller paid closing costs and dropped the price by $30,000.',
@@ -115,6 +119,7 @@ export const cities = [
   },
   {
     slug: 'parker',
+    desc: 'Parker, CO real estate agent and loan officer Tamila Aspen. Condos, townhomes and family homes in Douglas County, with real client reviews.',
     name: 'Parker',
     title: 'Parker, CO Real Estate Agent & Lender',
     lead: 'Condos, townhomes and family homes in Parker. Tamila sold a condo in Cottonwood for a client who calls her “one of the kindest people you will ever meet.”',
@@ -141,6 +146,7 @@ export const cities = [
   },
   {
     slug: 'brighton',
+    desc: 'Brighton, CO real estate agent and loan officer Tamila Aspen. 27J Schools, metro district taxes and selling and buying at the same time.',
     name: 'Brighton',
     title: 'Brighton, CO Real Estate Agent & Lender',
     lead: 'In Riverdale Park, Tamila helped a client sell and buy at the same time and convinced the seller of the new house to come down on price.',
@@ -167,6 +173,7 @@ export const cities = [
   },
   {
     slug: 'colorado-springs',
+    desc: 'Colorado Springs agent and VA loan officer for military families. PCS to Fort Carson, Peterson, Schriever or USAFA with Tamila Aspen.',
     name: 'Colorado Springs',
     title: 'Colorado Springs Agent for Military Families',
     lead: 'PCS to Fort Carson, Peterson, Schriever or the Air Force Academy? Tamila is a Military Relocation Professional and a VA loan officer, and a military mom herself.',

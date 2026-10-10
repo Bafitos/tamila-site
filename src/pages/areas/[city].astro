@@ -46,7 +46,7 @@ const schema = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: c.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
 ];
 ---
-<Base title={`${c.title} | Tamila Aspen`} description={`${c.lead} Real estate agent and mortgage loan officer. Call ${site.phone}.`} schema={schema}>
+<Base title={`${c.title} | Tamila Aspen`} description={c.desc} schema={schema}>
   <nav class="crumbs wrap" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/areas">Areas</a> › <span>{c.name}</span></nav>
   <PageHero
     eyebrow={`${c.name}, Colorado`}
