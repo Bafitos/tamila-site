@@ -1,4 +1,5 @@
 ---
+import Email from './Email.astro';
 import { site } from '../data/site.js';
 const {
   title = 'What is your home worth? What can you afford?',
@@ -24,7 +25,7 @@ const t = uk
       <h2>{title}</h2>
       <p class="lead">{lead}</p>
       <p class="cband__big"><a href={`tel:${site.phoneHref}`}>{site.phone}</a></p>
-      <p>{site.email}</p>
+      <p><Email /></p>
     </div>
     <form class="cform" action={site.formEndpoint} method="POST" data-endpoint={site.formEndpoint} data-lang={uk ? 'uk' : ru ? 'ru' : 'en'}>
       <input type="hidden" name="_subject" value={uk ? 'Нова заявка з сайту (UA)' : ru ? 'Новая заявка с сайта (RU)' : 'New website inquiry'} />

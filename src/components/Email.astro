@@ -1,0 +1,17 @@
+---
+// Email shown to people, hidden from spam bots: the address is not in the HTML.
+// It is stored reversed and assembled by the browser after the page loads.
+import { site } from '../data/site.js';
+const { label = '' } = Astro.props;
+const rev = site.email.split('').reverse().join('');
+---
+<a class="js-email" href="/#contact" data-e={rev} data-label={label}>{label || 'Email via the contact form'}</a>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('a.js-email').forEach((a) => {
+    const e = (a.dataset.e || '').split('').reverse().join('');
+    if (!e.includes('@')) return;
+    a.href = 'mailto:' + e;
+    a.textContent = a.dataset.label || e;
+  });
+</script>

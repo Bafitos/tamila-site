@@ -1,4 +1,5 @@
 ---
+import Email from './Email.astro';
 import { site } from '../data/site.js';
 import { cities } from '../data/cities.js';
 const pages = Object.fromEntries(cities.map((c) => [c.name, `/areas/${c.slug}`]));
@@ -11,7 +12,7 @@ const a = site.address;
     <div class="stack ftr__col">
       <p class="ftr__name">Tamila Aspen</p>
       <p>Real Estate Agent &amp; Mortgage Loan Officer</p>
-      <p><a href={`tel:${site.phoneHref}`}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <p><a href={`tel:${site.phoneHref}`}>{site.phone}</a><br /><Email /></p>
       <p><a href={site.profiles.google} target="_blank" rel="noopener" aria-label="Office location on Google Maps">{a.street}<br />{a.city}, {a.region} {a.zip}</a><br /><a class="ftr__dir" href={site.profiles.google} target="_blank" rel="noopener">Directions &amp; reviews on Google Maps →</a></p>
       <p>English · <a href="/ru">Русский</a> · <a href="/uk">Українська</a></p>
       <ul class="social" aria-label="Social media">
