@@ -64,12 +64,22 @@ async function ratesResponse(request, ctx) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (url.hostname === 'denver-real-estates.com') {
+    // One hop to the canonical address: https + www.
+    if (url.hostname === 'denver-real-estates.com' || url.protocol === 'http:') {
       url.hostname = 'www.denver-real-estates.com';
+      url.protocol = 'https:';
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname === '/api/rates') return ratesResponse(request, ctx);
-    return env.ASSETS.fetch(request);
+    const res = await env.ASSETS.fetch(request);
+    // Declare the charset in the HTTP header, not only in the page.
+    const type = res.headers.get('content-type') || '';
+    if ((type.startsWith('text/') || type.includes('xml') || type.includes('javascript')) && !/charset/i.test(type)) {
+      const out = new Response(res.body, res);
+      out.headers.set('content-type', `${type}; charset=utf-8`);
+      return out;
+    }
+    return res;
   },
 };
 
