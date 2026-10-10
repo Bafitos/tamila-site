@@ -35,7 +35,7 @@ export const site = {
   },
   social: {
     Instagram: 'https://www.instagram.com/tamila_aspenprohomes/',
-    Facebook: 'https://www.facebook.com/AspenHouseHunt/',
+    Facebook: 'https://www.facebook.com/tamilahomehunt/',
     LinkedIn: 'https://www.linkedin.com/in/aspenprohomes/',
     YouTube: 'https://www.youtube.com/channel/UCeCtIGRtvmo-2GYI7T9QkRQ',
     Pinterest: 'https://www.pinterest.com/aspenprohomes/',
