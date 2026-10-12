@@ -30,6 +30,8 @@
 - [Brighton](https://www.denver-real-estates.com/areas/brighton)
 - [Colorado Springs (military / VA)](https://www.denver-real-estates.com/areas/colorado-springs)
 - [Blog](https://www.denver-real-estates.com/blog): weekly side-by-side comparisons of Denver-area cities (RSS: /rss.xml)
+- [Parker vs Highlands Ranch](https://www.denver-real-estates.com/blog/parker-vs-highlands-ranch)
+- [Thornton vs Brighton](https://www.denver-real-estates.com/blog/thornton-vs-brighton)
 - [Aurora vs Centennial](https://www.denver-real-estates.com/blog/aurora-vs-centennial)
 - [На русском](https://www.denver-real-estates.com/ru): Russian-language page
 - [Українською](https://www.denver-real-estates.com/uk): Ukrainian-language page
