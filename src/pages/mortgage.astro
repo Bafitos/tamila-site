@@ -5,6 +5,8 @@ import Faq from '../components/Faq.astro';
 import ContactBand from '../components/ContactBand.astro';
 import img from '../assets/tamila-aspen-loan-officer-laptop.jpg';
 import { site } from '../data/site.js';
+import { Image } from 'astro:assets';
+import barrettLogo from '../assets/barrett-financial-logo.png';
 
 const loans = [
   ['Conventional', 'For buyers with steady income and fair or good credit. Some programs start at a low down payment.'],
@@ -52,11 +54,14 @@ const faq = [
       <h2>Your real monthly payment</h2>
       <p>The price of a home is only part of the story. Your payment also includes property taxes, insurance, HOA fees and, on some loans, mortgage insurance. Tamila calculates the full payment for each home you are considering, so there are no surprises.</p>
       <p><a class="pill" href="/mortgage-calculator">Try the Colorado payment calculator</a></p>
-      <p class="small">Loans offered through {site.lender}, NMLS #{site.lenderNmls}. Tamila Aspen, NMLS #{site.nmls}. Licensed in Colorado and Florida. Not a commitment to lend. Loan approval depends on credit, income, assets, property and program guidelines.</p>
+      <a href={site.profiles.barrett} target="_blank" rel="noopener" class="lender-logo"><Image src={barrettLogo} alt="Barrett Financial Group" widths={[240, 480]} sizes="220px" /></a>
+      <p class="small">{site.lenderDisclaimer} <a href={`https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/${site.lenderNmls}`} target="_blank" rel="noopener">nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/{site.lenderNmls}</a></p>
     </div>
   </section>
 
   <Faq items={faq} title="Mortgage questions" />
   <ContactBand title="Find out what you qualify for" lead="A short call and a soft credit check, which doesn't affect your score. Tamila will explain your options the same day." goal="Get pre-approved for a loan" />
 </Base>
-<style>.small { font-size: .85rem; opacity: .8; }</style>
+<style>
+  .lender-logo { display: block; width: 220px; margin-top: 24px; }
+  .lender-logo img { width: 100%; height: auto; }.small { font-size: .85rem; opacity: .8; }</style>

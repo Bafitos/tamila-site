@@ -5,6 +5,7 @@ import { cities } from '../data/cities.js';
 const pages = Object.fromEntries(cities.map((c) => [c.name, `/areas/${c.slug}`]));
 import { Image } from 'astro:assets';
 import equityLogo from '../assets/equity-logo.jpg';
+import barrettLogo from '../assets/barrett-financial-logo.png';
 const a = site.address;
 ---
 <footer class="ftr">
@@ -49,9 +50,12 @@ const a = site.address;
     </div>
   </div>
   <div class="wrap legal">
-    <div class="logo-chip"><Image src={equityLogo} alt="Equity Colorado Real Estate" widths={[240, 480]} sizes="200px" /></div>
+    <div class="logos">
+      <div class="logo-chip"><Image src={equityLogo} alt="Equity Colorado Real Estate" widths={[240, 480]} sizes="200px" /></div>
+      <a class="logo-chip" href={site.profiles.barrett} target="_blank" rel="noopener"><Image src={barrettLogo} alt="Barrett Financial Group" widths={[200, 400]} sizes="180px" class="logo-barrett" /></a>
+    </div>
     <p><b>Real estate:</b> Tamila Aspen, Real Estate Agent, Colorado license #{site.license}. Brokered by {site.brokerage}.</p>
-    <p><b>Mortgage:</b> Tamila Aspen, Mortgage Loan Originator, NMLS #{site.nmls}, powered by {site.lender}, NMLS #{site.lenderNmls}, 2701 East Insight Way, Suite 150, Chandler, AZ 85286. Licensed in CO and FL (MLD1880). This is not a commitment to lend. All loans are subject to credit approval. <a href={`https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/${site.lenderNmls}`} target="_blank" rel="noopener">{site.lender} on NMLS Consumer Access</a>.</p>
+    <p><b>Mortgage:</b> {site.lenderDisclaimer} <a href={`https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/${site.lenderNmls}`} target="_blank" rel="noopener">nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/{site.lenderNmls}</a></p>
     <p class="eho"><svg class="eho__icon" viewBox="0 0 40 40" role="img" aria-label="Equal Housing Opportunity"><path d="M20 4 3 17h4v19h26V17h4L20 4Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><rect x="13" y="19" width="14" height="3.4" fill="currentColor"/><rect x="13" y="25.5" width="14" height="3.4" fill="currentColor"/></svg><span>Equal Housing Opportunity</span></p>
     <p><a href={`https://www.nmlsconsumeraccess.org/EntityDetails.aspx/INDIVIDUAL/${site.nmls}`} target="_blank" rel="noopener">NMLS Consumer Access #{site.nmls}</a> · <a href="/privacy">Privacy Policy</a> · <a href="/accessibility">Accessibility</a></p>
     <p>© {new Date().getFullYear()} Tamila Aspen. All rights reserved.</p>
@@ -73,7 +77,9 @@ const a = site.address;
   .plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
   .social { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .social a { display: inline-block; padding: 6px 12px; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; font-size: .88rem; }
-  .logo-chip { background: #fff; border-radius: 12px; padding: 10px 16px; width: fit-content; margin-bottom: 8px; }
+  .logo-chip { background: #fff; border-radius: 12px; padding: 10px 16px; width: fit-content; display: flex; align-items: center; }
+  .logos { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; align-items: stretch; }
+  .logo-barrett { height: 40px; width: auto; }
   .logo-chip :global(img) { width: 180px; height: auto; }
   .eho { display: flex; align-items: center; gap: 10px; font-weight: 700; }
   .eho__icon { width: 34px; height: 34px; flex: none; }
