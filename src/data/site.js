@@ -26,7 +26,7 @@ export const site = {
     zillow: 'https://www.zillow.com/profile/TamilaAspen',
     realtor: 'https://www.realtor.com/realestateagents/5b99edae2248680010a0876a',
     homes: 'https://www.homes.com/real-estate-agents/tamila-aspen/jjxzqm6/',
-    equity: 'https://tamila-aspen.equity.us',
+    equity: 'https://equity.us/profile/129021',
     barrett: 'https://www.barrettfinancial.com/taspen',
     ratemyagent: 'https://www.ratemyagent.com/real-estate-agent/tamila-aspen-b0ncft/sales/overview',
   },
