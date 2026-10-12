@@ -8,29 +8,35 @@ import { site } from '../data/site.js';
 import { Image } from 'astro:assets';
 import barrettLogo from '../assets/barrett-financial-logo.png';
 
-const loans = [
-  ['Conventional', 'For buyers with steady income and fair or good credit. Some programs start at a low down payment.'],
-  ['FHA', 'Flexible credit rules and a low down payment. Popular with first-time buyers.'],
-  ['VA', '0% down for eligible service members, veterans and some surviving spouses.'],
-  ['USDA', '0% down in eligible rural and suburban areas.'],
-  ['Jumbo', 'For higher-priced homes above standard loan limits.'],
-  ['Non-QM', 'For self-employed buyers, investors and others whose income does not fit standard rules.'],
-  ['Down payment assistance', 'Colorado programs that can help with the down payment or closing costs.'],
-  ['Refinance', 'Lower your rate or payment, or take cash out, when it makes sense.'],
+const groups = [
+  { tag: 'First-time buyers', h: 'FHA, Conventional 97, HomeReady and Home Possible', p: 'Low down payment loans built for first homes. FHA starts at 3.5% down and is flexible about credit history. Conventional 97, Fannie Mae HomeReady and Freddie Mac Home Possible start at 3% down, and the mortgage insurance can be removed later.' },
+  { tag: 'Down payment help', h: 'CHFA and Local Assistance Programs', p: 'Colorado Housing and Finance Authority (CHFA) programs and other grants or second loans can cover part of your down payment or closing costs. In Florida, Florida Housing programs work the same way. Tamila checks which ones you qualify for.' },
+  { tag: 'Military and veterans', h: 'VA Loans and VA IRRRL', p: 'Zero down and no monthly mortgage insurance for eligible service members, veterans and surviving spouses. The VA IRRRL streamline refinance can lower an existing VA rate with less paperwork. Tamila is a military mom and is trained in military relocation.' },
+  { tag: 'Rural and suburban', h: 'USDA Rural Development', p: 'Zero down in eligible areas, which include many towns outside the Denver core. Household income limits apply, and Tamila can check an address for you.' },
+  { tag: 'Self-employed', h: 'Bank Statement, 1099, P&L and Asset Depletion', p: 'Non-QM loans that look at how you actually earn: 12 or 24 months of bank deposits, 1099 income, a profit and loss statement, or your savings and investments instead of tax returns.' },
+  { tag: 'Investors', h: 'DSCR Loans', p: 'Debt service coverage ratio loans qualify on the rent the property brings in, not on your personal income. No tax returns or pay stubs. Single-family rentals, small multifamily and short-term rentals, held personally or in an LLC.' },
+  { tag: 'No credit score or ITIN', h: 'ITIN and Alternative Credit Loans', p: 'Options for borrowers with an ITIN instead of a Social Security number, and for people with little or no credit history. Credit scores from 500 can work on several programs.' },
+  { tag: 'Higher-priced homes', h: 'Jumbo Loans', p: 'For loan amounts above the conforming limit, with full documentation or Non-QM options for complex income.' },
+  { tag: 'Homeowners', h: 'Refinance, Cash-Out, HELOC and Reverse', p: 'Lower your rate or payment, take cash out for a project or debt, open a home equity line of credit, or, for homeowners 62 and older, explore a reverse mortgage (HECM).' },
+  { tag: 'Fixer-uppers', h: 'FHA 203(k) and HomeStyle Renovation', p: 'Buy a home that needs work and finance the repairs in the same loan, with one closing and one monthly payment.' },
 ];
 const faq = [
-  ['What credit score do I need?', 'Tamila has programs for credit scores from 500, and even for borrowers with no credit score at all. Every situation is different: the program and the down payment depend on yours.'],
-  ['I have no credit score, or I am self-employed or an investor. Is there a loan for me?', 'Very often, yes. There are programs with no credit score, programs that use bank statements instead of tax returns, and investor loans that qualify on the property rent instead of your income. Just ask: many more programs exist than most people know about.'],
+  ['What credit score do I need for a mortgage?', 'It depends on the program. FHA allows scores from 500 with 10% down and from 580 with 3.5% down. Several Non-QM and ITIN programs work with little or no credit history. Every situation is different, so Tamila looks at yours and compares the options side by side.'],
+  ['What is the difference between a mortgage broker and a bank?', 'A bank can only offer its own loans. Tamila is a mortgage broker with Barrett Financial Group and can compare programs and pricing from about 200 wholesale lenders, then choose the one that fits your situation best.'],
+  ['What is a DSCR loan?', 'A debt service coverage ratio loan is an investor loan that qualifies on the property itself: the expected rent compared with the monthly payment. Your personal income, tax returns and pay stubs are not used. It is popular with investors who own several rentals or write off a lot of expenses.'],
+  ['What is a bank statement loan?', 'A Non-QM loan for self-employed borrowers that uses 12 or 24 months of business or personal bank deposits to calculate income, instead of tax returns.'],
+  ['Can I buy a home with an ITIN?', 'Yes. ITIN loans are designed for borrowers who file taxes with an Individual Taxpayer Identification Number instead of a Social Security number. Down payment and documents vary by lender.'],
+  ['How much do I need for a down payment?', 'Zero down on VA and USDA, 3% on Conventional 97, HomeReady and Home Possible, 3.5% on FHA with a 580 score. CHFA and other assistance programs can cover part of that.'],
   ['How fast can I get pre-approved?', 'Often within 24 hours once Tamila has your documents.'],
-  ['Why use a loan officer who is also your real estate agent?', 'Your offer, your loan and your closing dates are managed by one person, so nothing falls between two offices. Sellers also trust an offer when the agent and the lender are the same person.'],
+  ['Why use a loan officer who is also your real estate agent?', 'Your offer, your loan and your closing dates are managed by one person, so nothing falls between two offices. Sellers also trust an offer when the agent and the lender work together this closely.'],
   ['Can you guarantee a rate?', 'No one honestly can before you apply. Rates depend on your credit, down payment, loan program, property and the market on the day you lock.'],
 ];
 ---
-<Base title="Colorado Mortgage Loan Officer, Credit From 500 | Tamila Aspen" description="Colorado home loans with Tamila Aspen, NMLS #2490507: FHA, VA, conventional, jumbo, Non-QM and investor loans. Credit from 500 or no score." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+<Base title="Colorado Mortgage Broker, 200+ Lenders | Tamila Aspen" description="Colorado and Florida mortgage broker with about 200 lenders: FHA, VA, USDA, CHFA, DSCR, bank statement and ITIN loans. Credit from 500 or no score." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
   <PageHero
     eyebrow={`Mortgage · NMLS #${site.nmls}`}
-    title="Home Loans Explained in Plain Words"
-    lead="Tamila spent 23 years in finance and accounting before real estate. She looks at your whole picture and finds the loan that fits, not just the one that is easiest to sell."
+    title="The Right Loan, Explained Calmly and Clearly"
+    lead="Tamila is a mortgage broker with access to about 200 wholesale lenders, and she spent 23 years in finance and accounting before real estate. She looks at your whole picture and finds the loan that fits you, not just the one that is easiest to sell. Loans anywhere in Colorado and Florida."
     image={img}
     imageAlt="Tamila Aspen working on a laptop in a hotel lounge"
     pos="50% 30%"
@@ -39,18 +45,24 @@ const faq = [
 
   <section class="section mist">
     <div class="wrap">
-      <h2 class="center">Loan Programs</h2>
-      <div class="cards">
-        {loans.map(([h, p]) => <article class="card"><h3>{h}</h3><p>{p}</p></article>)}
+      <div class="narrow center stack">
+        <h2>Loan Programs for Every Situation</h2>
+        <p class="lead">As a broker, Tamila is not limited to one bank's menu. She compares programs and pricing from about 200 lenders and brings you the options that truly fit.</p>
       </div>
+      <div class="cards">
+        {groups.map((g) => <article class="card"><span class="tag">{g.tag}</span><h3>{g.h}</h3><p>{g.p}</p></article>)}
+      </div>
+      <p class="center note">Don't see your situation? Just ask. Many more programs exist than most people know about.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap prose">
-      <h2>Can I Buy a Home With Bad Credit?</h2>
-      <p>Often, yes. Tamila has programs for credit scores from <b>500</b>, and even for borrowers with no credit score at all. The lower the score, the more the program and down payment matter, so she compares the options side by side for you.</p>
-      <p class="callout"><b>Every situation is different.</b> Self-employed, investor, no credit score, recent credit problems: just ask. Many more programs exist than most people know about. It starts with a soft credit check that does not affect your score.</p>
+      <h2>Can I Buy a Home With Bad Credit or No Credit?</h2>
+      <p>Often, yes. FHA works with credit scores from <b>500</b> with 10% down, and several Non-QM and ITIN programs work with little or no credit history. The lower the score, the more the program and the down payment matter, so Tamila compares the options side by side and explains the trade-offs calmly.</p>
+      <p class="callout"><b>Every situation is different.</b> Self-employed, investor, ITIN, recent bankruptcy or foreclosure, no credit score: just ask. It starts with a soft credit check that does not affect your score.</p>
+      <h2>Why a Broker</h2>
+      <p>A bank loan officer can offer only that bank's programs. A broker shops your loan with many lenders at once. Tamila works through Barrett Financial Group with about 200 wholesale lenders, so when one lender says no, another may say yes, often at a better price.</p>
       <h2>Your Real Monthly Payment</h2>
       <p>The price of a home is only part of the story. Your payment also includes property taxes, insurance, HOA fees and, on some loans, mortgage insurance. Tamila calculates the full payment for each home you are considering, so there are no surprises.</p>
       <p><a class="pill" href="/mortgage-calculator">Try the Colorado payment calculator</a></p>
@@ -64,4 +76,5 @@ const faq = [
 </Base>
 <style>
   .lender-logo { display: block; width: 220px; margin-top: 24px; }
-  .lender-logo img { width: 100%; height: auto; }.small { font-size: .85rem; opacity: .8; }</style>
+  .lender-logo img { width: 100%; height: auto; }.small { font-size: .85rem; opacity: .8; }
+  .note { margin-top: 32px; }</style>
