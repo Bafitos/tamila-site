@@ -32,6 +32,7 @@ export const site = {
     homes: 'https://www.homes.com/real-estate-agents/tamila-aspen/jjxzqm6/',
     equity: 'https://tamila-aspen.equity.us',
     barrett: 'https://www.barrettfinancial.com/taspen',
+    ratemyagent: 'https://www.ratemyagent.com/real-estate-agent/tamila-aspen-b0ncft/sales/overview',
   },
   social: {
     Instagram: 'https://www.instagram.com/tamila_aspenprohomes/',
