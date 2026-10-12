@@ -42,7 +42,7 @@ export const site = {
     Pinterest: 'https://www.pinterest.com/aspenprohomes/',
     X: 'https://x.com/aspen_pro',
   },
-  areas: ['Denver', 'Aurora', 'Centennial', 'Highlands Ranch', 'Littleton', 'Parker', 'Thornton', 'Lakewood', 'Englewood', 'Arvada', 'Commerce City', 'Brighton', 'Colorado Springs', 'Monument', 'Larkspur'],
+  areas: ['Denver', 'Aurora', 'Centennial', 'Highlands Ranch', 'Littleton', 'Parker', 'Thornton', 'Lakewood', 'Englewood', 'Arvada', 'Commerce City', 'Brighton', 'Colorado Springs', 'Monument', 'Larkspur', 'Castle Rock', 'Westminster', 'Broomfield', 'Boulder', 'Longmont', 'Loveland'],
 };
 
 export const stories = [
