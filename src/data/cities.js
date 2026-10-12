@@ -18,7 +18,7 @@ export const cities = [
     ],
     tips: [
       'Many newer neighborhoods in east and southeast Aurora have a metro district tax and an HOA on top of regular property tax. Tamila adds both to your real monthly payment before you make an offer.',
-      'Stationed at Buckley? Tamila is a Military Relocation Professional and does VA loans herself. Her son serves in the U.S. Air Force.',
+      'Stationed at Buckley? Tamila is trained in military relocation and does VA loans herself. Her son serves in the U.S. Air Force.',
     ],
     neighborhoods: ['Meadow Hills', 'Rangeview', 'Tallyn’s Reach', 'Heritage Eagle Bend', 'Sky Ranch'],
     reviews: [
@@ -176,7 +176,7 @@ export const cities = [
     desc: 'Colorado Springs agent and VA loan officer for military families. PCS to Fort Carson, Peterson, Schriever or USAFA with Tamila Aspen.',
     name: 'Colorado Springs',
     title: 'Colorado Springs Agent for Military Families',
-    lead: 'PCS to Fort Carson, Peterson, Schriever or the Air Force Academy? Tamila is a Military Relocation Professional and a VA loan officer, and a military mom herself.',
+    lead: 'PCS to Fort Carson, Peterson, Schriever or the Air Force Academy? Tamila is trained in military relocation, is a VA loan officer, and is a military mom herself.',
     intro: 'Colorado Springs is the seat of El Paso County and one of the biggest military communities in the country. Many buyers here arrive on orders with a short window to find a home, often while still living in another state.',
     facts: [
       ['County', 'Colorado Springs is the county seat of El Paso County.'],

@@ -14,14 +14,8 @@ export const site = {
   lenderNmls: '181106',
   applyUrl: 'https://www.barrettfinancial.com/taspen/apply-now',
   formEndpoint: 'https://formspree.io/f/mrpekgaa',
-  designations: [
-    ['ABR', "Accredited Buyer's Representative"],
-    ['SRS', 'Seller Representative Specialist'],
-    ['PSA', 'Pricing Strategy Advisor'],
-    ['MRP', 'Military Relocation Professional'],
-    ['RCS-D', 'Real Estate Collaboration Specialist – Divorce'],
-    ['SFR', 'Short Sales & Foreclosure Resource'],
-  ],
+  // Completed specialized training (described in plain words; no association designation marks).
+  training: ['Representing buyers', 'Representing sellers', 'Pricing strategy', 'Military relocation', 'Divorce real estate', 'Short sales & foreclosures'],
   languages: ['English', 'Russian', 'Ukrainian'],
   profiles: {
     google: 'https://www.google.com/maps?cid=12427625558005067913',
@@ -88,6 +82,6 @@ export const faq = [
   ['Do I get less service for 1%?', 'No. You get the same as with a 3% agent: professional photos (paid by Tamila), MLS listing, social media marketing, negotiation and full support until closing.'],
   ['Should I renovate before I sell?', "Usually no. Buyers have their own taste and will redo it anyway. Plan instead for the buyer's inspection: sewer line, HVAC, foundation and roof are what buyers most often ask to fix."],
   ['How fast will my home sell?', 'Price decides speed. A home priced at the market can sell in days. A home listed about 10% above the market can sit for months until the price comes down.'],
-  ['Can I buy a home with bad credit?', 'Tamila works with buyers with credit scores starting around 570. The loan program and down payment depend on your score. Below that, she can show you how to get ready, starting with a soft credit check that does not affect your score.'],
+  ['Can I buy a home with bad credit?', 'Often, yes. Tamila has programs for credit scores from 500, and even for buyers with no credit score at all. Every situation is different, so the program and down payment depend on yours. If you are not ready yet, she will show you how to get there, starting with a soft credit check that does not affect your score.'],
   ['Do you speak Russian or Ukrainian?', 'Yes. Tamila works with clients in English, Russian and Ukrainian.'],
 ];
