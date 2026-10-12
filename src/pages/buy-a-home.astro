@@ -26,7 +26,7 @@ const steps = [
 <Base title="Buy a Home in Denver, Agent + Lender | Tamila Aspen" description="Buying a home in the Denver metro? Tamila Aspen is your real estate agent and loan officer: pre-approval, honest advice and strong negotiation." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
   <PageHero
     eyebrow="Buying a home"
-    title="Buy your home with one person who handles the house and the loan"
+    title="Buy Your Home With One Person Who Handles the House and the Loan"
     lead="First home, bigger home or a move from another state. Tamila explains every step in plain words and negotiates hard for you."
     image={img}
     imageAlt="Tamila Aspen standing in a hotel lobby in a blue suit"
@@ -36,7 +36,7 @@ const steps = [
 
   <section class="section mist">
     <div class="wrap">
-      <h2 class="center">How buying with Tamila works</h2>
+      <h2 class="center">How Buying With Tamila Works</h2>
       <ol class="steps">
         {steps.map(([h, p]) => <li><h3>{h}</h3><p>{p}</p></li>)}
       </ol>
@@ -45,18 +45,18 @@ const steps = [
 
   <section class="section">
     <div class="wrap prose">
-      <h2>“I want 2 bedrooms and 2 baths.” Where is that realistic?</h2>
+      <h2>“I Want 2 Bedrooms and 2 Baths.” Where Is That Realistic?</h2>
       <p>Prices in the Denver metro change a lot from one neighborhood to the next. The same budget that buys a family home in one suburb may not buy a condo near the Tech Center. Instead of guessing, tell Tamila your budget and what you need, and she will tell you honestly which areas fit.</p>
       <p>Remember that your monthly payment matters more than the price. Taxes, insurance, HOA fees and the loan program all change it. Tamila calculates the real payment for each home you like.</p>
-      <h2>First-time buyers</h2>
+      <h2>First-Time Buyers</h2>
       <p>Clients say Tamila treats them like family and explains difficult contract terms patiently. She also knows the loan side: FHA, VA, USDA and down payment assistance programs.</p>
       <p><a class="pill" href="/mortgage">See loan options</a></p>
     </div>
   </section>
 
   <Stories items={[stories[1], stories[2]]} title="Buyers in their own words" />
-  <Faq items={faq} title="Buyer questions" />
-  <ContactBand title="Tell Tamila what you are looking for" lead="Budget, bedrooms, areas you like. She will call you back, usually the same day." goal="Buy a home" />
+  <Faq items={faq} title="Buyer Questions" />
+  <ContactBand title="Tell Tamila What You Are Looking For" lead="Budget, bedrooms, areas you like. She will call you back, usually the same day." goal="Buy a home" />
 </Base>
 
 <style>

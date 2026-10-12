@@ -26,10 +26,10 @@ const faq = [
   ['Can you guarantee a rate?', 'No one honestly can before you apply. Rates depend on your credit, down payment, loan program, property and the market on the day you lock.'],
 ];
 ---
-<Base title="Colorado Mortgage Loan Officer, Credit from 500 | Tamila Aspen" description="Colorado home loans with Tamila Aspen, NMLS #2490507: FHA, VA, conventional, jumbo, Non-QM and investor loans. Credit from 500 or no score." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
+<Base title="Colorado Mortgage Loan Officer, Credit From 500 | Tamila Aspen" description="Colorado home loans with Tamila Aspen, NMLS #2490507: FHA, VA, conventional, jumbo, Non-QM and investor loans. Credit from 500 or no score." schema={[{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }]}>
   <PageHero
     eyebrow={`Mortgage · NMLS #${site.nmls}`}
-    title="Home loans explained in plain words"
+    title="Home Loans Explained in Plain Words"
     lead="Tamila spent 23 years in finance and accounting before real estate. She looks at your whole picture and finds the loan that fits, not just the one that is easiest to sell."
     image={img}
     imageAlt="Tamila Aspen working on a laptop in a hotel lounge"
@@ -39,7 +39,7 @@ const faq = [
 
   <section class="section mist">
     <div class="wrap">
-      <h2 class="center">Loan programs</h2>
+      <h2 class="center">Loan Programs</h2>
       <div class="cards">
         {loans.map(([h, p]) => <article class="card"><h3>{h}</h3><p>{p}</p></article>)}
       </div>
@@ -48,10 +48,10 @@ const faq = [
 
   <section class="section">
     <div class="wrap prose">
-      <h2>Can I buy a home with bad credit?</h2>
+      <h2>Can I Buy a Home With Bad Credit?</h2>
       <p>Often, yes. Tamila has programs for credit scores from <b>500</b>, and even for borrowers with no credit score at all. The lower the score, the more the program and down payment matter, so she compares the options side by side for you.</p>
       <p class="callout"><b>Every situation is different.</b> Self-employed, investor, no credit score, recent credit problems: just ask. Many more programs exist than most people know about. It starts with a soft credit check that does not affect your score.</p>
-      <h2>Your real monthly payment</h2>
+      <h2>Your Real Monthly Payment</h2>
       <p>The price of a home is only part of the story. Your payment also includes property taxes, insurance, HOA fees and, on some loans, mortgage insurance. Tamila calculates the full payment for each home you are considering, so there are no surprises.</p>
       <p><a class="pill" href="/mortgage-calculator">Try the Colorado payment calculator</a></p>
       <a href={site.profiles.barrett} target="_blank" rel="noopener" class="lender-logo"><Image src={barrettLogo} alt="Barrett Financial Group" widths={[240, 480]} sizes="220px" /></a>
@@ -59,8 +59,8 @@ const faq = [
     </div>
   </section>
 
-  <Faq items={faq} title="Mortgage questions" />
-  <ContactBand title="Find out what you qualify for" lead="A short call and a soft credit check, which doesn't affect your score. Tamila will explain your options the same day." goal="Get pre-approved for a loan" />
+  <Faq items={faq} title="Mortgage Questions" />
+  <ContactBand title="Find Out What You Qualify For" lead="A short call and a soft credit check, which doesn't affect your score. Tamila will explain your options the same day." goal="Get pre-approved for a loan" />
 </Base>
 <style>
   .lender-logo { display: block; width: 220px; margin-top: 24px; }

@@ -59,7 +59,7 @@ const schema = [
   <section class="section mist">
     <div class="wrap">
       <div class="narrow center stack">
-        <h2>What to know about {c.name}</h2>
+        <h2>What to Know About {c.name}</h2>
         <p class="lead">{c.intro}</p>
       </div>
       <div class="facts">
@@ -70,9 +70,9 @@ const schema = [
 
   <section class="section">
     <div class="wrap prose">
-      <h2>Tamila’s advice for {c.name}</h2>
+      <h2>Tamila’s Advice for {c.name}</h2>
       <ul class="checks">{c.tips.map((t) => <li>{t}</li>)}</ul>
-      <h3>Where her clients bought and sold</h3>
+      <h3>Where Her Clients Bought and Sold</h3>
       <ul class="chips">{c.neighborhoods.map((n) => <li>{n}</li>)}</ul>
     </div>
   </section>
@@ -80,7 +80,7 @@ const schema = [
   <section class="section mist">
     <div class="wrap">
       <div class="narrow center stack">
-        <h2>{c.reviewsTitle ?? `Clients in ${c.name}, in their own words`}</h2>
+        <h2>{c.reviewsTitle ?? `Clients in ${c.name}, in Their Own Words`}</h2>
       </div>
       <div class={`rv ${c.reviews.length === 1 ? 'rv--one' : ''}`}>
         {c.reviews.map((r) => (
@@ -98,13 +98,13 @@ const schema = [
     <div class="wrap narrow center stack">
       {c.military ? (
         <>
-          <h2>VA loan and the house, with one person</h2>
+          <h2>VA Loan and the House, With One Person</h2>
           <p class="lead">Tamila is trained in military relocation and is a mortgage loan officer. She handles your VA pre-approval, the home search and the closing, and she keeps you informed while you are still at your current duty station.</p>
           <div class="btns"><a class="pill" href="/va-loans-pcs">VA loans &amp; PCS moves</a><a class="pill pill--line" href={site.applyUrl} target="_blank" rel="noopener">Apply for pre-approval</a></div>
         </>
       ) : (
         <>
-          <h2>Selling in {c.name} and buying your next home?</h2>
+          <h2>Selling in {c.name} and Buying Your Next Home?</h2>
           <p class="lead">When you sell and buy with Tamila, her listing fee is 1% instead of the usual up to 3%. You still get professional photos (paid by Tamila), MLS, marketing and full support to closing.</p>
           <div class="btns"><a class="pill" href="/sell-for-1-percent">How the 1% works</a><a class="pill pill--line" href="/mortgage">Mortgage &amp; pre-approval</a></div>
         </>
@@ -116,7 +116,7 @@ const schema = [
 
   <section class="section">
     <div class="wrap narrow center stack">
-      <h2>Other areas Tamila serves</h2>
+      <h2>Other Areas Tamila Serves</h2>
       <ul class="chips chips--center">
         {others.map((o) => <li><a href={`/areas/${o.slug}`}>{o.name}</a></li>)}
         <li><a href="/areas">All areas</a></li>

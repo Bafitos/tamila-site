@@ -43,25 +43,25 @@ export const site = {
 
 export const stories = [
   {
-    title: 'The first agent gave up. Tamila sold it.',
+    title: 'The First Agent Gave Up. Tamila Sold It.',
     where: 'Heritage Eagle Bend, Aurora',
     who: 'Shahzad Choudhry · Seller · Zillow',
     text: "It was a difficult divorce situation with multiple problems popping up throughout. These included but were not limited to repairs, HOA violation, and insurance issues; not to mention marital conflict and a tough market. Tamila was fully engaged with all parties, managing all issues, and somehow got the home sold, which at times seemed impossible. She was our second agent, the first one gave up and quit.",
   },
   {
-    title: 'Seller paid closing costs and dropped the price $30,000',
+    title: 'Seller Paid Closing Costs and Dropped the Price $30,000',
     where: 'Grange Creek, Thornton',
     who: 'Buyer · Zillow',
     text: 'She did everything from showing homes to negotiating with the seller to pay closing costs and drop the price by $30,000. I would recommend Tamila to anyone who wants to make their dream of owning a home a reality.',
   },
   {
-    title: 'Bought a home while living in another state',
+    title: 'Bought a Home While Living in Another State',
     where: 'Meadow Hills, Aurora',
     who: 'Anne Harken Mitchell · Buyer · Zillow',
     text: 'I was buying from out of state and she was so helpful. She made herself available when I was in town to look at homes and she always answered my calls. She helped me with the paperwork and made the process smooth as I still lived out of state when I closed.',
   },
   {
-    title: 'Sold one home and bought the next, both with Tamila',
+    title: 'Sold One Home and Bought the Next, Both With Tamila',
     where: "Tallyn's Reach, Aurora",
     who: 'Luba N · Buyer & seller · Zillow',
     text: 'She helped me buy my dream home and sell my house, handling everything smoothly and on time. She patiently explained every detail I did not understand, and during moments of doubt she was always there for me.',

@@ -83,7 +83,7 @@ export const cities = [
       { who: 'Kevin Gailey', role: 'First home', src: 'Realtor.com', text: 'Tamila was the kindest, most knowledgeable and absolutely lovely partner in my home buying journey. She followed up when she said she would. Was always on time. She helped with any and all questions I had as a first time home owner.' },
       { who: 'April Thomas', role: 'First home', src: 'Realtor.com', text: 'She was incredibly knowledgeable, patient when explaining difficult contract terms, super responsive, and willing to work quickly to be able to get offers in before short timelines.' },
     ],
-    reviewsTitle: 'First-time buyers in the Denver metro',
+    reviewsTitle: 'First-Time Buyers in the Denver Metro',
     faq: [
       ['Should I get a sewer scope in Denver?', 'For an older home, yes, in most cases. A camera inspection of the sewer line costs little compared with replacing a broken line, and it gives you a reason to negotiate if something is found.'],
       ['Can you help me buy a condo with an FHA or VA loan?', 'Some condo buildings are approved for FHA or VA loans and some are not. Tamila is the loan officer too, so she checks this before you fall in love with a unit.'],
@@ -192,7 +192,7 @@ export const cities = [
     reviews: [
       { who: 'Anne Harken Mitchell', role: 'Bought from out of state · Aurora', src: 'Zillow', text: 'I was buying from out of state and she was so helpful. She made herself available when I was in town to look at homes and she always answered my calls. She helped me with the paperwork and made the process smooth as I still lived out of state when I closed.' },
     ],
-    reviewsTitle: 'What buying from out of state is like',
+    reviewsTitle: 'What Buying From Out of State Is Like',
     faq: [
       ['Can I buy a home in Colorado Springs before my PCS date?', 'Yes. With a VA pre-approval you can tour homes on a short house-hunting trip, or by video, and close remotely in many cases. Tamila coordinates the inspection, appraisal and paperwork while you are away.'],
       ['Do I need a down payment with a VA loan?', 'In most cases no, if you have full entitlement and the price is within what you qualify for. A VA funding fee usually applies unless you are exempt, for example with a service-connected disability rating.'],
