@@ -1,0 +1,30 @@
+name: Weekly Search Console snapshot
+
+on:
+  schedule:
+    - cron: "17 13 * * 1"   # Mondays ~7:17 am Denver (MDT) / 6:17 am (MST)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install google-api-python-client google-auth
+      - name: Pull Search Console data
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/gsc_report.py >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit snapshot
+        run: |
+          git config user.name "gsc-bot"
+          git config user.email "gsc-bot@users.noreply.github.com"
+          git add seo-data
+          git diff --cached --quiet || git commit -m "Search Console snapshot $(date -u +%F)"
+          git pull --rebase origin main && git push
