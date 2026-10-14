@@ -35,6 +35,14 @@ const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="alternate" type="application/rss+xml" title="Tamila Aspen, Denver Real Estate Blog" href="/rss.xml" />
+  <!-- Google tag (Google Ads AW-18513426131) -->
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=AW-18513426131"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18513426131');
+  </script>
   {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
 </head>
 <body>

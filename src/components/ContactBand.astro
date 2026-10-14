@@ -64,7 +64,11 @@ const t = uk
       btn?.setAttribute('disabled', '');
       try {
         const r = await fetch(ep, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
-        if (r.ok) { st.textContent = msg.ok; form.reset(); }
+        if (r.ok) {
+          st.textContent = msg.ok; form.reset();
+          // Google Ads conversion: Website Lead Form
+          (window as any).gtag?.('event', 'conversion', { send_to: 'AW-18513426131/3EmbCPzu9JwdENPt8ftE' });
+        }
         else {
           const data = await r.json().catch(() => null);
           const detail = data?.errors?.map((x: { message: string }) => x.message).join(' ');
