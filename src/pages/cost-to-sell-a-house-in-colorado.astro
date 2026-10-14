@@ -1,0 +1,236 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { site } from '../data/site.js';
+
+const faq = [
+  ['How much does it cost to sell a house in Colorado?', "The biggest cost is the real estate commission: the listing agent's fee plus the buyer's agent fee, both negotiable. On top of that, sellers in the Denver metro customarily pay for the buyer's owner's title insurance policy, and title insurance with closing fees can range from about $1,000 to $2,000 depending on the company and the price (Colorado Division of Insurance). You also credit the buyer for this year's property tax, pay off your mortgage, and settle any HOA fees. Use the calculator above for your own numbers."],
+  ['Does Colorado have a transfer tax?', 'There is no percentage-based state transfer tax. Colorado charges a documentary fee of 1 cent per $100 of the price (C.R.S. 39-13-102), which is $60 on a $600,000 home. It is typically paid by the buyer, but the contract can say otherwise.'],
+  ['Why do I pay property tax for the buyer at closing?', 'Colorado property taxes are paid in arrears: the bill for this year comes next year. At closing, the seller credits the buyer for the days the seller owned the home this year, and the buyer pays the full bill when it arrives. If you sell early in the year before paying last year’s bill, that bill is also paid from your proceeds.'],
+  ['Who pays for title insurance in Colorado?', "Section 8 of the Colorado contract lets buyer and seller choose. In the Denver metro it is customary for the seller to pay for the buyer's owner's policy. The buyer usually pays for the lender's policy."],
+  ['How does the 1% listing fee work?', "When you sell your home and buy your next one with Tamila, her listing fee is 1% instead of the usual up to 3%. If you only sell, the fee is the standard rate, up to 3%. The buyer's agent for your home is paid separately and is negotiable. You get the same full service either way: professional photos Tamila pays for, MLS, marketing, negotiation and support to closing."],
+];
+
+const schema = [
+  { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Colorado Home Sale Net Proceeds Calculator', url: `${site.url}/cost-to-sell-a-house-in-colorado`, applicationCategory: 'FinanceApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, author: { '@id': `${site.url}/#tamila` }, description: 'Estimate the cost to sell a house in Colorado and your net proceeds: commissions, title insurance and closing fees, property tax proration, mortgage payoff and HOA fees.' },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+];
+---
+<Base title="Cost to Sell a House in Colorado: Calculator | Tamila Aspen" description="What does it cost to sell a house in Colorado? Free calculator: commissions, title insurance, property tax proration and your net proceeds." schema={schema}>
+  <section class="section calc-hero">
+    <div class="wrap narrow center stack">
+      <p class="eyebrow">Free tool · For Colorado sellers</p>
+      <h1>Cost to Sell a House in Colorado</h1>
+      <p class="lead">How much will you actually walk away with? Enter your price and mortgage balance. The calculator adds the real Colorado selling costs, including the property tax credit most sellers forget, and compares a 1% listing fee with the usual 3%.</p>
+    </div>
+  </section>
+
+  <section class="section calc-wrap">
+    <div class="wrap calc">
+      <form class="calc__form" id="calc" onsubmit="return false">
+        <label>Expected sale price
+          <span class="money"><input id="price" type="number" inputmode="numeric" min="50000" step="1000" value="600000" /></span>
+        </label>
+        <label>Mortgage payoff (what you still owe)
+          <span class="money"><input id="payoff" type="number" inputmode="numeric" min="0" step="1000" value="350000" /></span>
+        </label>
+        <p class="hint">Include a second mortgage or HELOC if you have one. Your lender gives an exact payoff figure before closing.</p>
+
+        <label>Are you buying your next home too?
+          <select id="mode">
+            <option value="both">Yes, sell and buy with Tamila (1% listing fee)</option>
+            <option value="sell">No, only selling (standard rate, up to 3%)</option>
+          </select>
+        </label>
+
+        <div class="row2">
+          <label>Buyer's agent fee
+            <span class="pct"><input id="buyerPct" type="number" inputmode="decimal" min="0" max="5" step="0.25" value="3" /></span>
+          </label>
+          <label>Title insurance and closing fee
+            <span class="money"><input id="title" type="number" inputmode="numeric" min="0" step="50" value="1500" /></span>
+          </label>
+        </div>
+        <p class="hint">The buyer's agent fee is negotiable; 3% is a conservative estimate. Title insurance and closing fees can range from about $1,000 to $2,000 (Colorado Division of Insurance).</p>
+
+        <details class="more" open>
+          <summary>Property tax, HOA and other costs</summary>
+          <div class="row2">
+            <label>Property tax, per year
+              <span class="money"><input id="tax" type="number" inputmode="numeric" min="0" step="50" value="3300" /></span>
+            </label>
+            <label>Closing date
+              <input id="close" type="date" />
+            </label>
+          </div>
+          <p class="hint">Use the total from your last tax bill, including any metro district tax. Colorado taxes are paid a year behind, so you credit the buyer for the days you owned the home this year.</p>
+          <div class="row2">
+            <label>HOA fees at sale
+              <span class="money"><input id="hoa" type="number" inputmode="numeric" min="0" step="25" value="0" /></span>
+            </label>
+            <label>Repairs or credits to buyer
+              <span class="money"><input id="other" type="number" inputmode="numeric" min="0" step="250" value="0" /></span>
+            </label>
+          </div>
+          <p class="hint">HOA status letter and transfer fees vary; your HOA or management company will tell you. Repairs or credits are often agreed after the buyer's inspection.</p>
+        </details>
+      </form>
+
+      <div class="calc__out" aria-live="polite">
+        <p class="out__label">Estimated cash to you at closing</p>
+        <p class="out__total" id="net">$0</p>
+        <ul class="out__list" id="list"></ul>
+        <p class="out__label">Where your selling costs go</p>
+        <div class="bar" id="bar"></div>
+        <dl class="out__facts">
+          <div><dt>Total selling costs</dt><dd id="costs">$0</dd></div>
+          <div><dt>Costs as % of price</dt><dd id="costPct">0%</dd></div>
+        </dl>
+        <p class="out__note save" id="save"></p>
+        <div class="btns out__btns">
+          <a class="pill" href="#contact">Get a free home valuation</a>
+          <button type="button" class="pill pill--line" id="share">Copy link to this estimate</button>
+        </div>
+        <p class="out__small">Estimate only. Your title company prepares the final settlement statement. Commissions are negotiable. 1% listing fee applies when you sell and buy your next home with Tamila; listing only: standard rate, up to 3%. Not legal or tax advice.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section mist">
+    <div class="wrap prose">
+      <h2>What Sellers Pay in Colorado</h2>
+      <p><b>Commissions.</b> The listing agent's fee and the fee for the agent who brings the buyer. Both are negotiable and together are the largest cost of selling. With Tamila, the listing fee is 1% when you also buy your next home with her.</p>
+      <p><b>Owner's title insurance and closing fee.</b> The Colorado contract lets the parties choose who pays, and in the Denver metro the seller customarily pays for the buyer's owner's policy. Premiums are filed with the Colorado Division of Insurance and vary by company.</p>
+      <p><b>Property tax credit.</b> Because Colorado taxes are paid a year behind, the buyer will receive the bill for the months you lived there. You credit the buyer for those days at closing. Selling in November means crediting almost a full year.</p>
+      <p><b>Mortgage payoff and HOA.</b> Your loan is paid off from the sale proceeds. If you have an HOA, expect a status letter or transfer fee and the dues up to closing.</p>
+      <p><b>What you usually don't pay.</b> Colorado has no percentage-based state transfer tax. The state documentary fee is 1 cent per $100 of the price, typically paid by the buyer.</p>
+      <div class="btns"><a class="pill" href="/sell-for-1-percent">How the 1% listing works</a><a class="pill pill--line" href="/mortgage-calculator">Payment on your next home</a></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>Sources</h2>
+      <ul>
+        <li><a href="https://doi.colorado.gov/types-of-insurance/title-insurance" rel="noopener" target="_blank">Colorado Division of Insurance: Title insurance</a></li>
+        <li><a href="https://www.hollandhart.com/files/38975_CREC-Approved-Contracts-Ordering-the-Title.pdf" rel="noopener" target="_blank">Holland &amp; Hart: CREC contracts, ordering the title</a></li>
+        <li><a href="https://firstalliancetitle.com/how-are-property-taxes-prorated-at-closing/" rel="noopener" target="_blank">First Alliance Title: How property taxes are prorated at closing</a></li>
+        <li><a href="https://www.deedclaim.com/colorado/deed-requirements/" rel="noopener" target="_blank">Colorado documentary fee, C.R.S. 39-13-102</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <Faq items={faq} title="Selling Costs Questions" />
+  <ContactBand title="Want Your Exact Net Proceeds?" lead="Send Tamila your address. She will look at recent sales near you, suggest a price and prepare a net sheet with real numbers, free." goal="Sell my home" />
+</Base>
+
+<script>
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const fmt = (n: number) => (n < 0 ? '-$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-US');
+  const keys = ['price', 'payoff', 'mode', 'buyerPct', 'title', 'tax', 'close', 'hoa', 'other'];
+
+  const d0 = new Date(); d0.setDate(d0.getDate() + 45);
+  $('close').value = d0.toISOString().slice(0, 10);
+  const qs = new URLSearchParams(location.search);
+  for (const k of keys) { const v = qs.get(k); if (v !== null && $(k)) $(k).value = v; }
+
+  function proration(annual: number) {
+    const d = $('close').value ? new Date($('close').value + 'T12:00:00') : new Date();
+    const start = new Date(d.getFullYear(), 0, 1);
+    const days = Math.round((+d - +start) / 864e5);
+    const yearDays = d.getFullYear() % 4 === 0 ? 366 : 365;
+    return annual * days / yearDays;
+  }
+
+  function calc() {
+    const price = Math.max(0, +$('price').value || 0);
+    const payoff = Math.max(0, +$('payoff').value || 0);
+    const both = $('mode').value === 'both';
+    const listPct = both ? 1 : 3;
+    const buyerPct = Math.max(0, +$('buyerPct').value || 0);
+    const listing = price * listPct / 100;
+    const buyer = price * buyerPct / 100;
+    const title = +$('title').value || 0;
+    const tax = proration(+$('tax').value || 0);
+    const hoa = +$('hoa').value || 0;
+    const other = +$('other').value || 0;
+
+    const parts = [
+      [`Listing fee (${listPct}%${both ? '' : ', up to'})`, listing, '#255A4F'],
+      [`Buyer's agent (${buyerPct}%)`, buyer, '#4F8A7D'],
+      ['Title insurance & closing fee', title, '#8DB8AE'],
+      ['Property tax credit to buyer', tax, '#C1D5D2'],
+      ['HOA fees', hoa, '#D9C7A3'],
+      ['Repairs or credits', other, '#B08D57'],
+    ] as [string, number, string][];
+    const costs = parts.reduce((s, p) => s + p[1], 0);
+    const net = price - payoff - costs;
+
+    $('net').textContent = fmt(net);
+    (document.getElementById('costs')!).textContent = fmt(costs);
+    (document.getElementById('costPct')!).textContent = price ? (costs / price * 100).toFixed(1) + '%' : '0%';
+    const shown = [['Mortgage payoff', payoff, '#9AA7A4'] as [string, number, string], ...parts].filter((p) => p[1] > 0.5);
+    (document.getElementById('list')!).innerHTML = shown
+      .map((p) => `<li><span class="dot" style="background:${p[2]}"></span>${p[0]}<b>${fmt(p[1])}</b></li>`).join('');
+    const costParts = parts.filter((p) => p[1] > 0.5);
+    (document.getElementById('bar')!).innerHTML = costParts
+      .map((p) => `<span style="width:${(p[1] / (costs || 1) * 100).toFixed(2)}%;background:${p[2]}" title="${p[0]}"></span>`).join('');
+    const diff = price * 0.02;
+    (document.getElementById('save')!).textContent = both
+      ? `Compared with a typical 3% listing fee, you keep about ${fmt(diff)} more by selling and buying with Tamila.`
+      : `If you also buy your next home with Tamila, the listing fee drops to 1% and you keep about ${fmt(diff)} more.`;
+  }
+
+  document.getElementById('calc')!.addEventListener('input', calc);
+  document.getElementById('share')!.addEventListener('click', async (e) => {
+    const p = new URLSearchParams();
+    for (const k of keys) p.set(k, $(k).value);
+    const link = `${location.origin}${location.pathname}?${p}`;
+    history.replaceState(null, '', link);
+    try { await navigator.clipboard.writeText(link); (e.target as HTMLElement).textContent = 'Link copied'; }
+    catch { (e.target as HTMLElement).textContent = 'Link is in the address bar'; }
+  });
+  calc();
+</script>
+
+<style>
+  .calc-hero { padding-bottom: 8px; }
+  .calc { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: start; }
+  .calc > * { min-width: 0; }
+  .calc__form { display: grid; gap: 16px; }
+  .calc__form label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: .95rem; }
+  .calc__form input, .calc__form select { font: 400 1.1rem var(--font); color: var(--ink); background: var(--white); border: 1.5px solid var(--green-soft); border-radius: 12px; padding: 12px 14px; width: 100%; }
+  .calc__form input:focus, .calc__form select:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+  .money, .pct { position: relative; display: block; }
+  .money input { padding-left: 28px; }
+  .money::before { content: '$'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 400; opacity: .7; }
+  .pct input { padding-right: 34px; }
+  .pct::after { content: '%'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-weight: 400; opacity: .7; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .hint { font-size: .9rem; opacity: .85; margin-top: -8px; }
+  .hint:empty { display: none; }
+  .linkbtn { background: none; border: 0; padding: 0; color: var(--green); font: inherit; text-decoration: underline; cursor: pointer; }
+  .more { border: 1px solid var(--green-soft); border-radius: 16px; padding: 6px 18px 18px; }
+  .more summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
+  .more > *:not(summary) { margin-top: 14px; }
+  .calc__out { position: sticky; top: 96px; background: var(--green-mist); border-radius: 24px; padding: 28px; display: grid; gap: 14px; }
+  .out__label { font-weight: 700; }
+  .out__total { font-size: clamp(2.4rem, 6vw, 3.4rem); font-weight: 300; color: var(--green); line-height: 1; }
+  .bar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--green-soft); }
+  .bar :global(span) { display: block; height: 100%; }
+  .out__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .out__list :global(li) { display: flex; align-items: center; gap: 10px; font-weight: 400; }
+  .out__list :global(b) { margin-left: auto; }
+  .out__list :global(.dot) { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .out__facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 4px 0 0; border-top: 1px solid var(--green-soft); padding-top: 14px; }
+  .out__facts dt { font-size: .85rem; opacity: .8; }
+  .out__facts dd { margin: 0; font-weight: 700; font-size: 1.15rem; }
+  .out__note { font-size: .92rem; }
+  .out__note:empty { display: none; }
+  .out__btns { justify-content: flex-start; }
+  .out__small { font-size: .78rem; opacity: .75; }
+  @media (max-width: 900px) { .calc { grid-template-columns: 1fr; } .calc__out { position: static; } }
+  @media (max-width: 480px) { .row2 { grid-template-columns: 1fr; } }
+  .save { font-weight: 700; color: var(--green); }
+</style>

@@ -18,6 +18,7 @@
 - [Buy a home](https://www.denver-real-estates.com/buy-a-home): the buying process with an agent who is also the lender
 - [Mortgage](https://www.denver-real-estates.com/mortgage): loan programs from about 200 lenders: FHA, VA, USDA, CHFA, DSCR, bank statement, ITIN; credit from 500 or no score
 - [Colorado mortgage payment calculator](https://www.denver-real-estates.com/mortgage-calculator): monthly payment with this week's Freddie Mac average rate, FHA MIP, VA funding fee, property tax and metro district tax
+- [Cost to sell a house in Colorado](https://www.denver-real-estates.com/cost-to-sell-a-house-in-colorado): net proceeds calculator with commissions (1% vs 3%), title insurance and closing fee, property tax proration, payoff and HOA
 - [VA loans & PCS](https://www.denver-real-estates.com/va-loans-pcs): military families
 - [Selling during a divorce](https://www.denver-real-estates.com/selling-house-during-divorce)
 - [Short sale & foreclosure](https://www.denver-real-estates.com/short-sale-foreclosure)
