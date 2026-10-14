@@ -26,12 +26,20 @@ LAG_DAYS = 3  # GSC data is final ~2-3 days later
 
 # Searches we especially care about (substring match, case-insensitive)
 WATCH = [
-    "tamila", "aspen real estate", "1%", "1 percent", "one percent",
+    "tamila", "1%", "1 percent", "one percent",
     "listing agent", "real estate agent", "va loan", "pcs",
     "aurora", "centennial", "parker", "highlands ranch", "thornton",
     "brighton", "colorado springs", "denver", "mortgage", "divorce",
     "short sale", "foreclosure",
 ]
+
+
+# Google mixes up Tamila's last name with Aspen, CO (ski town). Queries that
+# mention "aspen" but not "tamila" are about the town, not her: they are kept
+# in the raw CSVs but left out of the report's lists and clean averages.
+def is_aspen_noise(q):
+    q = q.lower()
+    return "aspen" in q and "tamila" not in q
 
 
 def service():
@@ -128,15 +136,28 @@ def main():
     cur_c, cur_i, cur_p = week_totals(start, end)
     prv_c, prv_i, prv_p = week_totals(prev_end - dt.timedelta(days=6), prev_end)
 
-    prev_q = {r["query"]: r for r in q_hist if r["week_end"] == str(prev_end)}
-    cur_q = {r["query"]: r for r in q_rows}
+    prev_all = [r for r in q_hist if r["week_end"] == str(prev_end)]
+    noise = [r for r in q_rows if is_aspen_noise(r["query"])]
+    clean = [r for r in q_rows if not is_aspen_noise(r["query"])]
+    prev_clean = [r for r in prev_all if not is_aspen_noise(r["query"])]
+    _, cln_i, cln_p = totals(clean)
+    _, pcl_i, pcl_p = totals(prev_clean)
+
+    prev_q = {r["query"]: r for r in prev_clean}
+    cur_q = {r["query"]: r for r in clean}
 
     lines = [f"# Search Console — week {start} to {end}", "",
              "| | This week | Last week |", "|---|---|---|",
              f"| Clicks | {cur_c} | {prv_c} |",
              f"| Impressions | {cur_i} | {prv_i} |",
              f"| Avg position | {cur_p or '–'} | {prv_p or '–'} |",
-             f"| Queries | {len(q_rows)} | {len(prev_q)} |", ""]
+             f"| Queries | {len(q_rows)} | {len(prev_all)} |",
+             f"| Avg position, without Aspen-town queries | {cln_p or '–'} | {pcl_p or '–'} |",
+             f"| Impressions, without Aspen-town queries | {cln_i} | {pcl_i} |",
+             "", "_Avg position and impressions in the top rows include everything Google "
+             "showed, also searches about Aspen, CO (the ski town). The \"without Aspen-town\" "
+             "rows count only real queries, and all lists below exclude the Aspen-town ones._",
+             ""]
 
     def qline(q, r, old=None):
         s = f"- **{q}** — pos {r['position']}, {r['impressions']} impr, {r['clicks']} clicks"
@@ -170,6 +191,14 @@ def main():
         f"{r['clicks']} clicks, {r['impressions']} impr, pos {r['position']}"
         for r in sorted(p_rows, key=lambda r: -r["impressions"])[:15]]
     lines += ["## Top pages", *(pages or ["- none"]), ""]
+
+    n_impr = sum(int(r["impressions"]) for r in noise)
+    lines += ["## Noise: Aspen, CO (ski town) — ignored",
+              f"{len(noise)} queries, {n_impr} impressions. Not Tamila's market; "
+              "kept in queries-history.csv for reference only.", ""]
+    lines += [f"- {r['query']} — pos {r['position']}, {r['impressions']} impr"
+              for r in sorted(noise, key=lambda r: -int(r["impressions"]))[:10]] or ["- none"]
+    lines.append("")
 
     (OUT / "report.md").write_text("\n".join(lines), encoding="utf-8")
     print("\n".join(lines))
