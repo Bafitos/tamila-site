@@ -11,6 +11,7 @@ const faq = [
   ['When does the 1% listing fee apply?', 'When you sell your home and buy your next one with Tamila. If you only sell, the listing fee is the standard rate, up to 3%.'],
   ['Do I still pay the buyer’s agent?', "Usually yes. The agent who brings the buyer for your home is paid separately, typically up to 3%, and that amount is negotiable. The 1% covers Tamila's side only."],
   ['Why can Tamila charge 1%?', 'When you also buy your next home with her, she earns her buyer-agent commission on that purchase, which is typically paid by the seller of the home you buy. That lets her take less on your sale.'],
+  ['Is Tamila a low-commission or discount real estate agent?', 'Her listing fee is low, but the service is not discounted. When you sell and buy with her, you pay 1% for her side instead of the usual up to 3%, and you get the same full service: professional photos she pays for, MLS, marketing, negotiation and support until closing.'],
   ['Who pays for the listing photos?', 'Tamila hires a professional photography company and pays for it herself in almost every case.'],
   ['Should I renovate before I sell?', "Usually no. Buyers have their own taste and will redo it anyway. Spend your energy on pricing it right and on being ready for the buyer's inspection."],
   ['Should I do an inspection before I list?', "Tamila usually doesn't recommend it. The buyer will do their own inspection. What matters is knowing what buyers typically ask to fix, so nothing surprises you."],
@@ -20,11 +21,11 @@ const schema = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
 ];
 ---
-<Base title="Sell Your Denver Home for 1% | Tamila Aspen" description="Sell your Denver-area home for a 1% listing fee when you buy your next one with Tamila Aspen. Pro photos she pays for, MLS and full support." schema={schema}>
+<Base title="Sell Your Denver Home for 1% | Tamila Aspen" description="Low commission, full service: sell your Denver-area home for 1% when you buy your next one with Tamila Aspen. Pro photos she pays for, MLS." schema={schema}>
   <PageHero
     eyebrow="Selling your home"
     title="Sell Your Home for 1% When You Buy Your Next One With Tamila"
-    lead="You get the same full service as with a 3% agent. You simply keep more of your equity for your next home."
+    lead="A low listing fee without the cut-rate service: you get the same full service as with a 3% agent and keep more of your equity for your next home."
     image={img}
     imageAlt="Tamila Aspen walking down a Denver street"
     pos="50% 20%"

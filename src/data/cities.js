@@ -5,7 +5,8 @@
 export const cities = [
   {
     slug: 'aurora',
-    desc: 'Aurora, CO real estate agent and loan officer Tamila Aspen. Counties, schools, metro district taxes and real reviews from Aurora clients.',
+    desc: 'Aurora, CO real estate agent reviews from real clients, plus counties, schools and metro district taxes. Tamila Aspen, agent and loan officer.',
+    reviewsTitle: 'Aurora Real Estate Agent Reviews From Tamila’s Clients',
     name: 'Aurora',
     title: 'Aurora, CO Real Estate Agent & Lender',
     lead: 'Most of Tamila’s recent clients bought or sold in Aurora: from first townhomes in Rangeview to a hard divorce sale in Heritage Eagle Bend.',
