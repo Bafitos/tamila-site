@@ -89,7 +89,7 @@ async function leadResponse(request, env) {
   const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
   if (request.method !== 'POST') return json({ ok: false }, 405);
   const origin = request.headers.get('origin') || '';
-  if (origin && origin !== SITE) return json({ ok: true, filtered: true });
+  if (origin && origin !== SITE) { console.log('lead filtered: origin', origin); return json({ ok: true, filtered: true }); }
   let f;
   try { f = await request.formData(); } catch { return json({ ok: false }, 400); }
   const wantsJson = (request.headers.get('accept') || '').includes('application/json');
@@ -99,7 +99,11 @@ async function leadResponse(request, env) {
   const out = new FormData();
   for (const [k, val] of f) if (k !== '_t' && k !== '_gotcha') out.append(k, val);
   const r = await fetch((env && env.FORMSPREE_URL) || FORMSPREE_FALLBACK, { method: 'POST', body: out, headers: { Accept: 'application/json' } });
-  if (!r.ok) return json({ ok: false, errors: [{ message: 'Formspree ' + r.status }] }, 502);
+  console.log('lead forwarded:', (env && env.FORMSPREE_URL) ? 'secret' : 'fallback', r.status);
+  if (!r.ok) {
+    console.log('formspree error body:', (await r.text()).slice(0, 500));
+    return json({ ok: false, errors: [{ message: 'Formspree ' + r.status }] }, 502);
+  }
   return done({ ok: true });
 }
 
