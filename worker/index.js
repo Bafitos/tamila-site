@@ -65,7 +65,10 @@ async function ratesResponse(request, ctx) {
 // 3) /api/lead: contact form goes through here, not straight to Formspree,
 //    so spam bots can't post to the Formspree address. Spam is dropped
 //    silently (the bot sees "ok"); real leads are forwarded to Formspree.
-const FORMSPREE = 'https://formspree.io/f/mrpekgaa';
+// The real Formspree address lives in the Cloudflare secret FORMSPREE_URL
+// (Workers -> tamila-site -> Settings -> Variables and Secrets), never in this
+// public repo or in page HTML. The old, already-public form is only a fallback.
+const FORMSPREE_FALLBACK = 'https://formspree.io/f/mrpekgaa';
 const SITE = 'https://www.denver-real-estates.com';
 
 function isSpam(f) {
@@ -82,7 +85,7 @@ function isSpam(f) {
   return '';
 }
 
-async function leadResponse(request) {
+async function leadResponse(request, env) {
   const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
   if (request.method !== 'POST') return json({ ok: false }, 405);
   const origin = request.headers.get('origin') || '';
@@ -95,7 +98,7 @@ async function leadResponse(request) {
   if (reason) { console.log('lead filtered:', reason); return done({ ok: true, filtered: true }); }
   const out = new FormData();
   for (const [k, val] of f) if (k !== '_t' && k !== '_gotcha') out.append(k, val);
-  const r = await fetch(FORMSPREE, { method: 'POST', body: out, headers: { Accept: 'application/json' } });
+  const r = await fetch((env && env.FORMSPREE_URL) || FORMSPREE_FALLBACK, { method: 'POST', body: out, headers: { Accept: 'application/json' } });
   if (!r.ok) return json({ ok: false, errors: [{ message: 'Formspree ' + r.status }] }, 502);
   return done({ ok: true });
 }
@@ -110,7 +113,7 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname === '/api/rates') return ratesResponse(request, ctx);
-    if (url.pathname === '/api/lead') return leadResponse(request);
+    if (url.pathname === '/api/lead') return leadResponse(request, env);
     const res = await env.ASSETS.fetch(request);
     // Declare the charset in the HTTP header, not only in the page.
     const type = res.headers.get('content-type') || '';
