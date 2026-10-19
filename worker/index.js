@@ -61,6 +61,45 @@ async function ratesResponse(request, ctx) {
   return res;
 }
 
+
+// 3) /api/lead: contact form goes through here, not straight to Formspree,
+//    so spam bots can't post to the Formspree address. Spam is dropped
+//    silently (the bot sees "ok"); real leads are forwarded to Formspree.
+const FORMSPREE = 'https://formspree.io/f/mrpekgaa';
+const SITE = 'https://www.denver-real-estates.com';
+
+function isSpam(f) {
+  const v = (k) => String(f.get(k) || '').trim();
+  if (v('_gotcha')) return 'honeypot';
+  const t = Number(v('_t'));
+  if (!t || Date.now() - t < 3000 || Date.now() - t > 1000 * 60 * 60 * 24) return 'timing';
+  if (!v('goal')) return 'no-goal';
+  const text = `${v('name')} ${v('message')}`;
+  if (/\[url=|<a\s|https?:\/\/|www\.|\.(top|xyz|ru|cn|click|site|online)\b/i.test(text)) return 'link';
+  const digits = v('phone').replace(/\D/g, '');
+  if (digits.length < 7 || digits.length > 15) return 'phone';
+  if (v('name').length > 60 || v('message').length > 3000) return 'length';
+  return '';
+}
+
+async function leadResponse(request) {
+  const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
+  if (request.method !== 'POST') return json({ ok: false }, 405);
+  const origin = request.headers.get('origin') || '';
+  if (origin && origin !== SITE) return json({ ok: true, filtered: true });
+  let f;
+  try { f = await request.formData(); } catch { return json({ ok: false }, 400); }
+  const wantsJson = (request.headers.get('accept') || '').includes('application/json');
+  const done = (body) => wantsJson ? json(body) : Response.redirect(`${SITE}/?sent=1`, 303);
+  const reason = isSpam(f);
+  if (reason) { console.log('lead filtered:', reason); return done({ ok: true, filtered: true }); }
+  const out = new FormData();
+  for (const [k, val] of f) if (k !== '_t' && k !== '_gotcha') out.append(k, val);
+  const r = await fetch(FORMSPREE, { method: 'POST', body: out, headers: { Accept: 'application/json' } });
+  if (!r.ok) return json({ ok: false, errors: [{ message: 'Formspree ' + r.status }] }, 502);
+  return done({ ok: true });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -71,6 +110,7 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname === '/api/rates') return ratesResponse(request, ctx);
+    if (url.pathname === '/api/lead') return leadResponse(request);
     const res = await env.ASSETS.fetch(request);
     // Declare the charset in the HTTP header, not only in the page.
     const type = res.headers.get('content-type') || '';

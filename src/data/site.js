@@ -15,7 +15,7 @@ export const site = {
   // Required by Barrett Financial compliance (2026-10-12). Keep wording exactly as given.
   lenderDisclaimer: 'TAMILA ASPEN | NMLS #2490507 | Aspenprohomes Powered by Barrett Financial Group, L.L.C. | NMLS #181106 | 2701 East Insight Way, Suite 150, Chandler, AZ 85286 | CO | FL MLD1880 | Equal Housing Opportunity | Equal Housing Lender | This is not a commitment to lend. All loans are subject to credit approval. |',
   applyUrl: 'https://www.barrettfinancial.com/taspen/apply-now',
-  formEndpoint: 'https://formspree.io/f/mrpekgaa',
+  formEndpoint: '/api/lead', // worker/index.js filters spam, then forwards to Formspree
   // Completed specialized training (described in plain words; no association designation marks).
   training: ['Representing buyers', 'Representing sellers', 'Pricing strategy', 'Military relocation', 'Divorce real estate', 'Short sales & foreclosures'],
   languages: ['English', 'Russian', 'Ukrainian'],

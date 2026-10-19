@@ -30,6 +30,7 @@ const t = uk
     <form class="cform" action={site.formEndpoint} method="POST" data-endpoint={site.formEndpoint} data-lang={uk ? 'uk' : ru ? 'ru' : 'en'}>
       <input type="hidden" name="_subject" value={uk ? 'Нова заявка з сайту (UA)' : ru ? 'Новая заявка с сайта (RU)' : 'New website inquiry'} />
       <input type="hidden" name="page" value={Astro.url.pathname} />
+      <input type="hidden" name="_t" value="" />
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
       <label for="f-name">{t.name}<input id="f-name" name="name" autocomplete="name" required /></label>
       <label for="f-phone">{t.phone}<input id="f-phone" name="phone" type="tel" autocomplete="tel" required /></label>
@@ -46,6 +47,8 @@ const t = uk
 
 <script>
   document.querySelectorAll<HTMLFormElement>('form.cform').forEach((form) => {
+    const tf = form.querySelector<HTMLInputElement>('input[name="_t"]');
+    if (tf) tf.value = String(Date.now());
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const lang = form.dataset.lang || 'en';
@@ -65,9 +68,11 @@ const t = uk
       try {
         const r = await fetch(ep, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
         if (r.ok) {
+          const res = await r.json().catch(() => ({}));
           st.textContent = msg.ok; form.reset();
-          // Google Ads conversion: Website Lead Form
-          (window as any).gtag?.('event', 'conversion', { send_to: 'AW-18513426131/3EmbCPzu9JwdENPt8ftE' });
+          if (tf) tf.value = String(Date.now());
+          // Google Ads conversion: Website Lead Form (real leads only)
+          if (!res.filtered) (window as any).gtag?.('event', 'conversion', { send_to: 'AW-18513426131/3EmbCPzu9JwdENPt8ftE' });
         }
         else {
           const data = await r.json().catch(() => null);
