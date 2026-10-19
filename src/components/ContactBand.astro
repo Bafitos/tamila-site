@@ -77,7 +77,7 @@ const t = uk
         else {
           const data = await r.json().catch(() => null);
           const detail = data?.errors?.map((x: { message: string }) => x.message).join(' ');
-          st.textContent = detail ? `${msg.err} (${detail})` : msg.err;
+          st.textContent = r.status === 422 && detail ? detail : detail ? `${msg.err} (${detail})` : msg.err;
         }
       } catch { st.textContent = msg.err; }
       finally { btn?.removeAttribute('disabled'); }

@@ -71,17 +71,20 @@ async function ratesResponse(request, ctx) {
 const FORMSPREE_FALLBACK = 'https://formspree.io/f/mrpekgaa';
 const SITE = 'https://www.denver-real-estates.com';
 
-function isSpam(f) {
+// Returns '' (ok), 'silent:<why>' (spam: pretend success, drop) or a
+// visible message (likely a real person who made a mistake: show it).
+function checkLead(f) {
   const v = (k) => String(f.get(k) || '').trim();
-  if (v('_gotcha')) return 'honeypot';
-  const t = Number(v('_t'));
-  if (!t || Date.now() - t < 3000 || Date.now() - t > 1000 * 60 * 60 * 24) return 'timing';
-  if (!v('goal')) return 'no-goal';
+  if (v('_gotcha')) return 'silent:honeypot';
   const text = `${v('name')} ${v('message')}`;
-  if (/\[url=|<a\s|https?:\/\/|www\.|\.(top|xyz|ru|cn|click|site|online)\b/i.test(text)) return 'link';
+  if (/\[url=|<a\s|https?:\/\/|www\.|\.(top|xyz|ru|cn|click|site|online)\b/i.test(text)) return 'silent:link';
+  if (v('name').length > 60 || v('message').length > 3000) return 'silent:length';
+  if (!v('goal')) return 'silent:no-goal';
+  const t = Number(v('_t'));
+  if (!t) return 'silent:no-js';
+  if (Date.now() - t < 2000) return 'Please wait a second and press the button again.';
   const digits = v('phone').replace(/\D/g, '');
-  if (digits.length < 7 || digits.length > 15) return 'phone';
-  if (v('name').length > 60 || v('message').length > 3000) return 'length';
+  if (digits.length < 10 || digits.length > 15) return 'Please enter a full phone number with area code.';
   return '';
 }
 
@@ -94,8 +97,9 @@ async function leadResponse(request, env) {
   try { f = await request.formData(); } catch { return json({ ok: false }, 400); }
   const wantsJson = (request.headers.get('accept') || '').includes('application/json');
   const done = (body) => wantsJson ? json(body) : Response.redirect(`${SITE}/?sent=1`, 303);
-  const reason = isSpam(f);
-  if (reason) { console.log('lead filtered:', reason); return done({ ok: true, filtered: true }); }
+  const reason = checkLead(f);
+  if (reason.startsWith('silent:')) { console.log('lead filtered:', reason.slice(7)); return done({ ok: true, filtered: true }); }
+  if (reason) { console.log('lead rejected (shown to visitor):', reason); return json({ ok: false, errors: [{ message: reason }] }, 422); }
   const out = new FormData();
   for (const [k, val] of f) if (k !== '_t' && k !== '_gotcha') out.append(k, val);
   const r = await fetch((env && env.FORMSPREE_URL) || FORMSPREE_FALLBACK, { method: 'POST', body: out, headers: { Accept: 'application/json' } });
