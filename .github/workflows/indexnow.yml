@@ -1,0 +1,43 @@
+name: IndexNow ping (Bing, Yandex, Seznam, Naver)
+
+# After every site change, tell IndexNow search engines to re-crawl the pages.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "seo-data/**"
+      - "scripts/**"
+      - ".github/**"
+      - "README.md"
+  workflow_dispatch:
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    env:
+      HOST: www.denver-real-estates.com
+      KEY: 577084c3c7f542d6b6e901180034126e
+    steps:
+      - name: Wait for Cloudflare deploy and key file
+        run: |
+          sleep 120
+          for i in $(seq 1 20); do
+            body=$(curl -fsS "https://$HOST/$KEY.txt" || true)
+            [ "$body" = "$KEY" ] && echo "Key file is live" && exit 0
+            sleep 30
+          done
+          echo "Key file not reachable at https://$HOST/$KEY.txt" && exit 1
+      - name: Submit sitemap URLs
+        run: |
+          urls=$(curl -fsS "https://$HOST/sitemap.xml" | grep -o '<loc>[^<]*</loc>' | sed 's/<\/\?loc>//g')
+          echo "$urls"
+          json=$(printf '%s\n' "$urls" | jq -R . | jq -s --arg h "$HOST" --arg k "$KEY" \
+            '{host:$h, key:$k, keyLocation:("https://"+$h+"/"+$k+".txt"), urlList:.}')
+          code=$(curl -s -o resp.txt -w '%{http_code}' -X POST https://api.indexnow.org/IndexNow \
+            -H 'Content-Type: application/json; charset=utf-8' -d "$json")
+          echo "IndexNow HTTP $code"; cat resp.txt
+          case "$code" in 200|202) ;; *) exit 1 ;; esac
