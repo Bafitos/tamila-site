@@ -120,6 +120,15 @@ export default {
       url.protocol = 'https:';
       return Response.redirect(url.toString(), 301);
     }
+    // Old Wix auto-translated pages (Spanish, French, Korean, Chinese...) no longer
+    // exist: answer 410 Gone so Google drops them faster than with a 404.
+    // /ru and /uk are real pages and are not matched.
+    if (/^\/(es|fr|ko|zh|de|it|pt|ja|ar|he|pl|nl|tr|hi)(\/|$)/i.test(url.pathname)) {
+      return new Response(
+        '<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Page removed</title>' +
+        '<p>This page was removed. <a href="https://www.denver-real-estates.com/">Go to the home page</a>.</p>',
+        { status: 410, headers: { 'content-type': 'text/html; charset=utf-8' } });
+    }
     if (url.pathname === '/api/rates') return ratesResponse(request, ctx);
     if (url.pathname === '/api/lead') return leadResponse(request, env);
     const res = await env.ASSETS.fetch(request);
