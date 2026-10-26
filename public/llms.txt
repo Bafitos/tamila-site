@@ -31,6 +31,7 @@
 - [Brighton](https://www.denver-real-estates.com/areas/brighton)
 - [Colorado Springs (military / VA)](https://www.denver-real-estates.com/areas/colorado-springs)
 - [Blog](https://www.denver-real-estates.com/blog): weekly side-by-side comparisons of Denver-area cities (RSS: /rss.xml)
+- [Colorado Springs vs Monument for Military Families](https://www.denver-real-estates.com/blog/colorado-springs-vs-monument-military-families)
 - [Denver vs Aurora for First-Time Buyers](https://www.denver-real-estates.com/blog/denver-vs-aurora-first-time-buyers)
 - [Parker vs Highlands Ranch](https://www.denver-real-estates.com/blog/parker-vs-highlands-ranch)
 - [Thornton vs Brighton](https://www.denver-real-estates.com/blog/thornton-vs-brighton)
