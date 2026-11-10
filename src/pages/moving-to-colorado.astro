@@ -1,0 +1,214 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { site } from '../data/site.js';
+
+// Verified data. Update together with the "Data last checked" date below.
+// income: flat rate, or brackets [[from, rate]] for single filers, tax year 2026 (Tax Foundation, Feb 2026)
+// sales: combined state + average local rate, midyear 2026 (Tax Foundation, Jul 2026)
+// prop: property taxes paid as % of owner-occupied home value, 2024 (Tax Foundation Facts & Figures 2026, Table 33, from Census ACS)
+// ins: average annual homeowners insurance, $300,000 dwelling coverage (Insurify, updated Oct 2026)
+// home: Zillow Home Value Index, typical home value, September 2026
+const states = [
+  { s: 'Colorado', a: 'CO', income: 4.4, sales: 7.89, prop: 0.52, ins: 3240, home: 529013 },
+  { s: 'Texas', a: 'TX', income: 0, sales: 8.20, prop: 1.24, ins: 4668, home: 296424 },
+  { s: 'Florida', a: 'FL', income: 0, sales: 6.98, prop: 0.76, ins: 6408, home: 375361 },
+  { s: 'California', a: 'CA', income: [[0, 1], [11079, 2], [26264, 4], [41452, 6], [57542, 8], [72724, 9.3], [371479, 10.3], [445771, 11.3], [742953, 12.3], [1000000, 13.3]], incomeText: '1% – 13.3%', sales: 9.03, prop: 0.69, ins: 2040, home: 761538 },
+  { s: 'New York', a: 'NY', income: [[0, 3.9], [8500, 4.4], [11700, 5.15], [13900, 5.4], [80650, 5.9], [215400, 6.85], [1077550, 9.65], [5000000, 10.3], [25000000, 10.9]], incomeText: '3.9% – 10.9%', sales: 8.54, prop: 1.23, ins: 1356, home: 524942 },
+  { s: 'North Carolina', a: 'NC', income: 3.99, sales: 7.10, prop: 0.62, ins: 3192, home: 332159 },
+  { s: 'South Carolina', a: 'SC', income: [[0, 0], [3640, 3], [18230, 6]], incomeText: '0% – 6%', sales: 7.49, prop: 0.44, ins: 2700, home: 304319 },
+  { s: 'Alabama', a: 'AL', income: [[0, 2], [500, 4], [3000, 5]], incomeText: '2% – 5%', sales: 9.46, prop: 0.37, ins: 3408, home: 238614 },
+  { s: 'Louisiana', a: 'LA', income: 3.0, sales: 10.13, prop: 0.56, ins: 5028, home: 213867 },
+  { s: 'Arizona', a: 'AZ', income: 2.5, sales: 8.54, prop: 0.43, ins: 2184, home: 416733 },
+  { s: 'Tennessee', a: 'TN', income: 0, sales: 9.61, prop: 0.46, ins: 3096, home: 330844 },
+  { s: 'Georgia', a: 'GA', income: 5.19, sales: 7.56, prop: 0.77, ins: 2496, home: 329115 },
+  { s: 'Nevada', a: 'NV', income: 0, sales: 8.24, prop: 0.50, ins: 1308, home: 440739 },
+];
+const checked = 'November 2026';
+const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+const incText = (r: any) => r.incomeText || (r.income === 0 ? 'None' : r.income.toFixed(2).replace(/0$/, '') + '% flat');
+
+const faq = [
+  ['Is Colorado a tax-friendly state to move to?', 'It depends on what you compare. Colorado has a flat 4.40% income tax for 2026, and its property taxes are among the lowest in the country: about 0.52% of home value in 2024, ranked 40th of 50 (Tax Foundation). But Colorado homes cost more than in most states on this list: the typical home value was about $529,000 in September 2026 (Zillow). Use the calculator above with your own income and home price to see the full picture.'],
+  ['Which states have no state income tax?', 'Of the states on this page, Texas, Florida, Tennessee and Nevada have no individual income tax on wages for 2026 (Tax Foundation). They collect more in other ways: Texas has one of the higher property tax rates (about 1.24% of home value), and Tennessee has one of the highest combined sales tax rates (9.61%).'],
+  ['How much is homeowners insurance in Colorado?', 'Insurify reports an average of $3,240 a year in Colorado for a policy with $300,000 of dwelling coverage, compared with a national average of $2,808 (updated October 2026). Your price depends on the home, the roof, the deductible and the location, so get a quote on the actual house before you write an offer.'],
+  ['Are property taxes really low in Colorado?', 'The statewide average is low: about 0.52% of home value. Your actual bill depends on the county, the city, the school district and, in many newer neighborhoods, a metro district tax that can add a noticeable amount. Always check the tax bill of the exact home before you buy.'],
+  ['Can I get pre-approved for a Colorado mortgage before I move?', 'Yes. Tamila is a mortgage loan officer licensed in Colorado and Florida, so she can pre-approve you while you still live in another state, and as a real estate agent she can show homes by live video if you cannot visit yet.'],
+  ['Why are these numbers different from other charts online?', 'Sources measure different things: some use median home prices, some use typical values; insurance averages depend on the coverage amount the company assumes. Every number on this page has its source and date listed below, and Tamila updates the page when new data comes out.'],
+];
+
+const schema = [
+  { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Moving to Colorado: State Tax and Home Cost Comparison Calculator', url: `${site.url}/moving-to-colorado`, applicationCategory: 'FinanceApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, author: { '@id': `${site.url}/#tamila` }, description: 'Compare yearly state income tax, sales tax, property tax and homeowners insurance in Colorado and 12 other states for your own income and home price.' },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+];
+---
+<Base title="Moving to Colorado? Taxes & Home Costs by State (2026)" description="Moving to Colorado? Compare 2026 income tax, sales tax, property tax, home insurance and home values with 12 states. Free calculator with sources." schema={schema}>
+  <section class="section calc-hero">
+    <div class="wrap narrow center stack">
+      <p class="eyebrow">Free tool · Updated {checked}</p>
+      <h1>Moving to Colorado? Compare Taxes and Home Costs by State</h1>
+      <p class="lead">Everyone says their state is cheaper. Enter your income and the price of the home you want, and see what you would pay each year in Colorado and 12 other popular states: state income tax, sales tax, property tax and home insurance. Every number has a source.</p>
+    </div>
+  </section>
+
+  <section class="section calc-wrap">
+    <div class="wrap">
+      <form class="calc__form calc__form--row" id="mv" onsubmit="return false">
+        <label>Home price
+          <span class="money"><input id="price" type="number" inputmode="numeric" min="50000" step="5000" value="500000" /></span>
+        </label>
+        <label>Household taxable income
+          <span class="money"><input id="income" type="number" inputmode="numeric" min="0" step="1000" value="100000" /></span>
+        </label>
+        <label>Yearly spending on taxable goods
+          <span class="money"><input id="spend" type="number" inputmode="numeric" min="0" step="1000" value="25000" /></span>
+        </label>
+        <label class="chk"><input id="same" type="checkbox" /> Use each state's typical home value instead of my price</label>
+      </form>
+      <p class="hint">Taxable income is after deductions. Graduated states use 2026 single-filer brackets, so married couples there may pay less. Sales tax uses the average combined rate; groceries and other items are taxed differently in each state.</p>
+
+      <p class="swipe">Swipe the table sideways to see all columns →</p>
+      <div class="tbl-wrap" aria-live="polite">
+        <table class="cmp" id="out">
+          <thead><tr><th>State</th><th>Income tax</th><th>Sales tax</th><th>Property tax</th><th>Home insurance</th><th>Total per year</th><th>vs Colorado</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="out__small">Estimates for comparison only, not tax advice. Local rates vary by county and city; Colorado homes in a metro district pay more property tax. Insurance is a state average for $300,000 of dwelling coverage. Sources and dates are listed below.</p>
+      <div class="btns"><a class="pill" href="#contact">Get a free Colorado moving plan</a><button type="button" class="pill pill--line" id="share">Copy link to this comparison</button></div>
+    </div>
+  </section>
+
+  <section class="section mist">
+    <div class="wrap">
+      <h2 class="center">2026 State Tax and Home Cost Comparison</h2>
+      <div class="tbl-wrap">
+        <table class="cmp cmp--static">
+          <thead><tr><th>State</th><th>Income tax 2026</th><th>Sales tax (avg. combined)</th><th>Property tax (effective)</th><th>Home insurance (avg. per year)</th><th>Typical home value (Sep 2026)</th></tr></thead>
+          <tbody>
+            {states.map((r) => (
+              <tr class={r.a === 'CO' ? 'co' : ''}>
+                <th scope="row">{r.s}</th><td>{incText(r)}</td><td>{r.sales.toFixed(2)}%</td><td>{r.prop.toFixed(2)}%</td><td>{money(r.ins)}</td><td>{money(r.home)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="out__small">Income tax: Tax Foundation, rates as of January 1, 2026. Sales tax: Tax Foundation, state plus average local rate, midyear 2026. Property tax: property taxes paid as a share of owner-occupied home value, 2024 (Tax Foundation from Census ACS). Insurance: Insurify, $300,000 dwelling coverage, updated October 2026. Home values: Zillow Home Value Index, September 2026.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>What the Numbers Mean if You Are Moving to Colorado</h2>
+      <p><b>Low property tax, higher home prices.</b> Colorado homeowners paid about 0.52% of their home's value in property tax in 2024, one of the lowest rates in the country. The trade-off is price: a typical Colorado home was worth about $529,000 in September 2026, more than in every state on this list except California.</p>
+      <p><b>A flat income tax.</b> Colorado taxes income at one rate, 4.40% for 2026. Coming from California or New York, most households pay less state income tax. Coming from Texas, Florida, Tennessee or Nevada, you will start paying it, but compare the property tax and insurance lines too.</p>
+      <p><b>"No income tax" is not the whole story.</b> Texas has no income tax but one of the higher property tax rates (about 1.24%). Florida has the highest average home insurance on this list ($6,408 a year for $300,000 of coverage). Run your own numbers above.</p>
+      <p><b>Check the exact home.</b> In Colorado, many newer neighborhoods are in a metro district that adds to the tax bill, and many have HOA dues. Insurance depends on the roof and the deductible. Tamila checks these for every home before you write an offer.</p>
+      <div class="btns"><a class="pill" href="/buy-a-home">Buying a home in Colorado</a><a class="pill pill--line" href="/mortgage-calculator">Monthly payment calculator</a><a class="pill pill--line" href="/areas">Denver area guides</a></div>
+    </div>
+  </section>
+
+  <section class="section mist">
+    <div class="wrap prose">
+      <h2>Moving to Colorado With One Person for the Home and the Loan</h2>
+      <ul class="checks">
+        <li><b>Pre-approval before you move.</b> Tamila is a mortgage loan officer licensed in Colorado and Florida, with FHA, VA, conventional, jumbo and programs from a 500 credit score.</li>
+        <li><b>Live video tours.</b> If you cannot fly in for every showing, she walks the home with you on a video call.</li>
+        <li><b>Selling where you live now?</b> If you are selling a home in Colorado and buying your next one with Tamila, her listing fee is 1%. Listing only: standard rate, up to 3%.</li>
+        <li><b>Military moves.</b> Moving on PCS orders? See <a href="/va-loans-pcs">VA loans and PCS moves</a>.</li>
+        <li><b>English, Russian and Ukrainian.</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>Sources</h2>
+      <ul>
+        <li><a href="https://taxfoundation.org/data/all/state/state-income-tax-rates-2026/" rel="noopener" target="_blank">Tax Foundation: State Individual Income Tax Rates and Brackets, 2026</a></li>
+        <li><a href="https://taxfoundation.org/data/all/state/2026-sales-tax-rates-midyear/" rel="noopener" target="_blank">Tax Foundation: State and Local Sales Tax Rates, Midyear 2026</a></li>
+        <li><a href="https://taxfoundation.org/wp-content/uploads/2026/04/TaxFoundation_FactsFigures26-3-31.pdf" rel="noopener" target="_blank">Tax Foundation: Facts &amp; Figures 2026, Table 33, Property Taxes Paid as a Percentage of Owner-Occupied Housing Value</a></li>
+        <li><a href="https://insurify.com/homeowners-insurance/states/" rel="noopener" target="_blank">Insurify: Average Home Insurance Rates by State</a></li>
+        <li><a href="https://www.zillow.com/research/data/" rel="noopener" target="_blank">Zillow Research: Zillow Home Value Index (ZHVI), states, September 2026</a></li>
+      </ul>
+      <p>Data last checked: {checked}.</p>
+    </div>
+  </section>
+
+  <Faq items={faq} title="Moving to Colorado Questions" />
+  <ContactBand title="Planning a Move to Colorado?" lead="Tell Tamila where you are moving from, your budget and your timeline. She will send neighborhoods to look at, real tax and insurance numbers for homes you like, and a pre-approval plan, free." goal="Buy a home" />
+</Base>
+
+<script define:vars={{ states }}>
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => '$' + Math.round(n).toLocaleString('en-US');
+  const incomeTax = (inc, r) => {
+    if (typeof r === 'number') return inc * r / 100;
+    let t = 0;
+    for (let i = 0; i < r.length; i++) {
+      const [from, rate] = r[i];
+      const to = i + 1 < r.length ? r[i + 1][0] : Infinity;
+      if (inc > from) t += (Math.min(inc, to) - from) * rate / 100;
+    }
+    return t;
+  };
+  const keys = ['price', 'income', 'spend'];
+  const params = new URLSearchParams(location.search);
+  keys.forEach((k) => { if (params.get(k)) $(k).value = params.get(k); });
+  if (params.get('same') === '1') $('same').checked = true;
+
+  function run() {
+    const price = +$('price').value || 0, inc = +$('income').value || 0, spend = +$('spend').value || 0, same = $('same').checked;
+    const rows = states.map((r) => {
+      const home = same ? r.home : price;
+      const it = incomeTax(inc, r.income), st = spend * r.sales / 100, pt = home * r.prop / 100;
+      return { ...r, it, st, pt, total: it + st + pt + r.ins };
+    });
+    const co = rows.find((r) => r.a === 'CO').total;
+    rows.sort((a, b) => a.total - b.total);
+    $('out').querySelector('tbody').innerHTML = rows.map((r) => {
+      const d = r.total - co;
+      const diff = r.a === 'CO' ? '—' : (d > 0 ? '+' : '−') + fmt(Math.abs(d));
+      return `<tr class="${r.a === 'CO' ? 'co' : ''}"><th scope="row">${r.s}</th><td>${fmt(r.it)}</td><td>${fmt(r.st)}</td><td>${fmt(r.pt)}</td><td>${fmt(r.ins)}</td><td><b>${fmt(r.total)}</b></td><td class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${diff}</td></tr>`;
+    }).join('');
+  }
+  $('mv').addEventListener('input', run);
+  $('share').addEventListener('click', () => {
+    const p = new URLSearchParams();
+    keys.forEach((k) => p.set(k, $(k).value));
+    if ($('same').checked) p.set('same', '1');
+    const url = location.origin + location.pathname + '?' + p.toString();
+    navigator.clipboard?.writeText(url).then(() => { $('share').textContent = 'Link copied'; setTimeout(() => ($('share').textContent = 'Copy link to this comparison'), 2000); });
+  });
+  run();
+</script>
+
+<style is:global>
+  .calc-hero { padding-bottom: 8px; }
+  .calc__form--row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: end; }
+  .calc__form label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: .95rem; }
+  .calc__form input[type=number] { font: 400 1.1rem var(--font); color: var(--ink); background: var(--white); border: 1.5px solid var(--green-soft); border-radius: 12px; padding: 12px 14px; width: 100%; }
+  .calc__form input:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+  .calc__form .chk { flex-direction: row; align-items: center; gap: 10px; font-weight: 400; grid-column: 1 / -1; }
+  .chk input { width: 20px; height: 20px; accent-color: var(--green); }
+  .money { position: relative; display: block; }
+  .calc__form .money input { padding-left: 28px; }
+  .money::before { content: '$'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 400; opacity: .7; }
+  .hint { font-size: .9rem; opacity: .85; margin: 12px 0 18px; }
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 16px; border: 1px solid var(--green-soft); background: var(--white); }
+  .cmp { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 640px; }
+  .cmp th, .cmp td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--green-soft); white-space: nowrap; }
+  .cmp th:first-child { text-align: left; position: sticky; left: 0; background: var(--white); }
+  .cmp thead th { font-size: .82rem; text-transform: uppercase; letter-spacing: .03em; background: var(--green-mist); white-space: normal; vertical-align: bottom; }
+  .cmp thead th:first-child { background: var(--green-mist); }
+  .cmp tr.co th, .cmp tr.co td { background: var(--green-mist); font-weight: 700; }
+  .cmp td.up { color: #a3412b; }
+  .cmp td.down { color: var(--green); }
+  .cmp--static { margin-top: 8px; }
+  .out__small { font-size: .78rem; opacity: .75; margin-top: 12px; }
+  .btns { margin-top: 16px; }
+  .swipe { display: none; font-size: .85rem; opacity: .75; margin: 0 0 8px; }
+  @media (max-width: 760px) { .calc__form--row { grid-template-columns: 1fr; } .swipe { display: block; } }
+</style>
