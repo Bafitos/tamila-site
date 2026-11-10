@@ -9,6 +9,10 @@ const faq = [
   ['Does Colorado have a transfer tax?', 'There is no percentage-based state transfer tax. Colorado charges a documentary fee of 1 cent per $100 of the price (C.R.S. 39-13-102), which is $60 on a $600,000 home. It is typically paid by the buyer, but the contract can say otherwise.'],
   ['Why do I pay property tax for the buyer at closing?', 'Colorado property taxes are paid in arrears: the bill for this year comes next year. At closing, the seller credits the buyer for the days the seller owned the home this year, and the buyer pays the full bill when it arrives. If you sell early in the year before paying last year’s bill, that bill is also paid from your proceeds.'],
   ['Who pays for title insurance in Colorado?', "Section 8 of the Colorado contract lets buyer and seller choose. In the Denver metro it is customary for the seller to pay for the buyer's owner's policy. The buyer usually pays for the lender's policy."],
+  ['Is there a transfer tax in Denver?', 'No. No Front Range city charges a real estate transfer tax, including Denver, Aurora, Colorado Springs and Lakewood. The few Colorado towns that do are mountain resort towns such as Aspen, Breckenridge, Telluride and Vail. Every sale in Colorado pays only the state documentary fee of 1 cent per $100 of the price.'],
+  ['What does it cost to sell a house in Highlands Ranch?', 'The same main costs as anywhere in the Denver metro: commissions, title insurance and the closing fee, and the property tax credit to the buyer. Highlands Ranch is an unincorporated community in Douglas County, so your tax bill includes the Highlands Ranch Metro District, and most homes belong to the Highlands Ranch Community Association. Use your full tax bill in the calculator and ask the HRCA what it charges when a home is sold.'],
+  ['Do I pay capital gains tax when I sell my house in Colorado?', 'Often not on a main home. Under federal rules (IRS Publication 523), you can exclude up to $250,000 of gain, or $500,000 for a married couple filing jointly, if you owned and lived in the home for at least 2 of the last 5 years. Gain above that is taxable, and Colorado taxes it as part of your state income. Ask a tax professional about your situation.'],
+  ['I live outside Colorado now. Is tax withheld when I sell?', 'Usually yes. If your address is outside Colorado and the price is over $100,000, the title company withholds the lesser of 2% of the price or your net proceeds and sends it to the Colorado Department of Revenue. It is not an extra tax: you claim it as a credit when you file your Colorado return. This often applies to military families who sell after a PCS move.'],
   ['How does the 1% listing fee work?', "When you sell your home and buy your next one with Tamila, her listing fee is 1% instead of the usual up to 3%. If you only sell, the fee is the standard rate, up to 3%. The buyer's agent for your home is paid separately and is negotiable. You get the same full service either way: professional photos Tamila pays for, MLS, marketing, negotiation and support to closing."],
 ];
 
@@ -17,7 +21,7 @@ const schema = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
 ];
 ---
-<Base title="Cost to Sell a House in Colorado: Calculator | Tamila Aspen" description="What does it cost to sell a house in Colorado? Free calculator: commissions, title insurance, property tax proration and your net proceeds." schema={schema}>
+<Base title="Cost to Sell a House in Colorado & Denver: Calculator" description="Cost to sell a house in Colorado and Denver: free calculator for commissions, title, property tax credit and taxes, and what you take home." schema={schema}>
   <section class="section calc-hero">
     <div class="wrap narrow center stack">
       <p class="eyebrow">Free tool · For Colorado sellers</p>
@@ -111,12 +115,36 @@ const schema = [
 
   <section class="section">
     <div class="wrap prose">
+      <h2>Selling in Denver, Aurora, Highlands Ranch and the Suburbs</h2>
+      <p><b>No city transfer tax on the Front Range.</b> Denver, Aurora, Colorado Springs, Lakewood and the other Front Range cities do not charge a real estate transfer tax. Only a handful of mountain resort towns, such as Aspen, Breckenridge, Telluride and Vail, have one. So the cost to sell a house in Denver is the same list as anywhere in the metro: commissions, title and closing fee, the property tax credit, your payoff and HOA costs.</p>
+      <p><b>Metro districts.</b> Many newer neighborhoods in Aurora, Parker, Castle Rock, Thornton and Brighton are in a metro district, which adds its own line to the property tax bill. That tax is prorated at closing like the rest of your bill, so use the full amount from your last bill in the calculator.</p>
+      <p><b>Highlands Ranch.</b> Highlands Ranch is not a city. It is an unincorporated community in Douglas County. The Highlands Ranch Metro District, funded by property taxes, runs parks, open space and water service, and the Highlands Ranch Community Association runs the recreation centers and is funded by assessments. When you sell, expect the metro district tax on your proration and ask the HRCA about its fees at sale.</p>
+      <p>Tamila lists homes across the Front Range, from Loveland to Colorado Springs. See the <a href="/areas">area guides</a> or compare <a href="/blog/parker-vs-highlands-ranch">Parker vs Highlands Ranch</a>.</p>
+    </div>
+  </section>
+
+  <section class="section mist">
+    <div class="wrap prose">
+      <h2>Taxes When You Sell a House in Colorado</h2>
+      <p><b>Capital gains on your main home.</b> Federal rules let you exclude up to $250,000 of gain, or $500,000 for a married couple filing jointly, if you owned the home and lived in it for at least 2 of the 5 years before the sale (IRS Publication 523). Many sellers owe no tax on the sale of their main home. Gain above the exclusion, or on a rental or second home, is taxable, and Colorado taxes it as part of your state income.</p>
+      <p><b>Sellers who now live outside Colorado.</b> If your address is outside Colorado and the price is over $100,000, the title company withholds the lesser of 2% of the price or your net proceeds for the Colorado Department of Revenue (form DR 1083). You get it back as a credit on your Colorado tax return. Military families selling after a PCS move often see this line on the settlement statement, so plan for it in your cash at closing.</p>
+      <p>This is general information, not tax advice. A tax professional can tell you what applies to you.</p>
+      <div class="btns"><a class="pill" href="/va-loans-pcs">Selling on PCS orders</a><a class="pill pill--line" href="/selling-house-during-divorce">Selling during a divorce</a></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
       <h2>Sources</h2>
       <ul>
         <li><a href="https://doi.colorado.gov/types-of-insurance/title-insurance" rel="noopener" target="_blank">Colorado Division of Insurance: Title insurance</a></li>
         <li><a href="https://www.hollandhart.com/files/38975_CREC-Approved-Contracts-Ordering-the-Title.pdf" rel="noopener" target="_blank">Holland &amp; Hart: CREC contracts, ordering the title</a></li>
         <li><a href="https://firstalliancetitle.com/how-are-property-taxes-prorated-at-closing/" rel="noopener" target="_blank">First Alliance Title: How property taxes are prorated at closing</a></li>
         <li><a href="https://www.deedclaim.com/colorado/deed-requirements/" rel="noopener" target="_blank">Colorado documentary fee, C.R.S. 39-13-102</a></li>
+        <li><a href="https://www.rickjanson.com/blog/answers-which-colorado-towns-charge-a-real-estate-transfer-tax/" rel="noopener" target="_blank">Which Colorado towns charge a real estate transfer tax</a></li>
+        <li><a href="https://www.highlandsranch.org/government/about-highlands-ranch/how-highlands-ranch-operates" rel="noopener" target="_blank">Highlands Ranch Metro District: How Highlands Ranch operates</a></li>
+        <li><a href="https://www.irs.gov/publications/p523" rel="noopener" target="_blank">IRS Publication 523: Selling Your Home</a></li>
+        <li><a href="https://tax.colorado.gov/sites/tax/files/documents/DR1083_2025.pdf" rel="noopener" target="_blank">Colorado Department of Revenue: DR 1083, withholding on transfers of real property</a></li>
       </ul>
     </div>
   </section>

@@ -80,7 +80,7 @@ export const posts = [
       ['About Rocky Flats National Wildlife Refuge (U.S. Fish and Wildlife Service)', 'https://www.fws.gov/locations/rocky-flats-national-wildlife-refuge/about-us'],
       ['St. Anthony Hospital (Wikipedia)', 'https://en.wikipedia.org/wiki/St._Anthony_Hospital_(Colorado)'],
     ],
-    links: [['Buy a home', '/buy-a-home'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent'], ['Littleton vs Englewood', '/blog/littleton-vs-englewood']],
+    links: [['Cost to sell a house in Colorado', '/cost-to-sell-a-house-in-colorado'], ['Buy a home', '/buy-a-home'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent'], ['Littleton vs Englewood', '/blog/littleton-vs-englewood']],
   },
   {
     slug: 'littleton-vs-englewood',
@@ -179,7 +179,7 @@ export const posts = [
       ['Parks, recreation, library and golf (City of Englewood)', 'https://www.englewoodco.gov/parks-recreation-library-golf'],
       ['5280 neighborhood guide: Englewood, Arapahoe Acres (5280 Magazine, 2017)', 'https://5280.com/5280-neighborhood-guide-englewood/'],
     ],
-    links: [['Centennial area guide', '/areas/centennial'], ['Buy a home', '/buy-a-home'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['Aurora vs Centennial', '/blog/aurora-vs-centennial']],
+    links: [['Cost to sell a house in Colorado', '/cost-to-sell-a-house-in-colorado'], ['Centennial area guide', '/areas/centennial'], ['Buy a home', '/buy-a-home'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['Aurora vs Centennial', '/blog/aurora-vs-centennial']],
   },
   {
     slug: 'colorado-springs-vs-monument-military-families',
@@ -250,7 +250,7 @@ export const posts = [
       ['VA funding fee: who pays and who is exempt (VA News)', 'https://news.va.gov/147050/funding-fee-who-pays-who-is-exempt/'],
       ['Disabled Veterans Tax Exemption (Weld County Assessor, Colorado state program)', 'https://www.weld.gov/Government/Departments/Assessor/Exemptions/Disabled-Veterans-Tax-Exemption'],
     ],
-    links: [['Colorado Springs area guide', '/areas/colorado-springs'], ['VA loans and PCS moves', '/va-loans-pcs'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['Parker vs Highlands Ranch', '/blog/parker-vs-highlands-ranch']],
+    links: [['Cost to sell a house in Colorado', '/cost-to-sell-a-house-in-colorado'], ['Colorado Springs area guide', '/areas/colorado-springs'], ['VA loans and PCS moves', '/va-loans-pcs'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['Parker vs Highlands Ranch', '/blog/parker-vs-highlands-ranch']],
   },
   {
     slug: 'denver-vs-aurora-first-time-buyers',
@@ -319,7 +319,7 @@ export const posts = [
       ['SchoolChoice overview (Denver Public Schools)', 'https://schoolchoice.dpsk12.org/schoolchoice/'],
       ['Metro districts: resident impact (City of Arvada)', 'https://www.arvadaco.gov/1454/Metro-Districts-Resident-Impact'],
     ],
-    links: [['Denver area guide', '/areas/denver'], ['Aurora area guide', '/areas/aurora'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['Aurora vs Centennial', '/blog/aurora-vs-centennial']],
+    links: [['Cost to sell a house in Colorado', '/cost-to-sell-a-house-in-colorado'], ['Denver area guide', '/areas/denver'], ['Aurora area guide', '/areas/aurora'], ['VA loans near Buckley SFB', '/va-loans-pcs'], ['Mortgage loans', '/mortgage'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['Aurora vs Centennial', '/blog/aurora-vs-centennial']],
   },
   {
     slug: 'parker-vs-highlands-ranch',
@@ -381,7 +381,7 @@ export const posts = [
       ['UCHealth Highlands Ranch Hospital officially opens (UCHealth)', 'https://www.uchealth.org/today/uchealth-highlands-ranch-hospital-officially-opens/'],
       ['Metro districts: resident impact (City of Arvada)', 'https://www.arvadaco.gov/1454/Metro-Districts-Resident-Impact'],
     ],
-    links: [['Parker area guide', '/areas/parker'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent'], ['Aurora vs Centennial', '/blog/aurora-vs-centennial']],
+    links: [['Cost to sell a house in Colorado', '/cost-to-sell-a-house-in-colorado'], ['Parker area guide', '/areas/parker'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent'], ['Aurora vs Centennial', '/blog/aurora-vs-centennial']],
   },
   {
     slug: 'thornton-vs-brighton',
@@ -437,7 +437,7 @@ export const posts = [
       ['N Line (RTD) (Wikipedia, opening date, proposed extension)', 'https://en.wikipedia.org/wiki/N_Line_(RTD)'],
       ['N Line to Thornton (RTD)', 'https://www.rtd-denver.com/about-rtd/projects/fastracks/n-line'],
     ],
-    links: [['Thornton area guide', '/areas/thornton'], ['Brighton area guide', '/areas/brighton'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent']],
+    links: [['Cost to sell a house in Colorado', '/cost-to-sell-a-house-in-colorado'], ['Thornton area guide', '/areas/thornton'], ['Brighton area guide', '/areas/brighton'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent']],
   },
   {
     slug: 'aurora-vs-centennial',
@@ -487,6 +487,6 @@ export const posts = [
       ['Aurora, Colorado (Wikipedia, 2020 census and school districts)', 'https://en.wikipedia.org/wiki/Aurora,_Colorado'],
       ['Centennial, Colorado (Wikipedia, incorporation, 2020 census and school districts)', 'https://en.wikipedia.org/wiki/Centennial,_Colorado'],
     ],
-    links: [['Aurora area guide', '/areas/aurora'], ['Centennial area guide', '/areas/centennial'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent']],
+    links: [['Cost to sell a house in Colorado', '/cost-to-sell-a-house-in-colorado'], ['Aurora area guide', '/areas/aurora'], ['Centennial area guide', '/areas/centennial'], ['VA loans near Buckley SFB', '/va-loans-pcs'], ['Colorado mortgage calculator', '/mortgage-calculator'], ['How the 1% listing works', '/sell-for-1-percent']],
   },
 ];
