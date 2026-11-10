@@ -3,34 +3,42 @@ import Base from '../layouts/Base.astro';
 import Faq from '../components/Faq.astro';
 import ContactBand from '../components/ContactBand.astro';
 import { site } from '../data/site.js';
+import zhvi from '../data/zhvi.json';
 
-// Verified data. Update together with the "Data last checked" date below.
+// Tax and insurance data: verified by hand (scheduled task twice a year). Update taxChecked below.
+// Home values: src/data/zhvi.json, refreshed monthly by .github/workflows/zhvi-monthly.yml
 // income: flat rate, or brackets [[from, rate]] for single filers, tax year 2026 (Tax Foundation, Feb 2026)
 // sales: combined state + average local rate, midyear 2026 (Tax Foundation, Jul 2026)
 // prop: property taxes paid as % of owner-occupied home value, 2024 (Tax Foundation Facts & Figures 2026, Table 33, from Census ACS)
 // ins: average annual homeowners insurance, $300,000 dwelling coverage (Insurify, updated Oct 2026)
-// home: Zillow Home Value Index, typical home value, September 2026
+// home: Zillow Home Value Index from src/data/zhvi.json (latest month)
 const states = [
-  { s: 'Colorado', a: 'CO', income: 4.4, sales: 7.89, prop: 0.52, ins: 3240, home: 529013 },
-  { s: 'Texas', a: 'TX', income: 0, sales: 8.20, prop: 1.24, ins: 4668, home: 296424 },
-  { s: 'Florida', a: 'FL', income: 0, sales: 6.98, prop: 0.76, ins: 6408, home: 375361 },
-  { s: 'California', a: 'CA', income: [[0, 1], [11079, 2], [26264, 4], [41452, 6], [57542, 8], [72724, 9.3], [371479, 10.3], [445771, 11.3], [742953, 12.3], [1000000, 13.3]], incomeText: '1% – 13.3%', sales: 9.03, prop: 0.69, ins: 2040, home: 761538 },
-  { s: 'New York', a: 'NY', income: [[0, 3.9], [8500, 4.4], [11700, 5.15], [13900, 5.4], [80650, 5.9], [215400, 6.85], [1077550, 9.65], [5000000, 10.3], [25000000, 10.9]], incomeText: '3.9% – 10.9%', sales: 8.54, prop: 1.23, ins: 1356, home: 524942 },
-  { s: 'North Carolina', a: 'NC', income: 3.99, sales: 7.10, prop: 0.62, ins: 3192, home: 332159 },
-  { s: 'South Carolina', a: 'SC', income: [[0, 0], [3640, 3], [18230, 6]], incomeText: '0% – 6%', sales: 7.49, prop: 0.44, ins: 2700, home: 304319 },
-  { s: 'Alabama', a: 'AL', income: [[0, 2], [500, 4], [3000, 5]], incomeText: '2% – 5%', sales: 9.46, prop: 0.37, ins: 3408, home: 238614 },
-  { s: 'Louisiana', a: 'LA', income: 3.0, sales: 10.13, prop: 0.56, ins: 5028, home: 213867 },
-  { s: 'Arizona', a: 'AZ', income: 2.5, sales: 8.54, prop: 0.43, ins: 2184, home: 416733 },
-  { s: 'Tennessee', a: 'TN', income: 0, sales: 9.61, prop: 0.46, ins: 3096, home: 330844 },
-  { s: 'Georgia', a: 'GA', income: 5.19, sales: 7.56, prop: 0.77, ins: 2496, home: 329115 },
-  { s: 'Nevada', a: 'NV', income: 0, sales: 8.24, prop: 0.50, ins: 1308, home: 440739 },
-];
-const checked = 'November 2026';
+  { s: 'Colorado', a: 'CO', income: 4.4, sales: 7.89, prop: 0.52, ins: 3240 },
+  { s: 'Texas', a: 'TX', income: 0, sales: 8.20, prop: 1.24, ins: 4668 },
+  { s: 'Florida', a: 'FL', income: 0, sales: 6.98, prop: 0.76, ins: 6408 },
+  { s: 'California', a: 'CA', income: [[0, 1], [11079, 2], [26264, 4], [41452, 6], [57542, 8], [72724, 9.3], [371479, 10.3], [445771, 11.3], [742953, 12.3], [1000000, 13.3]], incomeText: '1% – 13.3%', sales: 9.03, prop: 0.69, ins: 2040 },
+  { s: 'New York', a: 'NY', income: [[0, 3.9], [8500, 4.4], [11700, 5.15], [13900, 5.4], [80650, 5.9], [215400, 6.85], [1077550, 9.65], [5000000, 10.3], [25000000, 10.9]], incomeText: '3.9% – 10.9%', sales: 8.54, prop: 1.23, ins: 1356 },
+  { s: 'North Carolina', a: 'NC', income: 3.99, sales: 7.10, prop: 0.62, ins: 3192 },
+  { s: 'South Carolina', a: 'SC', income: [[0, 0], [3640, 3], [18230, 6]], incomeText: '0% – 6%', sales: 7.49, prop: 0.44, ins: 2700 },
+  { s: 'Alabama', a: 'AL', income: [[0, 2], [500, 4], [3000, 5]], incomeText: '2% – 5%', sales: 9.46, prop: 0.37, ins: 3408 },
+  { s: 'Louisiana', a: 'LA', income: 3.0, sales: 10.13, prop: 0.56, ins: 5028 },
+  { s: 'Arizona', a: 'AZ', income: 2.5, sales: 8.54, prop: 0.43, ins: 2184 },
+  { s: 'Tennessee', a: 'TN', income: 0, sales: 9.61, prop: 0.46, ins: 3096 },
+  { s: 'Georgia', a: 'GA', income: 5.19, sales: 7.56, prop: 0.77, ins: 2496 },
+  { s: 'Nevada', a: 'NV', income: 0, sales: 8.24, prop: 0.50, ins: 1308 },
+].map((r) => ({ ...r, home: zhvi.values[r.s] }));
+const taxChecked = 'November 2026';
+const zMonth = new Date(zhvi.month + 'T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const zShort = new Date(zhvi.month + 'T12:00:00Z').toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+const co = states.find((r) => r.a === 'CO')!;
+const coHome = '$' + (Math.round(co.home / 1000) * 1000).toLocaleString('en-US');
+const pricier = states.filter((r) => r.home > co.home).map((r) => r.s);
+const pricierText = pricier.length === 0 ? 'the highest of any state on this list' : pricier.length === 1 ? `more than in every state on this list except ${pricier[0]}` : `more than in most states on this list`;
 const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const incText = (r: any) => r.incomeText || (r.income === 0 ? 'None' : r.income.toFixed(2).replace(/0$/, '') + '% flat');
 
 const faq = [
-  ['Is Colorado a tax-friendly state to move to?', 'It depends on what you compare. Colorado has a flat 4.40% income tax for 2026, and its property taxes are among the lowest in the country: about 0.52% of home value in 2024, ranked 40th of 50 (Tax Foundation). But Colorado homes cost more than in most states on this list: the typical home value was about $529,000 in September 2026 (Zillow). Use the calculator above with your own income and home price to see the full picture.'],
+  ['Is Colorado a tax-friendly state to move to?', `It depends on what you compare. Colorado has a flat 4.40% income tax for 2026, and its property taxes are among the lowest in the country: about 0.52% of home value in 2024, ranked 40th of 50 (Tax Foundation). But Colorado homes cost more than in most states on this list: the typical home value was about ${coHome} in ${zMonth} (Zillow). Use the calculator above with your own income and home price to see the full picture.`],
   ['Which states have no state income tax?', 'Of the states on this page, Texas, Florida, Tennessee and Nevada have no individual income tax on wages for 2026 (Tax Foundation). They collect more in other ways: Texas has one of the higher property tax rates (about 1.24% of home value), and Tennessee has one of the highest combined sales tax rates (9.61%).'],
   ['How much is homeowners insurance in Colorado?', 'Insurify reports an average of $3,240 a year in Colorado for a policy with $300,000 of dwelling coverage, compared with a national average of $2,808 (updated October 2026). Your price depends on the home, the roof, the deductible and the location, so get a quote on the actual house before you write an offer.'],
   ['Are property taxes really low in Colorado?', 'The statewide average is low: about 0.52% of home value. Your actual bill depends on the county, the city, the school district and, in many newer neighborhoods, a metro district tax that can add a noticeable amount. Always check the tax bill of the exact home before you buy.'],
@@ -46,7 +54,7 @@ const schema = [
 <Base title="Moving to Colorado? Taxes & Home Costs by State (2026)" description="Moving to Colorado? Compare 2026 income tax, sales tax, property tax, home insurance and home values with 12 states. Free calculator with sources." schema={schema}>
   <section class="section calc-hero">
     <div class="wrap narrow center stack">
-      <p class="eyebrow">Free tool · Updated {checked}</p>
+      <p class="eyebrow">Free tool · Home values updated {zMonth}</p>
       <h1>Moving to Colorado? Compare Taxes and Home Costs by State</h1>
       <p class="lead">Everyone says their state is cheaper. Enter your income and the price of the home you want, and see what you would pay each year in Colorado and 12 other popular states: state income tax, sales tax, property tax and home insurance. Every number has a source.</p>
     </div>
@@ -85,7 +93,7 @@ const schema = [
       <h2 class="center">2026 State Tax and Home Cost Comparison</h2>
       <div class="tbl-wrap">
         <table class="cmp cmp--static">
-          <thead><tr><th>State</th><th>Income tax 2026</th><th>Sales tax (avg. combined)</th><th>Property tax (effective)</th><th>Home insurance (avg. per year)</th><th>Typical home value (Sep 2026)</th></tr></thead>
+          <thead><tr><th>State</th><th>Income tax 2026</th><th>Sales tax (avg. combined)</th><th>Property tax (effective)</th><th>Home insurance (avg. per year)</th><th>Typical home value ({zShort})</th></tr></thead>
           <tbody>
             {states.map((r) => (
               <tr class={r.a === 'CO' ? 'co' : ''}>
@@ -95,14 +103,14 @@ const schema = [
           </tbody>
         </table>
       </div>
-      <p class="out__small">Income tax: Tax Foundation, rates as of January 1, 2026. Sales tax: Tax Foundation, state plus average local rate, midyear 2026. Property tax: property taxes paid as a share of owner-occupied home value, 2024 (Tax Foundation from Census ACS). Insurance: Insurify, $300,000 dwelling coverage, updated October 2026. Home values: Zillow Home Value Index, September 2026.</p>
+      <p class="out__small">Income tax: Tax Foundation, rates as of January 1, 2026. Sales tax: Tax Foundation, state plus average local rate, midyear 2026. Property tax: property taxes paid as a share of owner-occupied home value, 2024 (Tax Foundation from Census ACS). Insurance: Insurify, $300,000 dwelling coverage, updated October 2026. Home values: Zillow Home Value Index, {zMonth}, updated monthly.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap prose">
       <h2>What the Numbers Mean if You Are Moving to Colorado</h2>
-      <p><b>Low property tax, higher home prices.</b> Colorado homeowners paid about 0.52% of their home's value in property tax in 2024, one of the lowest rates in the country. The trade-off is price: a typical Colorado home was worth about $529,000 in September 2026, more than in every state on this list except California.</p>
+      <p><b>Low property tax, higher home prices.</b> Colorado homeowners paid about 0.52% of their home's value in property tax in 2024, one of the lowest rates in the country. The trade-off is price: a typical Colorado home was worth about {coHome} in {zMonth}, {pricierText}.</p>
       <p><b>A flat income tax.</b> Colorado taxes income at one rate, 4.40% for 2026. Coming from California or New York, most households pay less state income tax. Coming from Texas, Florida, Tennessee or Nevada, you will start paying it, but compare the property tax and insurance lines too.</p>
       <p><b>"No income tax" is not the whole story.</b> Texas has no income tax but one of the higher property tax rates (about 1.24%). Florida has the highest average home insurance on this list ($6,408 a year for $300,000 of coverage). Run your own numbers above.</p>
       <p><b>Check the exact home.</b> In Colorado, many newer neighborhoods are in a metro district that adds to the tax bill, and many have HOA dues. Insurance depends on the roof and the deductible. Tamila checks these for every home before you write an offer.</p>
@@ -131,9 +139,9 @@ const schema = [
         <li><a href="https://taxfoundation.org/data/all/state/2026-sales-tax-rates-midyear/" rel="noopener" target="_blank">Tax Foundation: State and Local Sales Tax Rates, Midyear 2026</a></li>
         <li><a href="https://taxfoundation.org/wp-content/uploads/2026/04/TaxFoundation_FactsFigures26-3-31.pdf" rel="noopener" target="_blank">Tax Foundation: Facts &amp; Figures 2026, Table 33, Property Taxes Paid as a Percentage of Owner-Occupied Housing Value</a></li>
         <li><a href="https://insurify.com/homeowners-insurance/states/" rel="noopener" target="_blank">Insurify: Average Home Insurance Rates by State</a></li>
-        <li><a href="https://www.zillow.com/research/data/" rel="noopener" target="_blank">Zillow Research: Zillow Home Value Index (ZHVI), states, September 2026</a></li>
+        <li><a href="https://www.zillow.com/research/data/" rel="noopener" target="_blank">Zillow Research: Zillow Home Value Index (ZHVI), states, {zMonth}</a></li>
       </ul>
-      <p>Data last checked: {checked}.</p>
+      <p>Tax and insurance data last checked: {taxChecked}. Home values update automatically each month.</p>
     </div>
   </section>
 
