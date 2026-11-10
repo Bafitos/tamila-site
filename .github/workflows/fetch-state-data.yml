@@ -15,7 +15,9 @@ jobs:
         run: |
           mkdir -p data-raw
           for y in 2024 2023; do
-            curl -fsS "https://api.census.gov/data/$y/acs/acs1?get=NAME,B25103_001E,B25077_001E,B25088_002E&for=state:*" -o data-raw/acs1_$y.json && break || true
+            code=$(curl -sS -o data-raw/acs1_$y.json -w '%{http_code}' "https://api.census.gov/data/$y/acs/acs1?get=NAME,B25103_001E,B25077_001E&for=state:*")
+            echo "ACS $y HTTP $code"; head -c 300 data-raw/acs1_$y.json; echo
+            [ "$code" = 200 ] && break
           done
           curl -fsSL "https://files.zillowstatic.com/research/public_csvs/zhvi/State_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv" -o data-raw/zhvi_state.csv || true
           python3 - <<'PY'
