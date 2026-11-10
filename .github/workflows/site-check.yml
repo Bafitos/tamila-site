@@ -25,5 +25,5 @@ jobs:
           chk "https://denver-real-estates.com/va-loans-pcs" 301 "$W/va-loans-pcs"
           chk "$W/index.html" 301 ""
           chk "$W/es" 410 ""
-          for p in / /sell-for-1-percent /cost-to-sell-a-house-in-colorado /va-loans-pcs /mortgage /blog /areas/aurora /ru /uk /sitemap.xml /577084c3c7f542d6b6e901180034126e.txt; do chk "$W$p" 200 ""; done
+          for p in / /sell-for-1-percent /moving-to-colorado /cost-to-sell-a-house-in-colorado /va-loans-pcs /mortgage /blog /areas/aurora /ru /uk /sitemap.xml /577084c3c7f542d6b6e901180034126e.txt; do chk "$W$p" 200 ""; done
           exit $fail
