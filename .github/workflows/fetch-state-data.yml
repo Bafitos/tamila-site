@@ -1,0 +1,35 @@
+name: Fetch state cost data (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Census ACS and Zillow ZHVI
+        run: |
+          mkdir -p data-raw
+          for y in 2024 2023; do
+            curl -fsS "https://api.census.gov/data/$y/acs/acs1?get=NAME,B25103_001E,B25077_001E,B25088_002E&for=state:*" -o data-raw/acs1_$y.json && break || true
+          done
+          curl -fsSL "https://files.zillowstatic.com/research/public_csvs/zhvi/State_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv" -o data-raw/zhvi_state.csv || true
+          python3 - <<'PY'
+          import csv, json
+          rows=list(csv.reader(open('data-raw/zhvi_state.csv')))
+          h=rows[0]; last=h[-1]
+          out={r[2]: r[-1] for r in rows[1:]}
+          json.dump({'month': last, 'values': out}, open('data-raw/zhvi_state_latest.json','w'), indent=1)
+          PY
+          ls -la data-raw
+      - name: Commit to data branch
+        run: |
+          git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
+          git checkout -b data/state-costs
+          git add data-raw/acs1_*.json data-raw/zhvi_state_latest.json
+          git commit -m "State cost raw data $(date -u +%F)"
+          git push -f origin data/state-costs
