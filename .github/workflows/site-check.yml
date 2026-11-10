@@ -15,7 +15,7 @@ jobs:
           fail=0
           chk() { # url expected_code expected_location_prefix
             read code loc < <(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$1")
-            if [ "$code" = "$2" ] && [[ "$loc" == "$3"* ]]; then echo "OK   $code $1 -> $loc"; else echo "FAIL $code $1 -> $loc (want $2 $3)"; fail=1; fi
+            if [ "$code" = "$2" ] && [[ "$loc" == "$3"* ]]; then echo "::notice::OK $code $1 -> $loc"; else echo "::error::FAIL $code $1 -> $loc (want $2 $3)"; fail=1; fi
           }
           W=https://www.denver-real-estates.com
           chk "https://aspenprohomes.com/" 301 "$W"
