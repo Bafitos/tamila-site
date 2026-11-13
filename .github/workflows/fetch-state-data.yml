@@ -11,27 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download Census ACS and Zillow ZHVI
+      - name: Download sources
         run: |
           mkdir -p data-raw
-          for y in 2024 2023; do
-            code=$(curl -sS -o data-raw/acs1_$y.json -w '%{http_code}' "https://api.census.gov/data/$y/acs/acs1?get=NAME,B25103_001E,B25077_001E&for=state:*")
-            echo "ACS $y HTTP $code"; head -c 300 data-raw/acs1_$y.json; echo
-            [ "$code" = 200 ] && break
-          done
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+          get() { code=$(curl -sSL -A "$UA" -o "data-raw/$1" -w '%{http_code}' "$2"); echo "$1 HTTP $code $(wc -c < data-raw/$1)" | tee -a data-raw/status.txt; }
+          get tf-income-2026.html "https://taxfoundation.org/data/all/state/state-income-tax-rates-2026/"
+          get tf-sales-midyear-2026.html "https://taxfoundation.org/data/all/state/2026-sales-tax-rates-midyear/"
+          get tf-facts-2026.pdf "https://taxfoundation.org/wp-content/uploads/2026/04/TaxFoundation_FactsFigures26-3-31.pdf"
+          get insurify-states.html "https://insurify.com/homeowners-insurance/states/"
           curl -fsSL "https://files.zillowstatic.com/research/public_csvs/zhvi/State_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv" -o data-raw/zhvi_state.csv || true
-          python3 - <<'PY'
-          import csv, json
-          rows=list(csv.reader(open('data-raw/zhvi_state.csv')))
-          h=rows[0]; last=h[-1]
-          out={r[2]: r[-1] for r in rows[1:]}
-          json.dump({'month': last, 'values': out}, open('data-raw/zhvi_state_latest.json','w'), indent=1)
-          PY
-          ls -la data-raw
       - name: Commit to data branch
         run: |
           git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
           git checkout -b data/state-costs
-          git add data-raw/acs1_*.json data-raw/zhvi_state_latest.json
+          git add -f data-raw
           git commit -m "State cost raw data $(date -u +%F)"
           git push -f origin data/state-costs
