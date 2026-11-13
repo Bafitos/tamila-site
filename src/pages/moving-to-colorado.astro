@@ -10,7 +10,7 @@ import data from '../data/state-costs.json';
 // Median sale prices: src/data/afford.json (Redfin), refreshed monthly by .github/workflows/redfin-monthly.yml; median household income: Census ACS (yearly).
 const taxChecked = 'November 2026';
 const states = data.states
-  .map((r: any) => { const extra = (afford as any).priceExtra?.[r.s]; const home = (afford.price as Record<string, number>)[r.s] ?? extra?.price ?? null; const priceLabel = (afford.price as Record<string, number>)[r.s] ? null : extra?.label ?? null; const income = (afford.income as Record<string, number>)[r.s] ?? null; return { ...r, home, priceLabel, income, ratio: home && income ? Math.round(home / income * 100) / 100 : null }; })
+  .map((r: any) => { const extra = (afford as any).priceExtra?.[r.s]; const home = (afford.price as Record<string, number>)[r.s] ?? extra?.price ?? null; const priceLabel = (afford.price as Record<string, number>)[r.s] ? null : extra?.label ?? null; const income = (afford.income as Record<string, number>)[r.s] ?? null; const homeHouse = ((afford as any).priceHouses as Record<string, number>)?.[r.s] ?? null; return { ...r, home, homeHouse, priceLabel, income, ratio: home && income ? Math.round(home / income * 100) / 100 : null }; })
   .sort((a: any, b: any) => a.s.localeCompare(b.s));
 const co = states.find((r: any) => r.s === 'Colorado');
 const others = states.filter((r: any) => r.s !== 'Colorado');
@@ -31,7 +31,7 @@ const tx = by('Texas'), fl = by('Florida');
 const popular = ['California', 'Texas', 'Florida', 'Illinois', 'New York', 'Arizona', 'Washington', 'Georgia'];
 
 const faq = [
-  ['Is Colorado a tax-friendly state to move to?', `It depends on where you are coming from. Colorado has a flat 4.40% income tax for 2026, and its property taxes are among the lowest in the country: about ${co.prop.toFixed(2)}% of home value in 2024, ranked ${ord(co.propRank)} of 50 (Tax Foundation). But homes cost more than in most states: the median Colorado home sold for about ${round1k(co.home)} in ${zMonth} (Redfin), ${ord(homeRank)} highest of the ${priced.length - 1} states and D.C. with Redfin data. With a median household income of ${money(co.income)} (Census, 2025), that is ${co.ratio.toFixed(2)} times income. Pick your state above to compare.`],
+  ['Is Colorado a tax-friendly state to move to?', `It depends on where you are coming from. Colorado has a flat 4.40% income tax for 2026, and its property taxes are among the lowest in the country: about ${co.prop.toFixed(2)}% of home value in 2024, ranked ${ord(co.propRank)} of 50 (Tax Foundation). But homes cost more than in most states: the median Colorado house (single-family) sold for about ${round1k(co.homeHouse)} in ${zMonth}, and the median for all home types including condos was about ${round1k(co.home)} (Redfin), the ${ord(homeRank)} highest of the ${priced.length - 1} states and D.C. with Redfin data. With a median household income of ${money(co.income)} (Census, 2025), the all-homes median is ${co.ratio.toFixed(2)} times income. Pick your state above to compare.`],
   ['Which states have no income tax on wages?', `${listAnd(noIncome)} have no individual income tax on wages for 2026 (Tax Foundation; Washington taxes only certain capital gains). These states collect more in other ways: Texas, for example, has one of the higher property tax rates (about ${tx.prop.toFixed(2)}% of home value).`],
   ['How much is homeowners insurance in Colorado?', `Insurify reports an average of ${money(co.ins)} a year in Colorado for a policy with $300,000 of dwelling coverage, compared with a national average of ${money(data.usIns)}. Your price depends on the home, the roof, the deductible and the location, so get a quote on the actual house before you write an offer.`],
   ['Are property taxes really low in Colorado?', `The statewide average is low: about ${co.prop.toFixed(2)}% of home value, compared with ${data.usProp.toFixed(2)}% for the U.S. Your actual bill depends on the county, the city, the school district and, in many newer neighborhoods, a metro district tax that can add a noticeable amount. Always check the tax bill of the exact home before you buy.`],
@@ -87,6 +87,8 @@ const schema = [
           <div class="you__f you__home" role="group" aria-label="Home price">
             <span class="you__l">Home price</span>
             <div class="seg" id="modeSeg"><button type="button" data-v="typical" class="on">Typical home in each state</button><button type="button" data-v="same">Same price everywhere</button></div>
+            <div class="seg seg--sm" id="typeSeg"><button type="button" data-v="houses" class="on">Houses only</button><button type="button" data-v="all">All homes (incl. condos)</button></div>
+            <input type="hidden" id="ptype" value="houses" />
             <span class="money" id="priceWrap" hidden><input id="price" type="number" inputmode="numeric" min="50000" step="5000" value="500000" aria-label="Home price in every state" /></span>
             <input type="hidden" id="mode" value="typical" />
           </div>
@@ -126,7 +128,7 @@ const schema = [
           <h2>How to Read These Numbers</h2>
           <dl class="dx__defs">
             <dt>Median home sale price</dt>
-            <dd>The price in the middle of all homes that actually sold in a month: half sold for more, half for less. It is a real sale price, not a list price or an online estimate. Source: Redfin, {zMonth}{la ? `; Louisiana from statewide MLS data, ${laMonth}` : ''}.</dd>
+            <dd>The price in the middle of all homes that actually sold in a month: half sold for more, half for less. It is a real sale price, not a list price or an online estimate. <b>Houses only</b> means single-family homes; <b>All homes</b> also includes condos and townhomes, which usually cost less, so that median is lower (Colorado, {zMonth}: {money(co.homeHouse)} for houses vs {money(co.home)} for all homes). Source: Redfin, {zMonth}{la ? `; Louisiana from statewide MLS data, ${laMonth}` : ''}.</dd>
             <dt>Median vs average: why your number may look different</dt>
             <dd>The <b>average</b> adds up every sale and divides by the number of sales, so a few very expensive homes pull it up. The <b>median</b> is the middle sale and is not moved by a handful of mansions, which is why economists and housing market reports use it to describe a typical home. {la && <>Example: in Louisiana in {laMonth}, the <b>median</b> sale price was <b>{money(la.price)}</b>, but the <b>average</b> was <b>{money(la.average)}</b>, about {Math.round((la.average / la.price - 1) * 100)}% higher. Both are correct; they answer different questions.</>} If you have seen a higher "average price" for your state, it is usually an average, a list price, or a different month or area.</dd>
             <dt>Median household income</dt>
@@ -149,7 +151,7 @@ const schema = [
             <li><b>Income tax is simplified.</b> You enter income before taxes. The tool subtracts each state's 2026 standard deduction and personal exemption (Tax Foundation) and applies the state's rates for married or single filers. Itemized deductions, dependents, income phase-outs, other credits and local income taxes that some cities and counties charge are not included.</li>
             <li><b>Mortgage payment is an estimate.</b> It assumes a 30-year fixed loan at this week's national average rate (Freddie Mac) unless you change it, the down payment you choose and, with less than 20% down, private mortgage insurance estimated at 0.5% of the loan a year. HOA dues, closing costs, FHA and VA fees are not included. Your rate and payment depend on your credit, income and loan program. This is not a loan offer or commitment to lend. Loans through Barrett Financial Group, LLC, NMLS #181106; Tamila Aspen, NMLS #2490507. Equal Housing Opportunity.</li>
             <li><b>Sales tax is an average.</b> It uses the average combined state and local rate. Many states tax groceries, medicine and services differently.</li>
-            <li><b>Home prices.</b> Median sale prices are from Redfin for {zMonth} (all home types, not seasonally adjusted). Redfin does not publish Louisiana, so Louisiana uses statewide MLS data{la ? ` for ${laMonth}` : ''}. Prices change every month and differ a lot between cities in the same state.</li>
+            <li><b>Home prices.</b> Median sale prices are from Redfin for {zMonth}, not seasonally adjusted: "Houses only" uses single-family homes, "All homes" includes condos, townhomes and small multi-family. Redfin does not publish Louisiana, so Louisiana uses statewide MLS data for all home types{la ? ` for ${laMonth}` : ''} in both views. Prices change every month and differ a lot between cities in the same state.</li>
             <li><b>Data changes.</b> Sources and dates are listed below. The page is updated as new data is published, but numbers can change at any time.</li>
           </ul>
         </div>
@@ -160,7 +162,7 @@ const schema = [
   <section class="section mist">
     <div class="wrap prose">
       <h2>What Changes When You Move to Colorado</h2>
-      <p><b>Low property tax, higher home prices.</b> Colorado homeowners paid about {co.prop.toFixed(2)}% of their home's value in property tax in 2024, ranked {ord(co.propRank)} of 50 states (the U.S. average was {data.usProp.toFixed(2)}%). The trade-off is price: the median Colorado home sold for about {round1k(co.home)} in {zMonth}, the {ord(homeRank)} highest of the {priced.length - 1} states and D.C. with Redfin data. With a median household income of {money(co.income)}, the typical home costs {co.ratio.toFixed(2)} times income, compared with an average of {usRatio.toFixed(2)} across them.</p>
+      <p><b>Low property tax, higher home prices.</b> Colorado homeowners paid about {co.prop.toFixed(2)}% of their home's value in property tax in 2024, ranked {ord(co.propRank)} of 50 states (the U.S. average was {data.usProp.toFixed(2)}%). The trade-off is price: the median Colorado house sold for about {round1k(co.homeHouse)} in {zMonth} ({round1k(co.home)} for all home types including condos), and all home types together rank {ord(homeRank)} highest of the {priced.length - 1} states and D.C. with Redfin data. With a median household income of {money(co.income)}, the typical home costs {co.ratio.toFixed(2)} times income, compared with an average of {usRatio.toFixed(2)} across them.</p>
       <p><b>A flat income tax.</b> Colorado taxes income at one rate, 4.40% for 2026. From a state with a high top rate, most households pay less; from one of the {noIncome.length} states with no tax on wages, you will start paying it, so compare property tax and insurance too.</p>
       <p><b>"No income tax" is not the whole story.</b> Texas has no income tax but a property tax rate of about {tx.prop.toFixed(2)}% of home value. Florida's average home insurance is {money(fl.ins)} a year for $300,000 of coverage, compared with {money(co.ins)} in Colorado.</p>
       <p><b>Check the exact home.</b> Many newer Colorado neighborhoods are in a metro district that adds to the tax bill, and many have HOA dues. Insurance depends on the roof and the deductible. Tamila checks these for every home before you write an offer.</p>
@@ -242,11 +244,11 @@ const schema = [
     const want = params.get('from').split(',').map((x) => states.find((r) => slug(r.s) === x)).filter((r) => r && r.s !== 'Colorado').map((r) => r.s);
     if (want.length) picked = [...new Set(want)].slice(0, MAX);
   }
-  const segs = { filing: 'filingSeg', dp: 'dpSeg', mode: 'modeSeg' };
-  const setSeg = (k, v) => { $(k).value = v; $(segs[k]).querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); if (k === 'mode') $('priceWrap').hidden = v !== 'same'; };
+  const segs = { filing: 'filingSeg', dp: 'dpSeg', mode: 'modeSeg', ptype: 'typeSeg' };
+  const setSeg = (k, v) => { $(k).value = v; $(segs[k]).querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); if (k === 'mode') { $('priceWrap').hidden = v !== 'same'; $('typeSeg').hidden = v === 'same'; } };
   let rateTouched = false;
   ['income', 'price', 'spend', 'rate'].forEach((k) => { if (params.get(k)) { $(k).value = params.get(k); if (k === 'rate') rateTouched = true; } });
-  ['filing', 'dp', 'mode'].forEach((k) => { if (params.get(k)) setSeg(k, params.get(k)); });
+  ['filing', 'dp', 'mode', 'ptype'].forEach((k) => { if (params.get(k)) setSeg(k, params.get(k)); });
   Object.entries(segs).forEach(([k, id]) => $(id).querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { setSeg(k, b.dataset.v); run(); })));
 
   function calc(r, o) {
@@ -254,14 +256,16 @@ const schema = [
     const taxable = Math.max(0, o.inc - (r.sd?.[f] || 0) - (r.ex?.[f] || 0));
     const it = Math.max(0, tax(taxable, f ? r.married : r.single) - (r.cr?.[f] || 0));
     const st = o.spend * r.sales / 100;
-    const price = o.mode === 'same' ? o.price : r.home;
-    if (!price) return { it, st, price: null, total: null };
+    const typical = o.ptype === 'houses' ? (r.homeHouse ?? r.home) : r.home;
+    const price = o.mode === 'same' ? o.price : typical;
+    if (!price) return { it, st, price: null, ratio: null, total: null };
     const loan = price * (1 - o.dp / 100), i = o.rate / 100 / 12, n = 360;
     const pi = i ? loan * i / (1 - Math.pow(1 + i, -n)) : loan / n;
     const pmi = o.dp < 20 ? loan * 0.005 / 12 : 0;
     const ptm = price * r.prop / 100 / 12, insm = r.ins / 12;
     const month = pi + pmi + ptm + insm;
-    return { it, st, price, pi, pmi, ptm, insm, month, share: o.inc ? month * 12 / o.inc * 100 : 0, down: price * o.dp / 100, total: month * 12 + it + st };
+    const ratio = typical && r.income ? typical / r.income : null;
+    return { it, st, price, ratio, pi, pmi, ptm, insm, month, share: o.inc ? month * 12 / o.inc * 100 : 0, down: price * o.dp / 100, total: month * 12 + it + st };
   }
   function addState(n) {
     if (!n || n === 'Colorado') return;
@@ -270,7 +274,7 @@ const schema = [
     run();
   }
   function run() {
-    const o = { inc: +$('income').value || 0, filing: $('filing').value, dp: +$('dp').value, mode: $('mode').value, price: +$('price').value || 0, spend: +$('spend').value || 0, rate: +$('rate').value || 0 };
+    const o = { ptype: $('ptype').value, inc: +$('income').value || 0, filing: $('filing').value, dp: +$('dp').value, mode: $('mode').value, price: +$('price').value || 0, spend: +$('spend').value || 0, rate: +$('rate').value || 0 };
     const cols = [...picked.map(find), CO];
     const res = cols.map((r) => calc(r, o));
     const co = res[res.length - 1];
@@ -291,7 +295,7 @@ const schema = [
       return `<td><b class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${Math.abs(d) < 100 ? 'about the same' : (d > 0 ? '+' : '−') + fmt(Math.abs(d)) + '/yr'}</b></td>`;
     }).join('') + '</tr>';
     $('cmpt').innerHTML = '<thead>' + head + '</thead><tbody>'
-      + row('Home price', (x) => (x.price ? fmt(x.price) : 'No data'), (x, r) => (o.mode === 'same' ? 'your price' : 'median sale, ' + (r.priceLabel || 'Redfin ' + MONTH)))
+      + row('Home price', (x) => (x.price ? fmt(x.price) : 'No data'), (x, r) => (o.mode === 'same' ? 'your price' : (o.ptype === 'houses' && r.homeHouse ? 'median house, ' : o.ptype === 'houses' ? 'median, all homes, ' : 'median, all homes, ') + (r.priceLabel || 'Redfin ' + MONTH)))
       + row('Monthly home payment', (x) => (x.price ? fmt(x.month) + '/mo' : dash), (x) => (x.price ? `loan ${fmt(x.pi + x.pmi)} · tax ${fmt(x.ptm)} · insurance ${fmt(x.insm)}` : ''), 'big')
       + row('Share of your income', (x) => (x.price ? Math.round(x.share) + '%' : dash), () => 'home payment ÷ income')
       + row('Down payment', (x) => (x.price ? fmt(x.down) : dash), () => o.dp + '% + closing costs')
@@ -300,20 +304,20 @@ const schema = [
       + `<tr class="tot"><th scope="row">Total per year</th>` + cols.map((r, i) => `<td class="${cls(r)}"><b>${res[i].total != null ? fmt(res[i].total) : dash}</b><small>home payments + taxes</small></td>`).join('') + '</tr>'
       + diffRow
       + row('Median household income', (x, r) => (r.income ? fmt(r.income) : dash), () => 'Census, 2025')
-      + row('Affordability ratio', (x, r) => (r.ratio ? r.ratio.toFixed(2) + '×' : dash), () => 'median price ÷ median income')
+      + row('Affordability ratio', (x) => (x.ratio ? x.ratio.toFixed(2) + '×' : dash), () => (o.ptype === 'houses' ? 'median house' : 'median home') + ' ÷ median income')
       + '</tbody>';
     const lines = picked.map((n, i) => {
       const x = res[i];
       if (x.total == null || co.total == null) return `From <b>${label(n)}</b>: no published median sale price, so only taxes are compared.`;
       const dm = co.month - x.month, d = co.total - x.total;
-      const homeTxt = o.mode === 'same' ? 'the same home' : 'the typical home';
+      const homeTxt = o.mode === 'same' ? 'the same home' : o.ptype === 'houses' ? 'the typical house' : 'the typical home';
       return `From <b>${label(n)}</b>: ${homeTxt} costs <b class="${dm > 0 ? 'up' : 'down'}">${fmt(Math.abs(dm))} ${dm > 0 ? 'more' : 'less'} a month</b> in Colorado; all in, about <b class="${d > 0 ? 'up' : 'down'}">${fmt(Math.abs(d))} ${d > 0 ? 'more' : 'less'} a year</b>.`;
     });
     $('headline').innerHTML = picked.length ? '<ul class="hl">' + lines.map((l) => `<li>${l}</li>`).join('') + '</ul>' : '<p>Add a state above to compare it with Colorado.</p>';
     $('notes').innerHTML = co.price ? `<li>In Colorado, a ${fmt(co.price)} home with ${o.dp}% down would take about <b>${Math.round(co.share)}%</b> of a ${fmt(o.inc)} income. Want to know what you would qualify for? Tamila can pre-approve you before you move.</li>` : '';
     const shown = [...picked, 'Colorado'].filter((n) => DISC[n]);
     $('discStates').innerHTML = shown.map((n) => `<li><b>${label(n)} insurance:</b> ${DISC[n]}</li>`).join('');
-    $('assume').textContent = `Based on ${fmt(o.inc)} household income before taxes (${o.filing === 'married' ? 'married' : 'single'}), ${o.dp}% down, a 30-year fixed loan at ${o.rate.toFixed(2)}%${o.dp < 20 ? ', estimated mortgage insurance' : ''}, ${o.mode === 'same' ? 'the same ' + fmt(o.price) + ' home in every state' : 'the median home sale price in each state'} and ${fmt(o.spend)} a year of taxed purchases.`;
+    $('assume').textContent = `Based on ${fmt(o.inc)} household income before taxes (${o.filing === 'married' ? 'married' : 'single'}), ${o.dp}% down, a 30-year fixed loan at ${o.rate.toFixed(2)}%${o.dp < 20 ? ', estimated mortgage insurance' : ''}, ${o.mode === 'same' ? 'the same ' + fmt(o.price) + ' home in every state' : (o.ptype === 'houses' ? 'the median house (single-family) sale price in each state' : 'the median sale price of all home types in each state')} and ${fmt(o.spend)} a year of taxed purchases.`;
   }
   $('mv').addEventListener('input', (e) => { if (e.target.id === 'rate') rateTouched = true; if (e.target.id !== 'add') run(); });
   $('add').addEventListener('change', () => addState($('add').value));
@@ -327,7 +331,7 @@ const schema = [
     }
   }).catch(() => { $('rateHint').textContent = 'Average rate estimate. Your rate depends on credit and loan.'; });
   $('share').addEventListener('click', () => {
-    const p = new URLSearchParams({ from: picked.map(slug).join(','), income: $('income').value, filing: $('filing').value, dp: $('dp').value, mode: $('mode').value });
+    const p = new URLSearchParams({ from: picked.map(slug).join(','), income: $('income').value, filing: $('filing').value, dp: $('dp').value, mode: $('mode').value, ptype: $('ptype').value });
     if ($('mode').value === 'same') p.set('price', $('price').value);
     const url = location.origin + location.pathname + '?' + p.toString();
     navigator.clipboard?.writeText(url).then(() => { $('share').textContent = 'Link copied'; setTimeout(() => ($('share').textContent = 'Copy link to this comparison'), 2000); });
@@ -361,7 +365,9 @@ const schema = [
   .you__l { display: block; font-weight: 700; font-size: .95rem; margin-bottom: 6px; }
   .you__home { grid-column: 1 / -1; }
   .you__home .money { margin-top: 10px; max-width: 320px; }
-  .you__home .money[hidden] { display: none; }
+  .you__home .money[hidden], .seg[hidden] { display: none; }
+  .seg--sm { margin-top: 10px; }
+  .seg--sm button { font-size: .9rem; padding: 8px 14px; }
   .seg { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--green); border-radius: 12px; overflow: hidden; }
   .seg button { border: 0; background: var(--white); color: var(--green); font: 600 1rem var(--font); padding: 10px 16px; cursor: pointer; border-right: 1px solid var(--green-soft); }
   .seg button:last-child { border-right: 0; }

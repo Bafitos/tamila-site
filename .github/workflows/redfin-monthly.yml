@@ -19,6 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Download Redfin states (monthly)
         run: curl -fsSL "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/housing_market/monthly/all_states.csv" -o /tmp/states.csv
+      - name: Download Redfin states by property type
+        run: curl -fsSL "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/property_types/monthly/all_states.csv" -o /tmp/types.csv
       - name: Update src/data/afford.json
         run: |
           python3 - <<'PY'
@@ -40,6 +42,11 @@ jobs:
           a['priceMonth'] = month
           a['priceUpdated'] = rows[0]['LAST UPDATED']
           a['price'] = dict(sorted(price.items()))
+          sf = [r for r in csv.DictReader(open('/tmp/types.csv')) if r['REGION TYPE'] == 'State' and r['PROPERTY TYPE'] == 'Single Family Residential' and r['IS SEASONALLY ADJUSTED'] == 'false']
+          sm = max(r['PERIOD BEGIN'] for r in sf)
+          houses = {('District of Columbia' if r['REGION NAME'] == 'Columbia' else r['REGION NAME']): int(float(r[k])) for r in sf if r['PERIOD BEGIN'] == sm and r[k] not in ('NA', '')}
+          if len(houses) >= 45 and 'Colorado' in houses:
+              a['priceHouses'] = dict(sorted(houses.items())); a['priceHousesMonth'] = sm
           json.dump(a, open('src/data/afford.json', 'w'), indent=1)
           print('Redfin month', month, 'Colorado', price['Colorado'])
           PY
