@@ -15,13 +15,20 @@ jobs:
         run: |
           mkdir -p data-raw
           curl -sSL -o /tmp/state.tsv.gz -w 'redfin HTTP %{http_code}\n' "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/state_market_tracker.tsv000.gz" | tee data-raw/afford-status.txt
-          python3 - <<'PY'
-          import csv, gzip, json, collections
+          ls -la /tmp/state.tsv.gz; file /tmp/state.tsv.gz
+          echo "::notice::$(file /tmp/state.tsv.gz) size $(stat -c %s /tmp/state.tsv.gz)"
+          (gzip -dc /tmp/state.tsv.gz | head -2 | cut -c1-600 | tr '\t' '|' | while read l; do echo "::notice::$l"; done) || true
+          python3 - <<'PY' || echo "::error::python failed"
+          import csv, gzip, json, collections, sys
+          csv.field_size_limit(sys.maxsize)
           rows = csv.DictReader(gzip.open('/tmp/state.tsv.gz', 'rt'), delimiter='\t')
           keep = collections.defaultdict(dict)
           cols = None
           for r in rows:
-              if cols is None: cols = list(r.keys())
+              if cols is None:
+                  cols = list(r.keys())
+                  r = {k.strip('"').upper(): v.strip('"') for k, v in r.items()}
+              r = {k.strip('"').upper(): (v or '').strip('"') for k, v in r.items()}
               if r.get('PROPERTY_TYPE') != 'All Residential' or str(r.get('IS_SEASONALLY_ADJUSTED')).lower() not in ('false', 'f'): continue
               keep[r['STATE']][r['PERIOD_BEGIN']] = {'median_sale_price': r['MEDIAN_SALE_PRICE'], 'period_end': r['PERIOD_END'], 'homes_sold': r.get('HOMES_SOLD'), 'last_updated': r.get('LAST_UPDATED')}
           out = {'columns': cols, 'states': {s: dict(sorted(v.items())[-14:]) for s, v in keep.items()}}
