@@ -3,6 +3,7 @@ import { site } from '../data/site.js';
 const links = [
   ['/sell-for-1-percent', 'Sell for 1%'],
   ['/buy-a-home', 'Buy'],
+  ['/moving-to-colorado', 'Moving to CO'],
   ['/mortgage', 'Mortgage'],
   ['/va-loans-pcs', 'VA & Military'],
   ['/areas', 'Areas'],
@@ -35,14 +36,14 @@ const links = [
 <style>
   .hdr { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-bottom: 1px solid var(--green-soft); }
   .hdr__in { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; }
-  .brand { display: flex; flex-direction: column; text-decoration: none; line-height: 1.15; }
+  .brand { display: flex; flex-direction: column; text-decoration: none; line-height: 1.15; flex-shrink: 0; }
   .brand__name { font-size: 1.45rem; font-weight: 400; letter-spacing: .01em; }
   .brand__sub { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--green); }
-  .hdr__nav { display: flex; align-items: center; gap: 4px; }
+  .hdr__nav { display: flex; align-items: center; gap: 0; }
   .hdr__nav a { white-space: nowrap; }
-  .hdr__nav a:not(.pill) { text-decoration: none; padding: 8px 10px; font-size: .95rem; font-weight: 400; border-radius: 6px; }
+  .hdr__nav a:not(.pill) { text-decoration: none; padding: 8px 8px; font-size: .95rem; font-weight: 400; border-radius: 6px; }
   .hdr__nav a:not(.pill):hover { background: var(--green-mist); }
-  .hdr__call { min-height: 44px; padding: 8px 18px; margin-left: 8px; }
+  .hdr__call { min-height: 44px; padding: 8px 16px; margin-left: 6px; }
   .menu { display: none; }
   .menu summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; align-content: center; gap: 7px; padding: 8px 6px; }
   .menu summary::-webkit-details-marker { display: none; }
