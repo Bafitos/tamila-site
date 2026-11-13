@@ -16,6 +16,9 @@ jobs:
           mkdir -p data-raw
           code=$(curl -sSL -o data-raw/redfin_all_states.csv -w '%{http_code}' "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/housing_market/monthly/all_states.csv")
           echo "::notice::redfin HTTP $code bytes $(stat -c %s data-raw/redfin_all_states.csv)"
+          code=$(curl -sSL -o data-raw/redfin_types_states.csv -w '%{http_code}' "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/property_types/monthly/all_states.csv")
+          echo "::notice::redfin types HTTP $code bytes $(stat -c %s data-raw/redfin_types_states.csv)"
+          head -1 data-raw/redfin_types_states.csv | cut -c1-500 | sed 's/^/::notice::TYPES HEADER /'
           head -1 data-raw/redfin_all_states.csv | cut -c1-900 | sed 's/^/::notice::HEADER /'
           head -3 data-raw/redfin_all_states.csv | tail -2 | cut -c1-400 | sed 's/^/::notice::ROW /'
           for y in 2025 2024; do
@@ -36,7 +39,7 @@ jobs:
           done
       - name: Commit to data branch
         run: |
-          mkdir -p /tmp/keep && cp data-raw/redfin_all_states.csv data-raw/acsdt1y*-b19013.dat data-raw/la-* /tmp/keep/ 2>/dev/null || true && rm -rf data-raw
+          mkdir -p /tmp/keep && cp data-raw/redfin_*.csv data-raw/acsdt1y*-b19013.dat data-raw/la-* /tmp/keep/ 2>/dev/null || true && rm -rf data-raw
           git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
           git fetch --depth 1 origin data/state-costs && git checkout -B data/state-costs FETCH_HEAD
           mkdir -p data-raw && cp /tmp/keep/* data-raw/
