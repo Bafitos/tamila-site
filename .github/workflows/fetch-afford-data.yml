@@ -19,14 +19,15 @@ jobs:
           head -1 data-raw/redfin_all_states.csv | cut -c1-900 | sed 's/^/::notice::HEADER /'
           head -3 data-raw/redfin_all_states.csv | tail -2 | cut -c1-400 | sed 's/^/::notice::ROW /'
           for y in 2025 2024; do
-            curl -sS -I "https://api.census.gov/data/$y/acs/acs1?get=NAME,B19013_001E&for=state:*" | grep -i "^location\|^HTTP" | tr '\r\n' '  ' | sed 's/^/::notice::ACS '$y' headers /'; echo
-            code=$(curl -sSL -A "Mozilla/5.0" -o data-raw/acs1_income_$y.json -w '%{http_code} %{url_effective}' "https://api.census.gov/data/$y/acs/acs1?get=NAME,B19013_001E,B19013_001M&for=state:*")
-            echo "::notice::ACS $y follow $code bytes $(stat -c %s data-raw/acs1_income_$y.json) $(head -c 200 data-raw/acs1_income_$y.json | tr '\n' ' ')"
+            u="https://www2.census.gov/programs-surveys/acs/summary_file/$y/table-based-SF/data/1YRData/acsdt1y$y-b19013.dat"
+            code=$(curl -sSL -A "Mozilla/5.0" -o data-raw/acsdt1y$y-b19013.dat -w '%{http_code}' "$u")
+            echo "::notice::ACS SF $y HTTP $code bytes $(stat -c %s data-raw/acsdt1y$y-b19013.dat) $(head -c 200 data-raw/acsdt1y$y-b19013.dat | tr '\n' ' ')"
+            grep -E "^0400000US08\|" data-raw/acsdt1y$y-b19013.dat | head -1 | sed 's/^/::notice::ACS SF '$y' Colorado /'
           done
       - name: Commit to data branch
         run: |
           git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
           git fetch origin data/state-costs && git checkout -B data/state-costs FETCH_HEAD
-          git add -f data-raw/redfin_all_states.csv data-raw/acs1_income_*.json
+          git add -f data-raw/redfin_all_states.csv data-raw/acsdt1y*-b19013.dat
           git commit -m "Affordability raw data $(date -u +%F)" || true
           git push -f origin data/state-costs
