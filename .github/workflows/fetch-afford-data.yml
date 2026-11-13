@@ -1,0 +1,42 @@
+name: Fetch affordability data (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Redfin state tracker and Census income
+        run: |
+          mkdir -p data-raw
+          curl -sSL -o /tmp/state.tsv.gz -w 'redfin HTTP %{http_code}\n' "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/state_market_tracker.tsv000.gz" | tee data-raw/afford-status.txt
+          python3 - <<'PY'
+          import csv, gzip, json, collections
+          rows = csv.DictReader(gzip.open('/tmp/state.tsv.gz', 'rt'), delimiter='\t')
+          keep = collections.defaultdict(dict)
+          cols = None
+          for r in rows:
+              if cols is None: cols = list(r.keys())
+              if r.get('PROPERTY_TYPE') != 'All Residential' or str(r.get('IS_SEASONALLY_ADJUSTED')).lower() not in ('false', 'f'): continue
+              keep[r['STATE']][r['PERIOD_BEGIN']] = {'median_sale_price': r['MEDIAN_SALE_PRICE'], 'period_end': r['PERIOD_END'], 'homes_sold': r.get('HOMES_SOLD'), 'last_updated': r.get('LAST_UPDATED')}
+          out = {'columns': cols, 'states': {s: dict(sorted(v.items())[-14:]) for s, v in keep.items()}}
+          json.dump(out, open('data-raw/redfin_state_recent.json', 'w'), indent=1)
+          print(len(out['states']), 'states')
+          PY
+          for y in 2025 2024; do
+            code=$(curl -sS -o data-raw/acs1_income_$y.json -w '%{http_code}' "https://api.census.gov/data/$y/acs/acs1?get=NAME,B19013_001E,B19013_001M&for=state:*")
+            echo "ACS $y HTTP $code bytes $(wc -c < data-raw/acs1_income_$y.json)" | tee -a data-raw/afford-status.txt
+            head -c 300 data-raw/acs1_income_$y.json >> data-raw/afford-status.txt; echo >> data-raw/afford-status.txt
+          done
+      - name: Commit to data branch
+        run: |
+          git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
+          git fetch origin data/state-costs && git checkout -B data/state-costs origin/data/state-costs || git checkout -b data/state-costs
+          git add -f data-raw/redfin_state_recent.json data-raw/acs1_income_*.json data-raw/afford-status.txt
+          git commit -m "Affordability raw data $(date -u +%F)"
+          git push -f origin data/state-costs
