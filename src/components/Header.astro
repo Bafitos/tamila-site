@@ -1,10 +1,24 @@
 ---
 import { site } from '../data/site.js';
-const links = [
-  ['/sell-for-1-percent', 'Sell for 1%'],
-  ['/buy-a-home', 'Buy'],
+const links: [string, string, [string, string][]?][] = [
+  ['/sell-for-1-percent', 'Sell for 1%', [
+    ['/sell-for-1-percent', 'Sell for 1%'],
+    ['/cost-to-sell-a-house-in-colorado', 'Cost to sell calculator'],
+    ['/selling-house-during-divorce', 'Selling during a divorce'],
+    ['/short-sale-foreclosure', 'Short sale & foreclosure'],
+  ]],
+  ['/buy-a-home', 'Buy', [
+    ['/buy-a-home', 'Buying a home'],
+    ['/moving-to-colorado', 'Moving to Colorado'],
+    ['/areas', 'Area guides'],
+    ['/blog', 'Neighborhood comparisons'],
+  ]],
   ['/moving-to-colorado', 'Moving to CO'],
-  ['/mortgage', 'Mortgage'],
+  ['/mortgage', 'Mortgage', [
+    ['/mortgage', 'Mortgage & credit'],
+    ['/mortgage-calculator', 'Payment calculator'],
+    ['/va-loans-pcs', 'VA loans & PCS moves'],
+  ]],
   ['/va-loans-pcs', 'VA & Military'],
   ['/areas', 'Areas'],
   ['/blog', 'Blog'],
@@ -20,13 +34,20 @@ const links = [
       <span class="brand__sub">Denver Real Estate &amp; Mortgage</span>
     </a>
     <nav class="hdr__nav" aria-label="Main">
-      {links.map(([href, t]) => <a href={href}>{t}</a>)}
+      {links.map(([href, t, sub]) => sub ? (
+        <div class="dd">
+          <a href={href} class="dd__top" aria-haspopup="true">{t}<svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+          <div class="dd__panel">{sub.map(([h, x]) => <a href={h}>{x}</a>)}</div>
+        </div>
+      ) : <a href={href}>{t}</a>)}
       <a class="pill hdr__call" href={`tel:${site.phoneHref}`}>{site.phone}</a>
     </nav>
     <details class="menu">
       <summary aria-label="Open menu"><span></span><span></span><span></span></summary>
       <nav class="menu__panel" aria-label="Mobile">
-        {links.map(([href, t]) => <a href={href}>{t}</a>)}
+        {links.filter(([href, t, sub]) => sub || !links.some(([, , s2]) => s2?.some(([h]) => h === href))).map(([href, t, sub]) => sub ? (
+          <div class="mgrp"><p class="mgrp__h">{t === 'Sell for 1%' ? 'Sell' : t}</p>{sub.map(([h, x]) => <a href={h}>{x}</a>)}</div>
+        ) : <a href={href}>{t}</a>)}
         <a class="pill" href={`tel:${site.phoneHref}`}>Call {site.phone}</a>
       </nav>
     </details>
@@ -43,13 +64,23 @@ const links = [
   .hdr__nav a { white-space: nowrap; }
   .hdr__nav a:not(.pill) { text-decoration: none; padding: 8px 8px; font-size: .95rem; font-weight: 400; border-radius: 6px; }
   .hdr__nav a:not(.pill):hover { background: var(--green-mist); }
+  .dd { position: relative; }
+  .dd__top { display: inline-flex; align-items: center; gap: 4px; }
+  .dd__top svg { width: 10px; height: 6px; opacity: .7; }
+  .dd__panel { position: absolute; top: 100%; left: 0; min-width: 240px; background: var(--white); border: 1px solid var(--green-soft); border-radius: 12px; box-shadow: 0 16px 30px rgba(0,0,0,.08); padding: 8px; display: none; flex-direction: column; z-index: 20; }
+  .dd:hover .dd__panel, .dd:focus-within .dd__panel { display: flex; }
+  .dd__panel a { padding: 10px 12px; text-decoration: none; border-radius: 8px; font-size: .95rem; }
+  .dd__panel a:hover { background: var(--green-mist); }
+  .mgrp { display: grid; padding: 8px 0 4px; border-bottom: 1px solid var(--green-soft); }
+  .mgrp__h { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; opacity: .7; margin: 4px 4px 0; }
+  .menu__panel .mgrp a { border-bottom: 0; padding: 10px 4px; }
   .hdr__call { min-height: 44px; padding: 8px 16px; margin-left: 6px; }
   .menu { display: none; }
   .menu summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; align-content: center; gap: 7px; padding: 8px 6px; }
   .menu summary::-webkit-details-marker { display: none; }
   .menu summary span { display: block; height: 3px; background: var(--green); border-radius: 2px; }
-  .menu__panel { position: absolute; left: 0; right: 0; top: 72px; background: var(--white); border-bottom: 1px solid var(--green-soft); padding: 12px 20px 20px; display: grid; gap: 4px; box-shadow: 0 16px 30px rgba(0,0,0,.08); }
+  .menu__panel { position: absolute; left: 0; right: 0; top: 72px; max-height: calc(100vh - 72px); overflow-y: auto; background: var(--white); border-bottom: 1px solid var(--green-soft); padding: 12px 20px 20px; display: grid; gap: 4px; box-shadow: 0 16px 30px rgba(0,0,0,.08); }
   .menu__panel a:not(.pill) { padding: 12px 4px; text-decoration: none; font-size: 1.1rem; border-bottom: 1px solid var(--green-soft); }
   .menu__panel .pill { margin-top: 12px; }
-  @media (max-width: 1200px) { .hdr__nav { display: none; } .menu { display: block; } }
+  @media (max-width: 1300px) { .hdr__nav { display: none; } .menu { display: block; } }
 </style>
