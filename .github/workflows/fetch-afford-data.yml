@@ -19,8 +19,9 @@ jobs:
           head -1 data-raw/redfin_all_states.csv | cut -c1-900 | sed 's/^/::notice::HEADER /'
           head -3 data-raw/redfin_all_states.csv | tail -2 | cut -c1-400 | sed 's/^/::notice::ROW /'
           for y in 2025 2024; do
-            code=$(curl -sS -o data-raw/acs1_income_$y.json -w '%{http_code}' "https://api.census.gov/data/$y/acs/acs1?get=NAME,B19013_001E,B19013_001M&for=state:*")
-            echo "::notice::ACS $y HTTP $code bytes $(stat -c %s data-raw/acs1_income_$y.json) $(head -c 160 data-raw/acs1_income_$y.json | tr '\n' ' ')"
+            curl -sS -I "https://api.census.gov/data/$y/acs/acs1?get=NAME,B19013_001E&for=state:*" | grep -i "^location\|^HTTP" | tr '\r\n' '  ' | sed 's/^/::notice::ACS '$y' headers /'; echo
+            code=$(curl -sSL -A "Mozilla/5.0" -o data-raw/acs1_income_$y.json -w '%{http_code} %{url_effective}' "https://api.census.gov/data/$y/acs/acs1?get=NAME,B19013_001E,B19013_001M&for=state:*")
+            echo "::notice::ACS $y follow $code bytes $(stat -c %s data-raw/acs1_income_$y.json) $(head -c 200 data-raw/acs1_income_$y.json | tr '\n' ' ')"
           done
       - name: Commit to data branch
         run: |
