@@ -24,12 +24,22 @@ jobs:
             echo "::notice::ACS SF $y HTTP $code bytes $(stat -c %s data-raw/acsdt1y$y-b19013.dat) $(head -c 200 data-raw/acsdt1y$y-b19013.dat | tr '\n' ' ')"
             grep -E "^0400000US08\|" data-raw/acsdt1y$y-b19013.dat | head -1 | sed 's/^/::notice::ACS SF '$y' Colorado /'
           done
+      - name: Louisiana REALTORS monthly report (ShowingTime, statewide)
+        run: |
+          sudo apt-get install -y poppler-utils >/dev/null 2>&1 || true
+          for m in 2026-11 2026-10 2026-09; do
+            code=$(curl -sSL -A "Mozilla/5.0" -o data-raw/la-$m.pdf -w '%{http_code}' "https://louisiana.stats.showingtime.com/docs/mmi/$m/x/LouisianaREALTORS%C2%AE?src=page")
+            echo "::notice::LA $m HTTP $code bytes $(stat -c %s data-raw/la-$m.pdf) $(file -b data-raw/la-$m.pdf | cut -c1-40)"
+            if pdftotext -layout data-raw/la-$m.pdf data-raw/la-$m.txt 2>/dev/null; then
+              grep -m3 -i "median sales price\|current as of" data-raw/la-$m.txt | tr -s ' ' | sed "s/^/::notice::LA $m /"
+            fi
+          done
       - name: Commit to data branch
         run: |
-          mkdir -p /tmp/keep && cp data-raw/redfin_all_states.csv data-raw/acsdt1y*-b19013.dat /tmp/keep/ && rm -rf data-raw
+          mkdir -p /tmp/keep && cp data-raw/redfin_all_states.csv data-raw/acsdt1y*-b19013.dat data-raw/la-* /tmp/keep/ 2>/dev/null || true && rm -rf data-raw
           git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
           git fetch --depth 1 origin data/state-costs && git checkout -B data/state-costs FETCH_HEAD
           mkdir -p data-raw && cp /tmp/keep/* data-raw/
-          git add -f data-raw/redfin_all_states.csv data-raw/acsdt1y*-b19013.dat
+          git add -f data-raw/
           git commit -m "Affordability raw data $(date -u +%F)" || true
           git push -f origin data/state-costs
