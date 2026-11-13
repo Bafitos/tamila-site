@@ -10,13 +10,15 @@ import data from '../data/state-costs.json';
 // Median sale prices: src/data/afford.json (Redfin), refreshed monthly by .github/workflows/redfin-monthly.yml; median household income: Census ACS (yearly).
 const taxChecked = 'November 2026';
 const states = data.states
-  .map((r: any) => { const home = (afford.price as Record<string, number>)[r.s] ?? null; const income = (afford.income as Record<string, number>)[r.s] ?? null; return { ...r, home, income, ratio: home && income ? Math.round(home / income * 100) / 100 : null }; })
+  .map((r: any) => { const extra = (afford as any).priceExtra?.[r.s]; const home = (afford.price as Record<string, number>)[r.s] ?? extra?.price ?? null; const priceLabel = (afford.price as Record<string, number>)[r.s] ? null : extra?.label ?? null; const income = (afford.income as Record<string, number>)[r.s] ?? null; return { ...r, home, priceLabel, income, ratio: home && income ? Math.round(home / income * 100) / 100 : null }; })
   .sort((a: any, b: any) => a.s.localeCompare(b.s));
 const co = states.find((r: any) => r.s === 'Colorado');
 const others = states.filter((r: any) => r.s !== 'Colorado');
 const by = (n: string) => states.find((r: any) => r.s === n);
 const zMonth = new Date(afford.priceMonth + 'T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+const la = (afford as any).priceExtra?.Louisiana;
+const laMonth = la ? new Date(la.month + 'T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }) : '';
 const ord = (n: number) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
 const listAnd = (a: string[]) => a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 const round1k = (n: number) => '$' + (Math.round(n / 1000) * 1000).toLocaleString('en-US');
@@ -99,18 +101,37 @@ const schema = [
   </section>
 
   <section class="section disclosures" id="disclosures">
-    <div class="wrap prose">
-      <h2>Important Disclosures</h2>
-      <ul>
-        <li><b>Estimates only.</b> This tool compares state averages to help you plan. It is not tax, insurance, legal or financial advice, and it does not replace quotes and advice for a specific home. Tamila Aspen is a Colorado Real Estate Agent and a Mortgage Loan Officer in Colorado and Florida, not a tax advisor or insurance agent.</li>
-        <li><b>Home insurance varies the most.</b> The numbers are statewide averages from Insurify for a policy with $300,000 of dwelling coverage. Your premium can be several times higher or lower depending on wildfire, hurricane, hail and flood risk where the home is, the age of the home and roof, the coverage and deductible you choose, and your claims history. In some high-risk areas, regular coverage can be hard to find. Always get insurance quotes for the exact address before you make an offer.</li>
-        <li><b>Flood is not included.</b> Most homeowners insurance does not cover flood damage (FEMA). Flood insurance is a separate policy and is not part of these totals.</li>
-        <li><b>Property tax depends on the address.</b> Rates are statewide averages for owner-occupied homes in 2024 (Tax Foundation). County, city, school district and special district taxes, assessments and exemptions change the real bill, and the same home price is used for every state.</li>
-        <li><b>Income tax is simplified.</b> State rates and brackets for 2026 are applied to the taxable income you enter. Deductions, credits and local income taxes that some cities and counties charge are not included.</li>
-        <li><b>Sales tax is an average.</b> It uses the average combined state and local rate. Many states tax groceries, medicine and services differently.</li>
-        <li><b>Home prices and affordability.</b> Median sale price is from Redfin for {zMonth} (all home types, not seasonally adjusted); Redfin does not publish Louisiana, so it shows no price or ratio. Median household income is from the Census Bureau's 2025 American Community Survey. The affordability ratio is price divided by income: a rough guide, not a loan qualification.</li>
-        <li><b>Data changes.</b> Sources and dates are listed below. The page is updated as new data is published, but numbers can change at any time.</li>
-      </ul>
+    <div class="wrap">
+      <div class="dx">
+        <div class="dx__col">
+          <h2>How to Read These Numbers</h2>
+          <dl class="dx__defs">
+            <dt>Median home sale price</dt>
+            <dd>The price in the middle of all homes that actually sold in a month: half sold for more, half for less. It is a real sale price, not a list price or an online estimate. Source: Redfin, {zMonth}{la ? `; Louisiana from statewide MLS data, ${laMonth}` : ''}.</dd>
+            <dt>Median vs average: why your number may look different</dt>
+            <dd>The <b>average</b> adds up every sale and divides by the number of sales, so a few very expensive homes pull it up. The <b>median</b> is the middle sale and is not moved by a handful of mansions, which is why economists and housing market reports use it to describe a typical home. {la && <>Example: in Louisiana in {laMonth}, the <b>median</b> sale price was <b>{money(la.price)}</b>, but the <b>average</b> was <b>{money(la.average)}</b>, about {Math.round((la.average / la.price - 1) * 100)}% higher. Both are correct; they answer different questions.</>} If you have seen a higher "average price" for your state, it is usually an average, a list price, or a different month or area.</dd>
+            <dt>Median household income</dt>
+            <dd>The income in the middle of all households in the state: half earn more, half earn less. "Household" means everyone living in one home, before taxes. Source: U.S. Census Bureau, American Community Survey 2025.</dd>
+            <dt>Affordability ratio</dt>
+            <dd>Median home sale price divided by median household income. It shows how many years of a typical household's income a typical home costs. Colorado: {money(co.home)} ÷ {money(co.income)} = <b>{co.ratio.toFixed(2)}</b>. The lower the ratio, the easier homes are to afford on local incomes; the higher, the harder. It does not include interest rates, down payment, taxes or your own income and debts, so it is a guide, not a loan approval.</dd>
+            <dt>Totals per year</dt>
+            <dd>State income tax, sales tax, property tax and home insurance added together for the same household and the same home price in every state, so you compare the states, not the houses.</dd>
+          </dl>
+        </div>
+        <div class="dx__col">
+          <h2>Important Disclosures</h2>
+          <ul class="dx__list">
+            <li><b>Estimates only.</b> This tool compares state averages to help you plan. It is not tax, insurance, legal or financial advice, and it does not replace quotes and advice for a specific home. Tamila Aspen is a Colorado Real Estate Agent and a Mortgage Loan Officer in Colorado and Florida, not a tax advisor or insurance agent.</li>
+            <li><b>Home insurance varies the most.</b> The numbers are statewide averages from Insurify for a policy with $300,000 of dwelling coverage. Your premium can be several times higher or lower depending on wildfire, hurricane, hail and flood risk where the home is, the age of the home and roof, the coverage and deductible you choose, and your claims history. In some high-risk areas, such as wildfire zones in California, regular coverage can be hard to find. Always get insurance quotes for the exact address before you make an offer.</li>
+            <li><b>Flood is not included.</b> Most homeowners insurance does not cover flood damage (FEMA). Flood insurance is a separate policy and is not part of these totals.</li>
+            <li><b>Property tax depends on the address.</b> Rates are statewide averages for owner-occupied homes in 2024 (Tax Foundation). County, city, school district and special district taxes, assessments and exemptions change the real bill, and the same home price is used for every state.</li>
+            <li><b>Income tax is simplified.</b> State rates and brackets for 2026 are applied to the taxable income you enter. Deductions, credits and local income taxes that some cities and counties charge are not included.</li>
+            <li><b>Sales tax is an average.</b> It uses the average combined state and local rate. Many states tax groceries, medicine and services differently.</li>
+            <li><b>Home prices.</b> Median sale prices are from Redfin for {zMonth} (all home types, not seasonally adjusted). Redfin does not publish Louisiana, so Louisiana uses statewide MLS data{la ? ` for ${laMonth}` : ''}. Prices change every month and differ a lot between cities in the same state.</li>
+            <li><b>Data changes.</b> Sources and dates are listed below. The page is updated as new data is published, but numbers can change at any time.</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -147,6 +168,7 @@ const schema = [
         <li><a href="https://taxfoundation.org/wp-content/uploads/2026/04/TaxFoundation_FactsFigures26-3-31.pdf" rel="noopener" target="_blank">Tax Foundation: Facts &amp; Figures 2026, Table 33, Property Taxes Paid as a Percentage of Owner-Occupied Housing Value</a> (2024, from Census ACS)</li>
         <li><a href="https://insurify.com/homeowners-insurance/states/" rel="noopener" target="_blank">Insurify: Average Home Insurance Rates by State</a> ($300,000 dwelling coverage)</li>
         <li><a href="https://www.redfin.com/news/data-center/housing-market/" rel="noopener" target="_blank">Redfin Data Center: Housing Market Tracker, median sale price by state, {zMonth}</a> (all residential, not seasonally adjusted; Redfin does not publish Louisiana)</li>
+        {la && <li><a href={la.url} rel="noopener" target="_blank">ShowingTime Monthly Indicators for Louisiana: statewide MLS data, {laMonth}</a> (median and average sale price for Louisiana)</li>}
         <li><a href="https://www.census.gov/programs-surveys/acs/data/summary-file.html" rel="noopener" target="_blank">U.S. Census Bureau: American Community Survey 2025 1-year estimates, table B19013, median household income</a></li>
         <li><a href="https://agents.floodsmart.gov/sites/default/files/media/document/2025-08/fema_nfip-most-homeowners-insurance-does-not-cover-flood-damage_postcard_08-2025.pdf" rel="noopener" target="_blank">FEMA / National Flood Insurance Program: Most homeowners insurance does not cover flood damage</a></li>
         <li><a href="https://www.insurance.ca.gov/0200-industry/0105-alert/upload/FAIR-Plan-growth-slows-below-2-as-Californias-insurance-market-continues-to-show-signs-of-recovery.pdf" rel="noopener" target="_blank">California Department of Insurance: FAIR Plan update, August 2026</a></li>
@@ -237,7 +259,7 @@ const schema = [
       + row('Home insurance', (x) => fmt(x.ins), () => 'state average')
       + `<tr class="tot"><th scope="row">Total per year</th>` + cols.map((r, i) => `<td class="${r.s === 'Colorado' ? 'co' : ''}"><b>${fmt(res[i].total)}</b></td>`).join('') + '</tr>'
       + diffRow
-      + row('Median home sale price', (x, r) => (r.home ? fmt(r.home) : 'No data'), () => 'Redfin, ' + MONTH)
+      + row('Median home sale price', (x, r) => (r.home ? fmt(r.home) : 'No data'), (r) => r.priceLabel || 'Redfin, ' + MONTH)
       + row('Median household income', (x, r) => (r.income ? fmt(r.income) : '—'), () => 'Census, 2025')
       + row('Affordability ratio', (x, r) => (r.ratio ? r.ratio.toFixed(2) + '×' : '—'), () => 'price ÷ income')
       + '</tbody>';
@@ -249,7 +271,7 @@ const schema = [
     $('headline').innerHTML = picked.length ? '<ul class="hl">' + lines.map((l) => `<li>${l}</li>`).join('') + '</ul>' : '<p>Add a state above to compare it with Colorado.</p>';
     $('notes').innerHTML = picked.map((n) => {
       const r = find(n);
-      if (!r.home || !CO.home) return `<li>${label(n)}: Redfin does not publish median sale prices, so there is no price or affordability comparison.</li>`;
+      if (!r.home || !CO.home) return `<li>${label(n)}: no published median sale price, so there is no price or affordability comparison.</li>`;
       const h = CO.home - r.home, p = Math.round(Math.abs(h) / r.home * 100);
       return `<li>Median home sale price in Colorado vs ${label(n)}: <b>${p}% ${h > 0 ? 'higher' : 'lower'}</b> (${fmt(CO.home)} vs ${fmt(r.home)}); affordability ratio ${CO.ratio.toFixed(2)}× vs ${r.ratio.toFixed(2)}×</li>`;
     }).join('');
@@ -319,5 +341,12 @@ const schema = [
 <style is:global>
   .disc-states { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .9rem; }
   .disclosures { background: #fffaf2; }
-  .disclosures li { margin-bottom: 8px; }
+  .dx { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; font-size: .9rem; line-height: 1.55; }
+  .dx h2 { font-size: 1.5rem; margin: 0 0 14px; }
+  .dx__defs { margin: 0; }
+  .dx__defs dt { font-weight: 700; margin-top: 14px; }
+  .dx__defs dt:first-child { margin-top: 0; }
+  .dx__defs dd { margin: 4px 0 0; }
+  .dx__list { margin: 0; padding-left: 18px; display: grid; gap: 10px; }
+  @media (max-width: 900px) { .dx { grid-template-columns: 1fr; gap: 28px; } }
 </style>

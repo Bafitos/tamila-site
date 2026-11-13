@@ -43,6 +43,34 @@ jobs:
           json.dump(a, open('src/data/afford.json', 'w'), indent=1)
           print('Redfin month', month, 'Colorado', price['Colorado'])
           PY
+      - name: Louisiana (Redfin does not publish it) from statewide MLS report
+        continue-on-error: true
+        run: |
+          sudo apt-get install -y poppler-utils >/dev/null 2>&1 || true
+          m=$(date -u +%Y-%m)
+          curl -fsSL -A "Mozilla/5.0" -o /tmp/la.pdf "https://louisiana.stats.showingtime.com/docs/mmi/$m/x/LouisianaREALTORS%C2%AE?src=page"
+          pdftotext -layout /tmp/la.pdf /tmp/la.txt
+          python3 - <<'PY'
+          import re, json, datetime
+          t = open('/tmp/la.txt').read()
+          mm = re.search(r'([A-Z][a-z]+) (20\d\d) Monthly Snapshot', t)
+          med = re.search(r'Median Sales Price (?:increased|decreased|remained)[^$]*\$[\d,]+ to \$([\d,]+)', t) or re.search(r'Median Sales Price[^\n$]*\$[\d,]+\s+\$([\d,]+)', t)
+          avg = re.search(r'Average Sales Price\s+\$[\d,]+\s+\$([\d,]+)', t)
+          asof = re.search(r'Current as of ([A-Z][a-z]+ \d+, 20\d\d)', t)
+          if not (mm and med and avg):
+              raise SystemExit('Louisiana report: could not parse')
+          month = datetime.datetime.strptime(mm.group(1) + ' ' + mm.group(2), '%B %Y').strftime('%Y-%m-01')
+          a = json.load(open('src/data/afford.json'))
+          ex = a.setdefault('priceExtra', {}).setdefault('Louisiana', {})
+          if ex.get('month', '') > month:
+              raise SystemExit('Louisiana: older report')
+          lab = datetime.datetime.strptime(month, '%Y-%m-%d').strftime('%b %Y')
+          ex.update({'price': int(med.group(1).replace(',', '')), 'average': int(avg.group(1).replace(',', '')), 'month': month,
+                     'label': f'MLS, {lab}', 'source': f'ShowingTime Monthly Indicators for Louisiana (statewide MLS data), {mm.group(1)} {mm.group(2)}' + (f', current as of {asof.group(1)}' if asof else ''),
+                     'url': f'https://louisiana.stats.showingtime.com/docs/mmi/{month[:7]}/x/LouisianaREALTORS%C2%AE?src=page'})
+          json.dump(a, open('src/data/afford.json', 'w'), indent=1)
+          print('Louisiana', month, ex['price'], ex['average'])
+          PY
       - name: Commit if changed
         run: |
           git config user.name "redfin-bot"

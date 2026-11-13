@@ -109,5 +109,15 @@
   "West Virginia": 61340,
   "Wisconsin": 80213,
   "Wyoming": 80894
+ },
+ "priceExtra": {
+  "Louisiana": {
+   "price": 250000,
+   "average": 293394,
+   "month": "2026-09-01",
+   "label": "MLS, Sep 2026",
+   "source": "ShowingTime Monthly Indicators for Louisiana (statewide MLS data), September 2026, current as of October 10, 2026",
+   "url": "https://louisiana.stats.showingtime.com/docs/mmi/2026-09/x/LouisianaREALTORS%C2%AE?src=page"
+  }
  }
 }
