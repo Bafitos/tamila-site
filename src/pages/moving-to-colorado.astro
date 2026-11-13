@@ -51,6 +51,7 @@ const schema = [
       <p class="eyebrow">Free tool · All 50 states + D.C. · Home sale prices {zMonth}</p>
       <h1>Moving to Colorado? See How Your State Compares</h1>
       <p class="lead">Enter your income and pick up to 5 states. See what the typical home in each state would cost you every month, how much of your paycheck it takes, and what you pay each year in state taxes, compared with Colorado. Every number has a source.</p>
+      <p><a class="fbbtn" href={site.social.Facebook} target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg><span>Follow me on Facebook</span></a></p>
     </div>
   </section>
 
@@ -120,7 +121,7 @@ const schema = [
         <p class="swipe">Swipe the table sideways to see every state →</p>
         <ul class="notes" id="notes"></ul>
         <p class="assume" id="assume"></p>
-        <div class="btns"><a class="pill" href="#contact">Get a free Colorado moving plan</a><button type="button" class="pill pill--line" id="share">Copy link to this comparison</button></div>
+        <div class="btns"><a class="pill" href="#contact">Get a free Colorado moving plan</a><button type="button" class="pill pill--line" id="share">Copy link to this comparison</button><a class="fbbtn" href={site.social.Facebook} target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg><span>Follow me on Facebook</span></a></div>
         <ul class="disc-states" id="discStates"></ul>
         <p class="out__small">Estimates for comparison only, not tax, insurance or legal advice. See the disclosures below the table.</p>
       </div>
@@ -429,6 +430,8 @@ const schema = [
   .out__small { font-size: .78rem; opacity: .75; }
   @media (max-width: 760px) { .you { grid-template-columns: 1fr; } }
   @media (max-width: 560px) { .grid3 { grid-template-columns: 1fr; } .seg button { padding: 9px 12px; font-size: .92rem; } .card { padding: 18px 14px; } .swipe { display: block; } .cmpt { font-size: .88rem; } .cmpt th, .cmpt td { padding: 8px 8px; } .cmpt tbody th { min-width: 96px; } .cmpt td { min-width: 96px; } }
+  .fbbtn{display:inline-flex;align-items:center;gap:.5rem;background:#1877F2;color:#fff!important;text-decoration:none;font-weight:700;padding:.7rem 1.25rem;border-radius:999px;line-height:1}
+  .fbbtn:hover{background:#0f63d0}
 </style>
 <style is:global>
   .disc-states { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .9rem; }
