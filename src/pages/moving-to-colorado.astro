@@ -80,9 +80,12 @@ const schema = [
           </div>
           <div class="you__f" role="group" aria-label="Down payment">
             <span class="you__l">Down payment</span>
-            <div class="seg" id="dpSeg"><button type="button" data-v="3">3%</button><button type="button" data-v="5" class="on">5%</button><button type="button" data-v="10">10%</button><button type="button" data-v="20">20%</button></div>
-            <small>You don't need 20% down: many buyers put 3% to 5% down (FHA 3.5%, VA 0%).</small>
-            <input type="hidden" id="dp" value="5" />
+            <div class="dpbox">
+              <input id="dp" type="range" min="0" max="100" step="0.5" value="5" aria-label="Down payment percent" />
+              <output id="dpOut">5%</output>
+            </div>
+            <div class="dpq"><button type="button" data-v="0">0% VA</button><button type="button" data-v="3.5">3.5% FHA</button><button type="button" data-v="5">5%</button><button type="button" data-v="20">20%</button><button type="button" data-v="50">50%</button></div>
+            <small>You don't need 20% down: many buyers put 3% to 5% down (FHA 3.5%, VA 0%). Drag to any amount, up to 100% for a cash purchase.</small>
           </div>
           <div class="you__f you__home" role="group" aria-label="Home price">
             <span class="you__l">Home price</span>
@@ -94,15 +97,11 @@ const schema = [
           </div>
         </div>
         <details class="more">
-          <summary>More options: interest rate and shopping</summary>
+          <summary>More options: interest rate</summary>
           <div class="grid3">
             <label>Interest rate (30-year fixed)
               <span class="pct"><input id="rate" type="number" inputmode="decimal" min="1" max="15" step="0.01" value="6.75" /></span>
               <small id="rateHint">Loading this week's national average…</small>
-            </label>
-            <label>Money you spend each year on things with sales tax
-              <span class="money"><input id="spend" type="number" inputmode="numeric" min="0" step="1000" value="25000" /></span>
-              <small>Shopping, cars, restaurants and other taxed purchases. Only changes the sales tax line.</small>
             </label>
           </div>
         </details>
@@ -138,7 +137,7 @@ const schema = [
             <dt>Monthly home payment and share of income</dt>
             <dd>The mortgage payment (with mortgage insurance if you put less than 20% down) plus property tax and home insurance, per month. "Share of your income" is that payment times 12 divided by your income before taxes, the same way a lender looks at it. By default each state uses its own typical (median) home price, so you see what living there would really cost; switch to "Same price everywhere" to compare one house.</dd>
             <dt>Total per year</dt>
-            <dd>Twelve monthly home payments plus state income tax and sales tax for your household.</dd>
+            <dd>Twelve monthly home payments plus state income tax for your household. Sales tax is shown as a rate only, because it depends on what you buy.</dd>
           </dl>
         </div>
         <div class="dx__col">
@@ -150,7 +149,7 @@ const schema = [
             <li><b>Property tax depends on the address.</b> Rates are statewide averages for owner-occupied homes in 2024 (Tax Foundation). County, city, school district and special district taxes, assessments and exemptions change the real bill, and the same home price is used for every state.</li>
             <li><b>Income tax is simplified.</b> You enter income before taxes. The tool subtracts each state's 2026 standard deduction and personal exemption (Tax Foundation) and applies the state's rates for married or single filers. Itemized deductions, dependents, income phase-outs, other credits and local income taxes that some cities and counties charge are not included.</li>
             <li><b>Mortgage payment is an estimate.</b> It assumes a 30-year fixed loan at this week's national average rate (Freddie Mac) unless you change it, the down payment you choose and, with less than 20% down, private mortgage insurance estimated at 0.5% of the loan a year. HOA dues, closing costs, FHA and VA fees are not included. Your rate and payment depend on your credit, income and loan program. This is not a loan offer or commitment to lend. Loans through Barrett Financial Group, LLC, NMLS #181106; Tamila Aspen, NMLS #2490507. Equal Housing Opportunity.</li>
-            <li><b>Sales tax is an average.</b> It uses the average combined state and local rate. Many states tax groceries, medicine and services differently.</li>
+            <li><b>Sales tax is shown as a rate only.</b> It is the average combined state and local rate and is not included in the totals. Many states tax groceries, medicine and services differently.</li>
             <li><b>Home prices.</b> Median sale prices are from Redfin for {zMonth}, not seasonally adjusted: "Houses only" uses single-family homes, "All homes" includes condos, townhomes and small multi-family. Redfin does not publish Louisiana, so Louisiana uses statewide MLS data for all home types{la ? ` for ${laMonth}` : ''} in both views. Prices change every month and differ a lot between cities in the same state.</li>
             <li><b>Data changes.</b> Sources and dates are listed below. The page is updated as new data is published, but numbers can change at any time.</li>
           </ul>
@@ -244,28 +243,28 @@ const schema = [
     const want = params.get('from').split(',').map((x) => states.find((r) => slug(r.s) === x)).filter((r) => r && r.s !== 'Colorado').map((r) => r.s);
     if (want.length) picked = [...new Set(want)].slice(0, MAX);
   }
-  const segs = { filing: 'filingSeg', dp: 'dpSeg', mode: 'modeSeg', ptype: 'typeSeg' };
+  const segs = { filing: 'filingSeg', mode: 'modeSeg', ptype: 'typeSeg' };
   const setSeg = (k, v) => { $(k).value = v; $(segs[k]).querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); if (k === 'mode') { $('priceWrap').hidden = v !== 'same'; $('typeSeg').hidden = v === 'same'; } };
   let rateTouched = false;
-  ['income', 'price', 'spend', 'rate'].forEach((k) => { if (params.get(k)) { $(k).value = params.get(k); if (k === 'rate') rateTouched = true; } });
-  ['filing', 'dp', 'mode', 'ptype'].forEach((k) => { if (params.get(k)) setSeg(k, params.get(k)); });
+  ['income', 'price', 'dp', 'rate'].forEach((k) => { if (params.get(k)) { $(k).value = params.get(k); if (k === 'rate') rateTouched = true; } });
+  ['filing', 'mode', 'ptype'].forEach((k) => { if (params.get(k)) setSeg(k, params.get(k)); });
+  document.querySelectorAll('.dpq button').forEach((b) => b.addEventListener('click', () => { $('dp').value = b.dataset.v; run(); }));
   Object.entries(segs).forEach(([k, id]) => $(id).querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { setSeg(k, b.dataset.v); run(); })));
 
   function calc(r, o) {
     const f = o.filing === 'married' ? 1 : 0;
     const taxable = Math.max(0, o.inc - (r.sd?.[f] || 0) - (r.ex?.[f] || 0));
     const it = Math.max(0, tax(taxable, f ? r.married : r.single) - (r.cr?.[f] || 0));
-    const st = o.spend * r.sales / 100;
     const typical = o.ptype === 'houses' ? (r.homeHouse ?? r.home) : r.home;
     const price = o.mode === 'same' ? o.price : typical;
-    if (!price) return { it, st, price: null, ratio: null, total: null };
+    if (!price) return { it, price: null, ratio: null, total: null };
     const loan = price * (1 - o.dp / 100), i = o.rate / 100 / 12, n = 360;
     const pi = i ? loan * i / (1 - Math.pow(1 + i, -n)) : loan / n;
     const pmi = o.dp < 20 ? loan * 0.005 / 12 : 0;
     const ptm = price * r.prop / 100 / 12, insm = r.ins / 12;
     const month = pi + pmi + ptm + insm;
     const ratio = typical && r.income ? typical / r.income : null;
-    return { it, st, price, ratio, pi, pmi, ptm, insm, month, share: o.inc ? month * 12 / o.inc * 100 : 0, down: price * o.dp / 100, total: month * 12 + it + st };
+    return { it, price, ratio, pi, pmi, ptm, insm, month, share: o.inc ? month * 12 / o.inc * 100 : 0, down: price * o.dp / 100, total: month * 12 + it };
   }
   function addState(n) {
     if (!n || n === 'Colorado') return;
@@ -274,7 +273,10 @@ const schema = [
     run();
   }
   function run() {
-    const o = { ptype: $('ptype').value, inc: +$('income').value || 0, filing: $('filing').value, dp: +$('dp').value, mode: $('mode').value, price: +$('price').value || 0, spend: +$('spend').value || 0, rate: +$('rate').value || 0 };
+    const o = { ptype: $('ptype').value, inc: +$('income').value || 0, filing: $('filing').value, dp: +$('dp').value, mode: $('mode').value, price: +$('price').value || 0, rate: +$('rate').value || 0 };
+    $('dpOut').textContent = (+o.dp) + '%';
+    document.querySelectorAll('.dpq button').forEach((b) => b.classList.toggle('on', +b.dataset.v === +o.dp));
+    $('dp').style.setProperty('--p', o.dp + '%');
     const cols = [...picked.map(find), CO];
     const res = cols.map((r) => calc(r, o));
     const co = res[res.length - 1];
@@ -300,8 +302,8 @@ const schema = [
       + row('Share of your income', (x) => (x.price ? Math.round(x.share) + '%' : dash), () => 'home payment ÷ income')
       + row('Down payment', (x) => (x.price ? fmt(x.down) : dash), () => o.dp + '% + closing costs')
       + row('State income tax', (x) => fmt(x.it) + '/yr', rateText.length ? (x, r) => rateText(r) : null)
-      + row('Sales tax', (x) => fmt(x.st) + '/yr', (x, r) => pct(r.sales) + ' combined')
-      + `<tr class="tot"><th scope="row">Total per year</th>` + cols.map((r, i) => `<td class="${cls(r)}"><b>${res[i].total != null ? fmt(res[i].total) : dash}</b><small>home payments + taxes</small></td>`).join('') + '</tr>'
+      + row('Sales tax rate', (x, r) => pct(r.sales), () => 'state + average local')
+      + `<tr class="tot"><th scope="row">Total per year</th>` + cols.map((r, i) => `<td class="${cls(r)}"><b>${res[i].total != null ? fmt(res[i].total) : dash}</b><small>home payments + income tax</small></td>`).join('') + '</tr>'
       + diffRow
       + row('Median household income', (x, r) => (r.income ? fmt(r.income) : dash), () => 'Census, 2025')
       + row('Affordability ratio', (x) => (x.ratio ? x.ratio.toFixed(2) + '×' : dash), () => (o.ptype === 'houses' ? 'median house' : 'median home') + ' ÷ median income')
@@ -317,7 +319,7 @@ const schema = [
     $('notes').innerHTML = co.price ? `<li>In Colorado, a ${fmt(co.price)} home with ${o.dp}% down would take about <b>${Math.round(co.share)}%</b> of a ${fmt(o.inc)} income. Want to know what you would qualify for? Tamila can pre-approve you before you move.</li>` : '';
     const shown = [...picked, 'Colorado'].filter((n) => DISC[n]);
     $('discStates').innerHTML = shown.map((n) => `<li><b>${label(n)} insurance:</b> ${DISC[n]}</li>`).join('');
-    $('assume').textContent = `Based on ${fmt(o.inc)} household income before taxes (${o.filing === 'married' ? 'married' : 'single'}), ${o.dp}% down, a 30-year fixed loan at ${o.rate.toFixed(2)}%${o.dp < 20 ? ', estimated mortgage insurance' : ''}, ${o.mode === 'same' ? 'the same ' + fmt(o.price) + ' home in every state' : (o.ptype === 'houses' ? 'the median house (single-family) sale price in each state' : 'the median sale price of all home types in each state')} and ${fmt(o.spend)} a year of taxed purchases.`;
+    $('assume').textContent = `Based on ${fmt(o.inc)} household income before taxes (${o.filing === 'married' ? 'married' : 'single'}), ${o.dp}% down, a 30-year fixed loan at ${o.rate.toFixed(2)}%${o.dp < 20 ? ', estimated mortgage insurance' : ''}, ${o.mode === 'same' ? 'the same ' + fmt(o.price) + ' home in every state' : (o.ptype === 'houses' ? 'the median house (single-family) sale price in each state' : 'the median sale price of all home types in each state')}.`;
   }
   $('mv').addEventListener('input', (e) => { if (e.target.id === 'rate') rateTouched = true; if (e.target.id !== 'add') run(); });
   $('add').addEventListener('change', () => addState($('add').value));
@@ -367,6 +369,14 @@ const schema = [
   .you__home .money { margin-top: 10px; max-width: 320px; }
   .you__home .money[hidden], .seg[hidden] { display: none; }
   .seg--sm { margin-top: 10px; }
+  .dpbox { display: flex; align-items: center; gap: 14px; }
+  .dpbox input[type=range] { flex: 1; -webkit-appearance: none; appearance: none; height: 8px; border-radius: 999px; padding: 0; border: 0; background: linear-gradient(to right, var(--green) var(--p, 5%), var(--green-soft) var(--p, 5%)); }
+  .dpbox input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: var(--white); border: 3px solid var(--green); cursor: pointer; }
+  .dpbox input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--white); border: 3px solid var(--green); cursor: pointer; }
+  .dpbox output { min-width: 64px; text-align: right; font-weight: 800; font-size: 1.3rem; color: var(--green); }
+  .dpq { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .dpq button { border: 1px solid var(--green-soft); background: var(--white); color: var(--green); border-radius: 999px; padding: 4px 10px; font: 600 .82rem var(--font); cursor: pointer; }
+  .dpq button.on { background: var(--green); color: var(--white); border-color: var(--green); }
   .seg--sm button { font-size: .9rem; padding: 8px 14px; }
   .seg { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--green); border-radius: 12px; overflow: hidden; }
   .seg button { border: 0; background: var(--white); color: var(--green); font: 600 1rem var(--font); padding: 10px 16px; cursor: pointer; border-right: 1px solid var(--green-soft); }
