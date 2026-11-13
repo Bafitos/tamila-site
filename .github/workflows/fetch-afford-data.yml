@@ -26,8 +26,10 @@ jobs:
           done
       - name: Commit to data branch
         run: |
+          mkdir -p /tmp/keep && cp data-raw/redfin_all_states.csv data-raw/acsdt1y*-b19013.dat /tmp/keep/ && rm -rf data-raw
           git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
-          git fetch origin data/state-costs && git checkout -B data/state-costs FETCH_HEAD
+          git fetch --depth 1 origin data/state-costs && git checkout -B data/state-costs FETCH_HEAD
+          mkdir -p data-raw && cp /tmp/keep/* data-raw/
           git add -f data-raw/redfin_all_states.csv data-raw/acsdt1y*-b19013.dat
           git commit -m "Affordability raw data $(date -u +%F)" || true
           git push -f origin data/state-costs
