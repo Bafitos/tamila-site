@@ -44,19 +44,21 @@ const schema = [
     <div class="wrap narrow center stack">
       <p class="eyebrow">Free tool · All 50 states + D.C. · Home values {zMonth}</p>
       <h1>Moving to Colorado? See How Your State Compares</h1>
-      <p class="lead">Choose the state you live in now. You will see what you pay there each year in state income tax, sales tax, property tax and home insurance, and what the same household would pay in Colorado. Every number has a source.</p>
+      <p class="lead">Pick the state you live in now, or up to 5 states you are deciding between. You will see what the same household pays each year in state income tax, sales tax, property tax and home insurance in each of them and in Colorado. Every number has a source.</p>
     </div>
   </section>
 
   <section class="section calc-wrap">
-    <div class="wrap narrow">
+    <div class="wrap">
       <form class="mv" id="mv" onsubmit="return false">
-        <label class="mv__from">I'm moving from
-          <select id="from">
-            {others.map((r: any) => <option value={r.s} selected={r.s === 'California'}>{r.s === 'District of Columbia' ? 'Washington, D.C.' : r.s}</option>)}
+        <label class="mv__from">Compare Colorado with up to 5 states
+          <select id="add">
+            <option value="">+ Add a state…</option>
+            {others.map((r: any) => <option value={r.s}>{r.s === 'District of Columbia' ? 'Washington, D.C.' : r.s}</option>)}
           </select>
         </label>
-        <div class="chips" aria-label="Popular states">
+        <div class="picked" id="picked" aria-label="States you are comparing"></div>
+        <div class="chips" aria-label="Popular states"><span class="chips__l">Popular:</span>
           {popular.map((p) => <button type="button" class="chip" data-s={p}>{p}</button>)}
         </div>
         <details class="more">
@@ -80,16 +82,9 @@ const schema = [
       </form>
 
       <div class="card" aria-live="polite">
-        <p class="card__head" id="headline"></p>
-        <div class="cmp">
-          <div class="cmp__row cmp__top"><span></span><b id="nameA"></b><b>Colorado</b></div>
-          <div class="cmp__row"><span>State income tax</span><span><em id="incA"></em><small id="incRA"></small></span><span><em id="incB"></em><small id="incRB"></small></span></div>
-          <div class="cmp__row"><span>Sales tax</span><span><em id="salA"></em><small id="salRA"></small></span><span><em id="salB"></em><small id="salRB"></small></span></div>
-          <div class="cmp__row"><span>Property tax</span><span><em id="proA"></em><small id="proRA"></small></span><span><em id="proB"></em><small id="proRB"></small></span></div>
-          <div class="cmp__row"><span>Home insurance</span><span><em id="insA"></em><small>state average</small></span><span><em id="insB"></em><small>state average</small></span></div>
-          <div class="cmp__row cmp__total"><span>Total per year</span><b id="totA"></b><b id="totB"></b></div>
-          <div class="cmp__row"><span>Typical home value</span><span><em id="homeA"></em><small>Zillow, {zMonth}</small></span><span><em id="homeB"></em><small>Zillow, {zMonth}</small></span></div>
-        </div>
+        <div class="card__head" id="headline"></div>
+        <div class="cmp-wrap"><table class="cmpt" id="cmpt"></table></div>
+        <p class="swipe">Swipe the table sideways to see every state →</p>
         <ul class="notes" id="notes"></ul>
         <p class="assume" id="assume"></p>
         <div class="btns"><a class="pill" href="#contact">Get a free Colorado moving plan</a><button type="button" class="pill pill--line" id="share">Copy link to this comparison</button></div>
@@ -164,46 +159,73 @@ const schema = [
     return `${pct(b[0][1])} to ${pct(b[b.length - 1][1])}`;
   };
   const slug = (s) => s.toLowerCase().replace(/[^a-z]+/g, '-');
+  const MAX = 5;
+  let picked = ['California'];
   const params = new URLSearchParams(location.search);
-  if (params.get('from')) { const m = states.find((r) => slug(r.s) === params.get('from')); if (m && m.s !== 'Colorado') $('from').value = m.s; }
+  if (params.get('from')) {
+    const want = params.get('from').split(',').map((x) => states.find((r) => slug(r.s) === x)).filter((r) => r && r.s !== 'Colorado').map((r) => r.s);
+    if (want.length) picked = [...new Set(want)].slice(0, MAX);
+  }
   ['income', 'price', 'spend', 'filing'].forEach((k) => { if (params.get(k)) { $(k).value = params.get(k); $('mv').querySelector('details').open = true; } });
 
   function calc(r, inc, filing, price, spend) {
     const it = tax(inc, filing === 'married' ? r.married : r.single), st = spend * r.sales / 100, pt = price * r.prop / 100;
     return { it, st, pt, ins: r.ins, total: it + st + pt + r.ins };
   }
-  function run() {
-    const A = find($('from').value), inc = +$('income').value || 0, filing = $('filing').value, price = +$('price').value || 0, spend = +$('spend').value || 0;
-    const a = calc(A, inc, filing, price, spend), b = calc(CO, inc, filing, price, spend);
-    $('nameA').textContent = label(A.s);
-    $('incA').textContent = fmt(a.it); $('incRA').textContent = rateText(A);
-    $('incB').textContent = fmt(b.it); $('incRB').textContent = rateText(CO);
-    $('salA').textContent = fmt(a.st); $('salRA').textContent = pct(A.sales) + ' combined';
-    $('salB').textContent = fmt(b.st); $('salRB').textContent = pct(CO.sales) + ' combined';
-    $('proA').textContent = fmt(a.pt); $('proRA').textContent = pct(A.prop) + ' of value';
-    $('proB').textContent = fmt(b.pt); $('proRB').textContent = pct(CO.prop) + ' of value';
-    $('insA').textContent = fmt(a.ins); $('insB').textContent = fmt(b.ins);
-    $('totA').textContent = fmt(a.total); $('totB').textContent = fmt(b.total);
-    $('homeA').textContent = A.home ? fmt(A.home) : '—'; $('homeB').textContent = fmt(CO.home);
-    const d = b.total - a.total;
-    $('headline').innerHTML = Math.abs(d) < 100
-      ? `Moving from <b>${label(A.s)}</b>, you would pay about the <b>same</b> in these taxes and insurance in Colorado.`
-      : `Moving from <b>${label(A.s)}</b>, you would pay about <b class="${d > 0 ? 'up' : 'down'}">${fmt(Math.abs(d))} ${d > 0 ? 'more' : 'less'} per year</b> in Colorado.`;
-    const parts = [['State income tax', b.it - a.it], ['Sales tax', b.st - a.st], ['Property tax', b.pt - a.pt], ['Home insurance', b.ins - a.ins]];
-    const notes = parts.filter(([, v]) => Math.abs(v) >= 50).sort((x, y) => Math.abs(y[1]) - Math.abs(x[1]))
-      .map(([k, v]) => `<li>${k}: <b class="${v > 0 ? 'up' : 'down'}">${v > 0 ? '+' : '−'}${fmt(Math.abs(v))}</b> a year in Colorado</li>`);
-    if (A.home && CO.home) {
-      const h = CO.home - A.home, p = Math.round(Math.abs(h) / A.home * 100);
-      notes.push(`<li>Typical home: <b>${p}% ${h > 0 ? 'more expensive' : 'less expensive'}</b> in Colorado (${fmt(CO.home)} vs ${fmt(A.home)})</li>`);
-    }
-    $('notes').innerHTML = notes.join('');
-    $('assume').textContent = `Based on ${fmt(inc)} taxable income (${filing === 'married' ? 'married filing jointly' : 'single'}), the same ${fmt(price)} home in both states and ${fmt(spend)} a year of taxable spending.`;
+  function addState(n) {
+    if (!n || n === 'Colorado') return;
+    if (picked.includes(n)) { picked = picked.filter((x) => x !== n); }
+    else if (picked.length < MAX) picked.push(n);
+    run();
   }
-  $('mv').addEventListener('input', run);
-  $('mv').addEventListener('change', run);
-  document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => { $('from').value = c.dataset.s; run(); }));
+  function run() {
+    const inc = +$('income').value || 0, filing = $('filing').value, price = +$('price').value || 0, spend = +$('spend').value || 0;
+    const cols = [...picked.map(find), CO];
+    const res = cols.map((r) => calc(r, inc, filing, price, spend));
+    const co = res[res.length - 1];
+    // picked chips
+    $('picked').innerHTML = picked.map((n) => `<button type="button" class="pk" data-s="${n}" aria-label="Remove ${label(n)}">${label(n)} <span aria-hidden="true">×</span></button>`).join('')
+      + (picked.length >= MAX ? '<span class="pk__max">Maximum 5 states</span>' : '');
+    $('picked').querySelectorAll('.pk').forEach((b) => b.addEventListener('click', () => { picked = picked.filter((x) => x !== b.dataset.s); run(); }));
+    $('add').value = ''; $('add').disabled = picked.length >= MAX;
+    [...$('add').options].forEach((o) => { if (o.value) o.disabled = picked.includes(o.value); });
+    document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', picked.includes(c.dataset.s)));
+    // table
+    const head = '<tr><th></th>' + cols.map((r) => `<th scope="col" class="${r.s === 'Colorado' ? 'co' : ''}">${label(r.s)}</th>`).join('') + '</tr>';
+    const row = (name, f, sub) => `<tr><th scope="row">${name}</th>` + cols.map((r, i) => `<td class="${r.s === 'Colorado' ? 'co' : ''}"><em>${f(res[i], r)}</em>${sub ? `<small>${sub(r)}</small>` : ''}</td>`).join('') + '</tr>';
+    const diffRow = '<tr class="diff"><th scope="row">Colorado vs this state</th>' + cols.map((r, i) => {
+      if (r.s === 'Colorado') return '<td class="co">—</td>';
+      const d = co.total - res[i].total;
+      return `<td><b class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${Math.abs(d) < 100 ? 'about the same' : (d > 0 ? '+' : '−') + fmt(Math.abs(d)) + '/yr'}</b></td>`;
+    }).join('') + '</tr>';
+    $('cmpt').innerHTML = '<thead>' + head + '</thead><tbody>'
+      + row('State income tax', (x) => fmt(x.it), rateText)
+      + row('Sales tax', (x) => fmt(x.st), (r) => pct(r.sales) + ' combined')
+      + row('Property tax', (x) => fmt(x.pt), (r) => pct(r.prop) + ' of value')
+      + row('Home insurance', (x) => fmt(x.ins), () => 'state average')
+      + `<tr class="tot"><th scope="row">Total per year</th>` + cols.map((r, i) => `<td class="${r.s === 'Colorado' ? 'co' : ''}"><b>${fmt(res[i].total)}</b></td>`).join('') + '</tr>'
+      + diffRow
+      + row('Typical home value', (x, r) => (r.home ? fmt(r.home) : '—'), () => 'Zillow')
+      + '</tbody>';
+    // headline + notes
+    const lines = picked.map((n, i) => {
+      const d = co.total - res[i].total;
+      return Math.abs(d) < 100 ? `From <b>${label(n)}</b>: about the <b>same</b> in Colorado` : `From <b>${label(n)}</b>: about <b class="${d > 0 ? 'up' : 'down'}">${fmt(Math.abs(d))} ${d > 0 ? 'more' : 'less'} a year</b> in Colorado`;
+    });
+    $('headline').innerHTML = picked.length ? '<ul class="hl">' + lines.map((l) => `<li>${l}</li>`).join('') + '</ul>' : '<p>Add a state above to compare it with Colorado.</p>';
+    $('notes').innerHTML = picked.map((n) => {
+      const r = find(n);
+      if (!r.home || !CO.home) return '';
+      const h = CO.home - r.home, p = Math.round(Math.abs(h) / r.home * 100);
+      return `<li>Typical home in Colorado vs ${label(n)}: <b>${p}% ${h > 0 ? 'more expensive' : 'less expensive'}</b> (${fmt(CO.home)} vs ${fmt(r.home)})</li>`;
+    }).join('');
+    $('assume').textContent = `Based on ${fmt(inc)} taxable income (${filing === 'married' ? 'married filing jointly' : 'single'}), the same ${fmt(price)} home in every state and ${fmt(spend)} a year of taxable spending.`;
+  }
+  $('mv').addEventListener('input', (e) => { if (e.target.id !== 'add') run(); });
+  $('add').addEventListener('change', () => addState($('add').value));
+  document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => addState(c.dataset.s)));
   $('share').addEventListener('click', () => {
-    const p = new URLSearchParams({ from: slug($('from').value) });
+    const p = new URLSearchParams({ from: picked.map(slug).join(',') });
     if ($('mv').querySelector('details').open) ['income', 'filing', 'price', 'spend'].forEach((k) => p.set(k, $(k).value));
     const url = location.origin + location.pathname + '?' + p.toString();
     navigator.clipboard?.writeText(url).then(() => { $('share').textContent = 'Link copied'; setTimeout(() => ($('share').textContent = 'Copy link to this comparison'), 2000); });
@@ -213,7 +235,7 @@ const schema = [
 
 <style is:global>
   .calc-hero { padding-bottom: 8px; }
-  .mv { display: grid; gap: 14px; }
+  .mv { display: grid; gap: 14px; max-width: 760px; margin: 0 auto; }
   .mv label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: .95rem; }
   .mv input, .mv select { font: 400 1.1rem var(--font); color: var(--ink); background: var(--white); border: 1.5px solid var(--green-soft); border-radius: 12px; padding: 12px 14px; width: 100%; }
   .mv__from select { font-size: 1.3rem; padding: 14px 16px; border-width: 2px; border-color: var(--green); }
@@ -232,16 +254,29 @@ const schema = [
   .card__head { font-size: 1.25rem; line-height: 1.4; }
   .up { color: #a3412b; }
   .down { color: var(--green); }
-  .cmp { background: var(--white); border-radius: 16px; overflow: hidden; }
-  .cmp__row { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--green-soft); align-items: center; }
-  .cmp__row:last-child { border-bottom: 0; }
-  .cmp__row > span:first-child { font-weight: 600; }
-  .cmp__row em { font-style: normal; font-size: 1.1rem; font-weight: 700; display: block; }
-  .cmp__row small { display: block; font-size: .78rem; opacity: .75; }
-  .cmp__top { background: var(--green); color: var(--white); }
-  .cmp__total { background: var(--green-mist); font-size: 1.1rem; }
+  .picked { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .pk { border: 0; background: var(--green); color: var(--white); border-radius: 999px; padding: 8px 14px; font: 600 .95rem var(--font); cursor: pointer; }
+  .pk span { margin-left: 4px; opacity: .8; }
+  .pk__max { font-size: .85rem; opacity: .75; }
+  .chips__l { font-size: .85rem; opacity: .75; align-self: center; }
+  .chip.on { background: var(--green-mist); border-color: var(--green); }
+  .hl { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 1.1rem; }
+  .cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; background: var(--white); border-radius: 16px; }
+  .cmpt { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  .cmpt th, .cmpt td { padding: 10px 12px; border-bottom: 1px solid var(--green-soft); text-align: left; vertical-align: top; }
+  .cmpt thead th { background: var(--green); color: var(--white); font-weight: 700; white-space: nowrap; }
+  .cmpt thead th.co { background: #1d4d42; }
+  .cmpt tbody th { font-weight: 600; position: sticky; left: 0; background: var(--white); min-width: 120px; }
+  .cmpt thead th:first-child { position: sticky; left: 0; z-index: 1; }
+  .cmpt td { min-width: 110px; }
+  .cmpt td.co { background: #f3f8f6; }
+  .cmpt em { font-style: normal; font-weight: 700; display: block; }
+  .cmpt small { display: block; font-size: .76rem; opacity: .75; }
+  .cmpt tr.tot td, .cmpt tr.tot th { background: var(--green-mist); }
+  .cmpt tr:last-child th, .cmpt tr:last-child td { border-bottom: 0; }
+  .swipe { display: none; font-size: .82rem; opacity: .75; margin: -6px 0 0; }
   .notes { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
   .assume { font-size: .85rem; opacity: .8; }
   .out__small { font-size: .78rem; opacity: .75; }
-  @media (max-width: 560px) { .grid3 { grid-template-columns: 1fr; } .cmp__row { grid-template-columns: 1fr 1fr 1fr; padding: 10px 10px; font-size: .9rem; } .cmp__row em { font-size: 1rem; } .card { padding: 18px 14px; } }
+  @media (max-width: 560px) { .grid3 { grid-template-columns: 1fr; } .card { padding: 18px 14px; } .swipe { display: block; } .cmpt { font-size: .88rem; } .cmpt th, .cmpt td { padding: 8px 8px; } .cmpt tbody th { min-width: 96px; } .cmpt td { min-width: 96px; } }
 </style>
