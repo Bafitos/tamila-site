@@ -3,35 +3,39 @@ import Base from '../layouts/Base.astro';
 import Faq from '../components/Faq.astro';
 import ContactBand from '../components/ContactBand.astro';
 import { site } from '../data/site.js';
-import zhvi from '../data/zhvi.json';
+import afford from '../data/afford.json';
 import data from '../data/state-costs.json';
 
 // Tax and insurance data: src/data/state-costs.json (verified from primary sources; refreshed by the twice-yearly scheduled task).
-// Home values: src/data/zhvi.json, refreshed monthly by .github/workflows/zhvi-monthly.yml.
+// Median sale prices: src/data/afford.json (Redfin), refreshed monthly by .github/workflows/redfin-monthly.yml; median household income: Census ACS (yearly).
 const taxChecked = 'November 2026';
 const states = data.states
-  .map((r: any) => ({ ...r, home: (zhvi.values as Record<string, number>)[r.s] ?? null }))
+  .map((r: any) => { const home = (afford.price as Record<string, number>)[r.s] ?? null; const income = (afford.income as Record<string, number>)[r.s] ?? null; return { ...r, home, income, ratio: home && income ? Math.round(home / income * 100) / 100 : null }; })
   .sort((a: any, b: any) => a.s.localeCompare(b.s));
 const co = states.find((r: any) => r.s === 'Colorado');
 const others = states.filter((r: any) => r.s !== 'Colorado');
 const by = (n: string) => states.find((r: any) => r.s === n);
-const zMonth = new Date(zhvi.month + 'T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const zMonth = new Date(afford.priceMonth + 'T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const ord = (n: number) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
 const listAnd = (a: string[]) => a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 const round1k = (n: number) => '$' + (Math.round(n / 1000) * 1000).toLocaleString('en-US');
-const homeRank = [...states].filter((r: any) => r.home).sort((a: any, b: any) => b.home - a.home).findIndex((r: any) => r.s === 'Colorado') + 1;
+const priced = states.filter((r: any) => r.home);
+const homeRank = [...priced].sort((a: any, b: any) => b.home - a.home).findIndex((r: any) => r.s === 'Colorado') + 1;
+const ratioRank = [...priced].sort((a: any, b: any) => b.ratio - a.ratio).findIndex((r: any) => r.s === 'Colorado') + 1;
+const usRatio = Math.round(priced.reduce((t: number, r: any) => t + r.ratio, 0) / priced.length * 100) / 100;
 const noIncome = states.filter((r: any) => r.single.length === 0).map((r: any) => r.s);
 const tx = by('Texas'), fl = by('Florida');
 const popular = ['California', 'Texas', 'Florida', 'Illinois', 'New York', 'Arizona', 'Washington', 'Georgia'];
 
 const faq = [
-  ['Is Colorado a tax-friendly state to move to?', `It depends on where you are coming from. Colorado has a flat 4.40% income tax for 2026, and its property taxes are among the lowest in the country: about ${co.prop.toFixed(2)}% of home value in 2024, ranked ${ord(co.propRank)} of 50 (Tax Foundation). But homes cost more than in most states: the typical Colorado home value was about ${round1k(co.home)} in ${zMonth} (Zillow), ${ord(homeRank)} highest of 50 states and D.C. Pick your state above to compare.`],
+  ['Is Colorado a tax-friendly state to move to?', `It depends on where you are coming from. Colorado has a flat 4.40% income tax for 2026, and its property taxes are among the lowest in the country: about ${co.prop.toFixed(2)}% of home value in 2024, ranked ${ord(co.propRank)} of 50 (Tax Foundation). But homes cost more than in most states: the median Colorado home sold for about ${round1k(co.home)} in ${zMonth} (Redfin), ${ord(homeRank)} highest of the ${priced.length - 1} states and D.C. with Redfin data. With a median household income of ${money(co.income)} (Census, 2025), that is ${co.ratio.toFixed(2)} times income. Pick your state above to compare.`],
   ['Which states have no income tax on wages?', `${listAnd(noIncome)} have no individual income tax on wages for 2026 (Tax Foundation; Washington taxes only certain capital gains). These states collect more in other ways: Texas, for example, has one of the higher property tax rates (about ${tx.prop.toFixed(2)}% of home value).`],
   ['How much is homeowners insurance in Colorado?', `Insurify reports an average of ${money(co.ins)} a year in Colorado for a policy with $300,000 of dwelling coverage, compared with a national average of ${money(data.usIns)}. Your price depends on the home, the roof, the deductible and the location, so get a quote on the actual house before you write an offer.`],
   ['Are property taxes really low in Colorado?', `The statewide average is low: about ${co.prop.toFixed(2)}% of home value, compared with ${data.usProp.toFixed(2)}% for the U.S. Your actual bill depends on the county, the city, the school district and, in many newer neighborhoods, a metro district tax that can add a noticeable amount. Always check the tax bill of the exact home before you buy.`],
   ['Can I get pre-approved for a Colorado mortgage before I move?', 'Yes. Tamila is a mortgage loan officer licensed in Colorado and Florida, so she can pre-approve you while you still live in another state, and as a real estate agent she can show homes by live video if you cannot visit yet.'],
-  ['Why are these numbers different from other charts online?', 'Sources measure different things: some use median home prices, some use typical values; insurance averages depend on the coverage amount the company assumes. Every number here has its source and date listed below, and the page is updated when new data comes out.'],
+  ['What is the affordability ratio?', `It is the median home sale price divided by the median household income in the state. A ratio of 5 means the typical home costs about five years of a typical household's income before taxes. Colorado's ratio is ${co.ratio.toFixed(2)}, ${ord(ratioRank)} highest of the ${priced.length - 1} states and D.C. with Redfin data. It is a rough comparison only: it does not include interest rates, down payment, taxes or your own income and debts.`],
+  ['Why are these numbers different from other charts online?', 'Sources measure different things: some use median sale prices, some use typical home values or list prices; insurance averages depend on the coverage amount the company assumes. Every number here has its source and date listed below, and the page is updated when new data comes out.'],
 ];
 
 const schema = [
@@ -39,10 +43,10 @@ const schema = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
 ];
 ---
-<Base title="Moving to Colorado? Taxes & Home Costs vs Your State" description="Moving to Colorado? Pick your state and compare 2026 income tax, sales tax, property tax, home insurance and home values with Colorado. Free, with sources." schema={schema}>
+<Base title="Moving to Colorado? Taxes & Home Costs vs Your State" description="Moving to Colorado? Pick your state and compare 2026 taxes, home insurance, median home sale prices and affordability with Colorado. Free, with sources." schema={schema}>
   <section class="section calc-hero">
     <div class="wrap narrow center stack">
-      <p class="eyebrow">Free tool · All 50 states + D.C. · Home values {zMonth}</p>
+      <p class="eyebrow">Free tool · All 50 states + D.C. · Home sale prices {zMonth}</p>
       <h1>Moving to Colorado? See How Your State Compares</h1>
       <p class="lead">Pick the state you live in now, or up to 5 states you are deciding between. You will see what the same household pays each year in state income tax, sales tax, property tax and home insurance in each of them and in Colorado. Every number has a source.</p>
     </div>
@@ -88,15 +92,32 @@ const schema = [
         <ul class="notes" id="notes"></ul>
         <p class="assume" id="assume"></p>
         <div class="btns"><a class="pill" href="#contact">Get a free Colorado moving plan</a><button type="button" class="pill pill--line" id="share">Copy link to this comparison</button></div>
-        <p class="out__small">Estimates for comparison only, not tax advice. Local rates vary by county and city; Colorado homes in a metro district pay more property tax. Insurance is a state average for $300,000 of dwelling coverage.</p>
+        <ul class="disc-states" id="discStates"></ul>
+        <p class="out__small">Estimates for comparison only, not tax, insurance or legal advice. See the disclosures below the table.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="section disclosures" id="disclosures">
+    <div class="wrap prose">
+      <h2>Important Disclosures</h2>
+      <ul>
+        <li><b>Estimates only.</b> This tool compares state averages to help you plan. It is not tax, insurance, legal or financial advice, and it does not replace quotes and advice for a specific home. Tamila Aspen is a Colorado Real Estate Agent and a Mortgage Loan Officer in Colorado and Florida, not a tax advisor or insurance agent.</li>
+        <li><b>Home insurance varies the most.</b> The numbers are statewide averages from Insurify for a policy with $300,000 of dwelling coverage. Your premium can be several times higher or lower depending on wildfire, hurricane, hail and flood risk where the home is, the age of the home and roof, the coverage and deductible you choose, and your claims history. In some high-risk areas, regular coverage can be hard to find. Always get insurance quotes for the exact address before you make an offer.</li>
+        <li><b>Flood is not included.</b> Most homeowners insurance does not cover flood damage (FEMA). Flood insurance is a separate policy and is not part of these totals.</li>
+        <li><b>Property tax depends on the address.</b> Rates are statewide averages for owner-occupied homes in 2024 (Tax Foundation). County, city, school district and special district taxes, assessments and exemptions change the real bill, and the same home price is used for every state.</li>
+        <li><b>Income tax is simplified.</b> State rates and brackets for 2026 are applied to the taxable income you enter. Deductions, credits and local income taxes that some cities and counties charge are not included.</li>
+        <li><b>Sales tax is an average.</b> It uses the average combined state and local rate. Many states tax groceries, medicine and services differently.</li>
+        <li><b>Home prices and affordability.</b> Median sale price is from Redfin for {zMonth} (all home types, not seasonally adjusted); Redfin does not publish Louisiana, so it shows no price or ratio. Median household income is from the Census Bureau's 2025 American Community Survey. The affordability ratio is price divided by income: a rough guide, not a loan qualification.</li>
+        <li><b>Data changes.</b> Sources and dates are listed below. The page is updated as new data is published, but numbers can change at any time.</li>
+      </ul>
     </div>
   </section>
 
   <section class="section mist">
     <div class="wrap prose">
       <h2>What Changes When You Move to Colorado</h2>
-      <p><b>Low property tax, higher home prices.</b> Colorado homeowners paid about {co.prop.toFixed(2)}% of their home's value in property tax in 2024, ranked {ord(co.propRank)} of 50 states (the U.S. average was {data.usProp.toFixed(2)}%). The trade-off is price: a typical Colorado home was worth about {round1k(co.home)} in {zMonth}, the {ord(homeRank)} highest of the 50 states and D.C.</p>
+      <p><b>Low property tax, higher home prices.</b> Colorado homeowners paid about {co.prop.toFixed(2)}% of their home's value in property tax in 2024, ranked {ord(co.propRank)} of 50 states (the U.S. average was {data.usProp.toFixed(2)}%). The trade-off is price: the median Colorado home sold for about {round1k(co.home)} in {zMonth}, the {ord(homeRank)} highest of the {priced.length - 1} states and D.C. with Redfin data. With a median household income of {money(co.income)}, the typical home costs {co.ratio.toFixed(2)} times income, compared with an average of {usRatio.toFixed(2)} across them.</p>
       <p><b>A flat income tax.</b> Colorado taxes income at one rate, 4.40% for 2026. From a state with a high top rate, most households pay less; from one of the {noIncome.length} states with no tax on wages, you will start paying it, so compare property tax and insurance too.</p>
       <p><b>"No income tax" is not the whole story.</b> Texas has no income tax but a property tax rate of about {tx.prop.toFixed(2)}% of home value. Florida's average home insurance is {money(fl.ins)} a year for $300,000 of coverage, compared with {money(co.ins)} in Colorado.</p>
       <p><b>Check the exact home.</b> Many newer Colorado neighborhoods are in a metro district that adds to the tax bill, and many have HOA dues. Insurance depends on the roof and the deductible. Tamila checks these for every home before you write an offer.</p>
@@ -125,9 +146,13 @@ const schema = [
         <li><a href="https://taxfoundation.org/data/all/state/2026-sales-tax-rates-midyear/" rel="noopener" target="_blank">Tax Foundation: State and Local Sales Tax Rates, Midyear 2026</a> (state plus average local rate)</li>
         <li><a href="https://taxfoundation.org/wp-content/uploads/2026/04/TaxFoundation_FactsFigures26-3-31.pdf" rel="noopener" target="_blank">Tax Foundation: Facts &amp; Figures 2026, Table 33, Property Taxes Paid as a Percentage of Owner-Occupied Housing Value</a> (2024, from Census ACS)</li>
         <li><a href="https://insurify.com/homeowners-insurance/states/" rel="noopener" target="_blank">Insurify: Average Home Insurance Rates by State</a> ($300,000 dwelling coverage)</li>
-        <li><a href="https://www.zillow.com/research/data/" rel="noopener" target="_blank">Zillow Research: Zillow Home Value Index (ZHVI), states, {zMonth}</a></li>
+        <li><a href="https://www.redfin.com/news/data-center/housing-market/" rel="noopener" target="_blank">Redfin Data Center: Housing Market Tracker, median sale price by state, {zMonth}</a> (all residential, not seasonally adjusted; Redfin does not publish Louisiana)</li>
+        <li><a href="https://www.census.gov/programs-surveys/acs/data/summary-file.html" rel="noopener" target="_blank">U.S. Census Bureau: American Community Survey 2025 1-year estimates, table B19013, median household income</a></li>
+        <li><a href="https://agents.floodsmart.gov/sites/default/files/media/document/2025-08/fema_nfip-most-homeowners-insurance-does-not-cover-flood-damage_postcard_08-2025.pdf" rel="noopener" target="_blank">FEMA / National Flood Insurance Program: Most homeowners insurance does not cover flood damage</a></li>
+        <li><a href="https://www.insurance.ca.gov/0200-industry/0105-alert/upload/FAIR-Plan-growth-slows-below-2-as-Californias-insurance-market-continues-to-show-signs-of-recovery.pdf" rel="noopener" target="_blank">California Department of Insurance: FAIR Plan update, August 2026</a></li>
+        <li><a href="https://www.cbsnews.com/colorado/news/hail-driving-colorado-high-insurance-rates" rel="noopener" target="_blank">CBS Colorado: Colorado Division of Insurance data on hail and wildfire in homeowners premiums (February 2026)</a></li>
       </ul>
-      <p>Tax and insurance data last checked: {taxChecked}. Home values update automatically each month.</p>
+      <p>Tax and insurance data last checked: {taxChecked}. Home sale prices update automatically each month; household income once a year.</p>
     </div>
   </section>
 
@@ -135,7 +160,7 @@ const schema = [
   <ContactBand title="Planning a Move to Colorado?" lead="Tell Tamila where you are moving from, your budget and your timeline. She will send neighborhoods to look at, real tax and insurance numbers for homes you like, and a pre-approval plan, free." goal="Buy a home" />
 </Base>
 
-<script define:vars={{ states }}>
+<script define:vars={{ states, MONTH: zMonth }}>
   const $ = (id) => document.getElementById(id);
   const fmt = (n) => '$' + Math.round(n).toLocaleString('en-US');
   const pct = (n) => (Math.round(n * 100) / 100).toFixed(2).replace(/\.?0+$/, '') + '%';
@@ -160,6 +185,13 @@ const schema = [
   };
   const slug = (s) => s.toLowerCase().replace(/[^a-z]+/g, '-');
   const MAX = 5;
+  const DISC = {
+    California: 'The state average hides big differences. In wildfire-prone areas, many owners have had trouble finding regular coverage and use the California FAIR Plan, which the state describes as temporary coverage while the regular market recovers. Expect much higher costs there and get quotes before you make an offer.',
+    Florida: 'Hurricane and wind risk drive prices: coastal homes can cost far more to insure than the state average. Flood is a separate policy.',
+    Louisiana: 'Hurricane and wind risk drive prices: coastal homes can cost far more to insure than the state average. Flood is a separate policy.',
+    Texas: 'Coastal homes (hurricanes) and hail-prone areas can cost much more to insure than the state average. Flood is a separate policy.',
+    Colorado: 'Hail is the biggest driver: data from the Colorado Division of Insurance show hail makes up 26% to 54% of homeowners premiums and wildfire 1% to 25%, depending on the county. Homes near forests can cost much more to insure.',
+  };
   let picked = ['California'];
   const params = new URLSearchParams(location.search);
   if (params.get('from')) {
@@ -205,7 +237,9 @@ const schema = [
       + row('Home insurance', (x) => fmt(x.ins), () => 'state average')
       + `<tr class="tot"><th scope="row">Total per year</th>` + cols.map((r, i) => `<td class="${r.s === 'Colorado' ? 'co' : ''}"><b>${fmt(res[i].total)}</b></td>`).join('') + '</tr>'
       + diffRow
-      + row('Typical home value', (x, r) => (r.home ? fmt(r.home) : '—'), () => 'Zillow')
+      + row('Median home sale price', (x, r) => (r.home ? fmt(r.home) : 'No data'), () => 'Redfin, ' + MONTH)
+      + row('Median household income', (x, r) => (r.income ? fmt(r.income) : '—'), () => 'Census, 2025')
+      + row('Affordability ratio', (x, r) => (r.ratio ? r.ratio.toFixed(2) + '×' : '—'), () => 'price ÷ income')
       + '</tbody>';
     // headline + notes
     const lines = picked.map((n, i) => {
@@ -215,10 +249,12 @@ const schema = [
     $('headline').innerHTML = picked.length ? '<ul class="hl">' + lines.map((l) => `<li>${l}</li>`).join('') + '</ul>' : '<p>Add a state above to compare it with Colorado.</p>';
     $('notes').innerHTML = picked.map((n) => {
       const r = find(n);
-      if (!r.home || !CO.home) return '';
+      if (!r.home || !CO.home) return `<li>${label(n)}: Redfin does not publish median sale prices, so there is no price or affordability comparison.</li>`;
       const h = CO.home - r.home, p = Math.round(Math.abs(h) / r.home * 100);
-      return `<li>Typical home in Colorado vs ${label(n)}: <b>${p}% ${h > 0 ? 'more expensive' : 'less expensive'}</b> (${fmt(CO.home)} vs ${fmt(r.home)})</li>`;
+      return `<li>Median home sale price in Colorado vs ${label(n)}: <b>${p}% ${h > 0 ? 'higher' : 'lower'}</b> (${fmt(CO.home)} vs ${fmt(r.home)}); affordability ratio ${CO.ratio.toFixed(2)}× vs ${r.ratio.toFixed(2)}×</li>`;
     }).join('');
+    const shown = [...picked, 'Colorado'].filter((n) => DISC[n]);
+    $('discStates').innerHTML = shown.map((n) => `<li><b>${label(n)} insurance:</b> ${DISC[n]}</li>`).join('');
     $('assume').textContent = `Based on ${fmt(inc)} taxable income (${filing === 'married' ? 'married filing jointly' : 'single'}), the same ${fmt(price)} home in every state and ${fmt(spend)} a year of taxable spending.`;
   }
   $('mv').addEventListener('input', (e) => { if (e.target.id !== 'add') run(); });
@@ -279,4 +315,9 @@ const schema = [
   .assume { font-size: .85rem; opacity: .8; }
   .out__small { font-size: .78rem; opacity: .75; }
   @media (max-width: 560px) { .grid3 { grid-template-columns: 1fr; } .card { padding: 18px 14px; } .swipe { display: block; } .cmpt { font-size: .88rem; } .cmpt th, .cmpt td { padding: 8px 8px; } .cmpt tbody th { min-width: 96px; } .cmpt td { min-width: 96px; } }
+</style>
+<style is:global>
+  .disc-states { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .9rem; }
+  .disclosures { background: #fffaf2; }
+  .disclosures li { margin-bottom: 8px; }
 </style>

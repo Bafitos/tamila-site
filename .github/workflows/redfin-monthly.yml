@@ -1,0 +1,53 @@
+name: Monthly Redfin home sale prices
+
+# Redfin updates its Housing Market Tracker in the first days of each month.
+# On the 10th we refresh the median sale price per state in src/data/afford.json;
+# if it changed, the commit triggers the Cloudflare build and /moving-to-colorado
+# shows the new month automatically.
+on:
+  schedule:
+    - cron: "23 15 10 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Redfin states (monthly)
+        run: curl -fsSL "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/housing_market/monthly/all_states.csv" -o /tmp/states.csv
+      - name: Update src/data/afford.json
+        run: |
+          python3 - <<'PY'
+          import csv, json
+          rows = list(csv.DictReader(open('/tmp/states.csv')))
+          k = 'MEDIAN SALE PRICE NSA ($)'
+          st = [r for r in rows if r['REGION TYPE'] == 'State' and r['IS SEASONALLY ADJUSTED'] == 'false']
+          month = max(r['PERIOD BEGIN'] for r in st)
+          price = {}
+          for r in st:
+              if r['PERIOD BEGIN'] == month and r[k] not in ('NA', ''):
+                  name = 'District of Columbia' if r['REGION NAME'] == 'Columbia' else r['REGION NAME']
+                  price[name] = int(float(r[k]))
+          if len(price) < 45 or 'Colorado' not in price:
+              raise SystemExit(f'Redfin file looks wrong: {len(price)} states for {month}')
+          a = json.load(open('src/data/afford.json'))
+          if month < a['priceMonth']:
+              raise SystemExit(f'Older month {month} than {a["priceMonth"]}')
+          a['priceMonth'] = month
+          a['priceUpdated'] = rows[0]['LAST UPDATED']
+          a['price'] = dict(sorted(price.items()))
+          json.dump(a, open('src/data/afford.json', 'w'), indent=1)
+          print('Redfin month', month, 'Colorado', price['Colorado'])
+          PY
+      - name: Commit if changed
+        run: |
+          git config user.name "redfin-bot"
+          git config user.email "redfin-bot@users.noreply.github.com"
+          git add src/data/afford.json
+          if git diff --cached --quiet; then echo "No change"; exit 0; fi
+          git commit -m "Redfin median sale prices: $(python3 -c "import json;print(json.load(open('src/data/afford.json'))['priceMonth'])")"
+          git pull --rebase origin main && git push
