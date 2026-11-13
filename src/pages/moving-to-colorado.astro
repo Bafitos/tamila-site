@@ -84,8 +84,15 @@ const schema = [
               <input id="dp" type="range" min="0" max="100" step="0.5" value="5" aria-label="Down payment percent" />
               <output id="dpOut">5%</output>
             </div>
-            <div class="dpq"><button type="button" data-v="0">0% VA</button><button type="button" data-v="3.5">3.5% FHA</button><button type="button" data-v="5">5%</button><button type="button" data-v="20">20%</button><button type="button" data-v="50">50%</button></div>
+            <div class="dpq"><button type="button" data-v="0" data-loan="va">0% VA</button><button type="button" data-v="3.5" data-loan="fha">3.5% FHA</button><button type="button" data-v="5">5%</button><button type="button" data-v="20">20%</button><button type="button" data-v="50">50%</button></div>
             <small>You don't need 20% down: many buyers put 3% to 5% down (FHA 3.5%, VA 0%). Drag to any amount, up to 100% for a cash purchase.</small>
+          </div>
+          <div class="you__f" role="group" aria-label="Loan type">
+            <span class="you__l">Loan type</span>
+            <div class="seg" id="loanSeg"><button type="button" data-v="conv" class="on">Conventional</button><button type="button" data-v="fha">FHA</button><button type="button" data-v="va">VA</button></div>
+            <div class="seg seg--sm" id="vaSeg" hidden><button type="button" data-v="first" class="on">First VA loan</button><button type="button" data-v="again">Used VA before</button><button type="button" data-v="exempt">Exempt from fee</button></div>
+            <small id="loanHint">Conventional: from 3% down; private mortgage insurance until you have 20% equity.</small>
+            <input type="hidden" id="loan" value="conv" /><input type="hidden" id="vause" value="first" />
           </div>
           <div class="you__f you__home" role="group" aria-label="Home price">
             <span class="you__l">Home price</span>
@@ -135,7 +142,7 @@ const schema = [
             <dt>Affordability ratio</dt>
             <dd>Median home sale price divided by median household income. It shows how many years of a typical household's income a typical home costs. Colorado: {money(co.home)} ÷ {money(co.income)} = <b>{co.ratio.toFixed(2)}</b>. The lower the ratio, the easier homes are to afford on local incomes; the higher, the harder. It does not include interest rates, down payment, taxes or your own income and debts, so it is a guide, not a loan approval.</dd>
             <dt>Monthly home payment and share of income</dt>
-            <dd>The mortgage payment (with mortgage insurance if you put less than 20% down) plus property tax and home insurance, per month. "Share of your income" is that payment times 12 divided by your income before taxes, the same way a lender looks at it. By default each state uses its own typical (median) home price, so you see what living there would really cost; switch to "Same price everywhere" to compare one house.</dd>
+            <dd>The mortgage payment (with mortgage insurance for conventional loans under 20% down and for FHA loans; VA has none) plus property tax and home insurance, per month. "Share of your income" is that payment times 12 divided by your income before taxes, the same way a lender looks at it. By default each state uses its own typical (median) home price, so you see what living there would really cost; switch to "Same price everywhere" to compare one house.</dd>
             <dt>Total per year</dt>
             <dd>Twelve monthly home payments plus state income tax for your household. Sales tax is shown as a rate only, because it depends on what you buy.</dd>
           </dl>
@@ -148,7 +155,7 @@ const schema = [
             <li><b>Flood is not included.</b> Most homeowners insurance does not cover flood damage (FEMA). Flood insurance is a separate policy and is not part of these totals.</li>
             <li><b>Property tax depends on the address.</b> Rates are statewide averages for owner-occupied homes in 2024 (Tax Foundation). County, city, school district and special district taxes, assessments and exemptions change the real bill, and the same home price is used for every state.</li>
             <li><b>Income tax is simplified.</b> You enter income before taxes. The tool subtracts each state's 2026 standard deduction and personal exemption (Tax Foundation) and applies the state's rates for married or single filers. Itemized deductions, dependents, income phase-outs, other credits and local income taxes that some cities and counties charge are not included.</li>
-            <li><b>Mortgage payment is an estimate.</b> It assumes a 30-year fixed loan at this week's national average rate (Freddie Mac) unless you change it, the down payment you choose and, with less than 20% down, private mortgage insurance estimated at 0.5% of the loan a year. HOA dues, closing costs, FHA and VA fees are not included. Your rate and payment depend on your credit, income and loan program. This is not a loan offer or commitment to lend. Loans through Barrett Financial Group, LLC, NMLS #181106; Tamila Aspen, NMLS #2490507. Equal Housing Opportunity.</li>
+            <li><b>Mortgage payment is an estimate.</b> It assumes a 30-year fixed loan at this week's national average rate (Freddie Mac) unless you change it, and the down payment and loan type you choose. <b>Conventional:</b> private mortgage insurance estimated at 0.5% of the loan a year with less than 20% down. <b>FHA:</b> 1.75% upfront mortgage insurance added to the loan, plus annual mortgage insurance of 0.50% to 0.75% depending on the loan amount and down payment; FHA loan limits by county are not checked. <b>VA:</b> no monthly mortgage insurance; a one-time funding fee of 1.25% to 3.3% is added to the loan unless you are exempt (for example, veterans receiving VA disability compensation). HOA dues and closing costs are not included. Your rate and payment depend on your credit, income, eligibility and loan program. This is not a loan offer or commitment to lend. Loans through Barrett Financial Group, LLC, NMLS #181106; Tamila Aspen, NMLS #2490507. Equal Housing Opportunity.</li>
             <li><b>Sales tax is shown as a rate only.</b> It is the average combined state and local rate and is not included in the totals. Many states tax groceries, medicine and services differently.</li>
             <li><b>Home prices.</b> Median sale prices are from Redfin for {zMonth}, not seasonally adjusted: "Houses only" uses single-family homes, "All homes" includes condos, townhomes and small multi-family. Redfin does not publish Louisiana, so Louisiana uses statewide MLS data for all home types{la ? ` for ${laMonth}` : ''} in both views. Prices change every month and differ a lot between cities in the same state.</li>
             <li><b>Data changes.</b> Sources and dates are listed below. The page is updated as new data is published, but numbers can change at any time.</li>
@@ -243,12 +250,17 @@ const schema = [
     const want = params.get('from').split(',').map((x) => states.find((r) => slug(r.s) === x)).filter((r) => r && r.s !== 'Colorado').map((r) => r.s);
     if (want.length) picked = [...new Set(want)].slice(0, MAX);
   }
-  const segs = { filing: 'filingSeg', mode: 'modeSeg', ptype: 'typeSeg' };
-  const setSeg = (k, v) => { $(k).value = v; $(segs[k]).querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); if (k === 'mode') { $('priceWrap').hidden = v !== 'same'; $('typeSeg').hidden = v === 'same'; } };
+  const LOANHINT = {
+    conv: 'Conventional: from 3% down; private mortgage insurance until you have 20% equity.',
+    fha: 'FHA: from 3.5% down, flexible credit; 1.75% upfront fee added to the loan plus monthly mortgage insurance.',
+    va: 'VA: for eligible veterans and service members; 0% down, no monthly mortgage insurance, one-time funding fee unless exempt.',
+  };
+  const segs = { filing: 'filingSeg', mode: 'modeSeg', ptype: 'typeSeg', loan: 'loanSeg', vause: 'vaSeg' };
+  const setSeg = (k, v) => { $(k).value = v; $(segs[k]).querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); if (k === 'mode') { $('priceWrap').hidden = v !== 'same'; $('typeSeg').hidden = v === 'same'; } if (k === 'loan') { $('vaSeg').hidden = v !== 'va'; const dp = +$('dp').value; if (v === 'fha' && dp < 3.5) $('dp').value = '3.5'; if (v === 'conv' && dp < 3) $('dp').value = '3'; $('loanHint').textContent = LOANHINT[v]; } };
   let rateTouched = false;
   ['income', 'price', 'dp', 'rate'].forEach((k) => { if (params.get(k)) { $(k).value = params.get(k); if (k === 'rate') rateTouched = true; } });
-  ['filing', 'mode', 'ptype'].forEach((k) => { if (params.get(k)) setSeg(k, params.get(k)); });
-  document.querySelectorAll('.dpq button').forEach((b) => b.addEventListener('click', () => { $('dp').value = b.dataset.v; run(); }));
+  ['filing', 'mode', 'ptype', 'loan', 'vause'].forEach((k) => { if (params.get(k)) setSeg(k, params.get(k)); });
+  document.querySelectorAll('.dpq button').forEach((b) => b.addEventListener('click', () => { if (b.dataset.loan) setSeg('loan', b.dataset.loan); $('dp').value = b.dataset.v; run(); }));
   Object.entries(segs).forEach(([k, id]) => $(id).querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { setSeg(k, b.dataset.v); run(); })));
 
   function calc(r, o) {
@@ -258,13 +270,18 @@ const schema = [
     const typical = o.ptype === 'houses' ? (r.homeHouse ?? r.home) : r.home;
     const price = o.mode === 'same' ? o.price : typical;
     if (!price) return { it, price: null, ratio: null, total: null };
-    const loan = price * (1 - o.dp / 100), i = o.rate / 100 / 12, n = 360;
-    const pi = i ? loan * i / (1 - Math.pow(1 + i, -n)) : loan / n;
-    const pmi = o.dp < 20 ? loan * 0.005 / 12 : 0;
+    const base = price * (1 - o.dp / 100), i = o.rate / 100 / 12, n = 360;
+    let feePct = 0, miYear = 0;
+    if (o.loan === 'fha') { feePct = base > 0 ? 1.75 : 0; const ltv = base / price; miYear = base > 726200 ? (ltv > 0.95 ? 0.75 : 0.70) : (ltv > 0.95 ? 0.55 : 0.50); if (base <= 0) miYear = 0; }
+    else if (o.loan === 'va') { feePct = base <= 0 || o.vause === 'exempt' ? 0 : o.dp >= 10 ? 1.25 : o.dp >= 5 ? 1.5 : (o.vause === 'again' ? 3.3 : 2.15); }
+    else { miYear = o.dp < 20 ? 0.5 : 0; }
+    const loan = base * (1 + feePct / 100);
+    const pi = loan <= 0 ? 0 : i ? loan * i / (1 - Math.pow(1 + i, -n)) : loan / n;
+    const pmi = (o.loan === 'fha' ? base : loan) * miYear / 100 / 12;
     const ptm = price * r.prop / 100 / 12, insm = r.ins / 12;
     const month = pi + pmi + ptm + insm;
     const ratio = typical && r.income ? typical / r.income : null;
-    return { it, price, ratio, pi, pmi, ptm, insm, month, share: o.inc ? month * 12 / o.inc * 100 : 0, down: price * o.dp / 100, total: month * 12 + it };
+    return { it, price, ratio, feePct, pi, pmi, ptm, insm, month, share: o.inc ? month * 12 / o.inc * 100 : 0, down: price * o.dp / 100, total: month * 12 + it };
   }
   function addState(n) {
     if (!n || n === 'Colorado') return;
@@ -273,7 +290,7 @@ const schema = [
     run();
   }
   function run() {
-    const o = { ptype: $('ptype').value, inc: +$('income').value || 0, filing: $('filing').value, dp: +$('dp').value, mode: $('mode').value, price: +$('price').value || 0, rate: +$('rate').value || 0 };
+    const o = { loan: $('loan').value, vause: $('vause').value, ptype: $('ptype').value, inc: +$('income').value || 0, filing: $('filing').value, dp: +$('dp').value, mode: $('mode').value, price: +$('price').value || 0, rate: +$('rate').value || 0 };
     $('dpOut').textContent = (+o.dp) + '%';
     document.querySelectorAll('.dpq button').forEach((b) => b.classList.toggle('on', +b.dataset.v === +o.dp));
     $('dp').style.setProperty('--p', o.dp + '%');
@@ -298,9 +315,9 @@ const schema = [
     }).join('') + '</tr>';
     $('cmpt').innerHTML = '<thead>' + head + '</thead><tbody>'
       + row('Home price', (x) => (x.price ? fmt(x.price) : 'No data'), (x, r) => (o.mode === 'same' ? 'your price' : (o.ptype === 'houses' && r.homeHouse ? 'median house, ' : o.ptype === 'houses' ? 'median, all homes, ' : 'median, all homes, ') + (r.priceLabel || 'Redfin ' + MONTH)))
-      + row('Monthly home payment', (x) => (x.price ? fmt(x.month) + '/mo' : dash), (x) => (x.price ? `loan ${fmt(x.pi + x.pmi)} · tax ${fmt(x.ptm)} · insurance ${fmt(x.insm)}` : ''), 'big')
+      + row('Monthly home payment', (x) => (x.price ? fmt(x.month) + '/mo' : dash), (x) => (x.price ? `loan ${fmt(x.pi)}${x.pmi ? ' · mortgage ins. ' + fmt(x.pmi) : ''} · tax ${fmt(x.ptm)} · home ins. ${fmt(x.insm)}` : ''), 'big')
       + row('Share of your income', (x) => (x.price ? Math.round(x.share) + '%' : dash), () => 'home payment ÷ income')
-      + row('Down payment', (x) => (x.price ? fmt(x.down) : dash), () => o.dp + '% + closing costs')
+      + row('Down payment', (x) => (x.price ? fmt(x.down) : dash), (x) => o.dp + '% + closing costs' + (x.feePct ? `; ${x.feePct}% ${o.loan === 'fha' ? 'FHA upfront fee' : 'VA funding fee'} added to loan` : ''))
       + row('State income tax', (x) => fmt(x.it) + '/yr', rateText.length ? (x, r) => rateText(r) : null)
       + row('Sales tax rate', (x, r) => pct(r.sales), () => 'state + average local')
       + `<tr class="tot"><th scope="row">Total per year</th>` + cols.map((r, i) => `<td class="${cls(r)}"><b>${res[i].total != null ? fmt(res[i].total) : dash}</b><small>home payments + income tax</small></td>`).join('') + '</tr>'
@@ -319,7 +336,7 @@ const schema = [
     $('notes').innerHTML = co.price ? `<li>In Colorado, a ${fmt(co.price)} home with ${o.dp}% down would take about <b>${Math.round(co.share)}%</b> of a ${fmt(o.inc)} income. Want to know what you would qualify for? Tamila can pre-approve you before you move.</li>` : '';
     const shown = [...picked, 'Colorado'].filter((n) => DISC[n]);
     $('discStates').innerHTML = shown.map((n) => `<li><b>${label(n)} insurance:</b> ${DISC[n]}</li>`).join('');
-    $('assume').textContent = `Based on ${fmt(o.inc)} household income before taxes (${o.filing === 'married' ? 'married' : 'single'}), ${o.dp}% down, a 30-year fixed loan at ${o.rate.toFixed(2)}%${o.dp < 20 ? ', estimated mortgage insurance' : ''}, ${o.mode === 'same' ? 'the same ' + fmt(o.price) + ' home in every state' : (o.ptype === 'houses' ? 'the median house (single-family) sale price in each state' : 'the median sale price of all home types in each state')}.`;
+    $('assume').textContent = `Based on ${fmt(o.inc)} household income before taxes (${o.filing === 'married' ? 'married' : 'single'}), ${o.dp}% down, a 30-year fixed ${o.loan === 'fha' ? 'FHA' : o.loan === 'va' ? 'VA' : 'conventional'} loan at ${o.rate.toFixed(2)}%${o.loan === 'fha' ? ' with FHA mortgage insurance' : o.loan === 'va' ? (o.vause === 'exempt' ? ' with no funding fee' : ' with the VA funding fee') : o.dp < 20 ? ', estimated private mortgage insurance' : ''}, ${o.mode === 'same' ? 'the same ' + fmt(o.price) + ' home in every state' : (o.ptype === 'houses' ? 'the median house (single-family) sale price in each state' : 'the median sale price of all home types in each state')}.`;
   }
   $('mv').addEventListener('input', (e) => { if (e.target.id === 'rate') rateTouched = true; if (e.target.id !== 'add') run(); });
   $('add').addEventListener('change', () => addState($('add').value));
@@ -333,7 +350,7 @@ const schema = [
     }
   }).catch(() => { $('rateHint').textContent = 'Average rate estimate. Your rate depends on credit and loan.'; });
   $('share').addEventListener('click', () => {
-    const p = new URLSearchParams({ from: picked.map(slug).join(','), income: $('income').value, filing: $('filing').value, dp: $('dp').value, mode: $('mode').value, ptype: $('ptype').value });
+    const p = new URLSearchParams({ from: picked.map(slug).join(','), income: $('income').value, filing: $('filing').value, dp: $('dp').value, loan: $('loan').value, vause: $('vause').value, mode: $('mode').value, ptype: $('ptype').value });
     if ($('mode').value === 'same') p.set('price', $('price').value);
     const url = location.origin + location.pathname + '?' + p.toString();
     navigator.clipboard?.writeText(url).then(() => { $('share').textContent = 'Link copied'; setTimeout(() => ($('share').textContent = 'Copy link to this comparison'), 2000); });
