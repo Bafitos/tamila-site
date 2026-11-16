@@ -15,7 +15,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
 // Embed code: a self-contained card with a credited link back to the original article.
 const embed = `<div style="font-family:Arial,Helvetica,sans-serif;border:1px solid #D0DEDC;border-radius:12px;padding:16px;max-width:680px;color:#1B2421">
-<p style="margin:0 0 10px;font-weight:bold;font-size:18px;color:#255A4F">${esc(c.a)} vs ${esc(c.b)}, Colorado</p>
+<p style="margin:0 0 10px;font-weight:bold;font-size:18px;color:#255A4F">${esc(c.a)} vs ${esc(c.b)}${[c.a, c.b].includes('Colorado') ? '' : ', Colorado'}</p>
 <table style="width:100%;border-collapse:collapse;font-size:14px">
 <tr><th style="text-align:left;padding:6px;border-bottom:2px solid #255A4F"></th><th style="text-align:left;padding:6px;border-bottom:2px solid #255A4F">${esc(c.a)}</th><th style="text-align:left;padding:6px;border-bottom:2px solid #255A4F">${esc(c.b)}</th></tr>
 ${c.rows.map(([l, a, b]) => `<tr><td style="padding:6px;border-bottom:1px solid #D0DEDC;font-weight:bold">${esc(l)}</td><td style="padding:6px;border-bottom:1px solid #D0DEDC">${esc(a)}</td><td style="padding:6px;border-bottom:1px solid #D0DEDC">${esc(b)}</td></tr>`).join('\n')}
