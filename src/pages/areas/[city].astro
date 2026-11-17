@@ -5,6 +5,7 @@ import Faq from '../../components/Faq.astro';
 import ContactBand from '../../components/ContactBand.astro';
 import { site } from '../../data/site.js';
 import { cities } from '../../data/cities.js';
+import { posts } from '../../data/posts.js';
 import walking from '../../assets/tamila-aspen-walking.jpg';
 import portrait from '../../assets/tamila-aspen-portrait.jpg';
 import onPhone from '../../assets/tamila-aspen-on-phone.jpg';
@@ -16,6 +17,7 @@ export function getStaticPaths() {
 const { c } = Astro.props;
 const photos = { walking, portrait, 'on-phone': onPhone, 'full-length': fullLength };
 const others = cities.filter((x) => x.slug !== c.slug);
+const related = posts.filter((p) => (p.cities || []).includes(c.slug));
 const url = `${site.url}/areas/${c.slug}`;
 
 const schema = [
@@ -113,6 +115,17 @@ const schema = [
   </section>
 
   <Faq items={c.faq} title={`${c.name} questions`} />
+
+  {related.length > 0 && (
+    <section class="section mist">
+      <div class="wrap narrow stack">
+        <h2>Read More About {c.name}</h2>
+        <ul>
+          {related.map((p) => <li><a href={`/blog/${p.slug}`}>{p.title}</a></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
 
   <section class="section">
     <div class="wrap narrow center stack">
