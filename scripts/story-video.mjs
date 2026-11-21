@@ -13,6 +13,20 @@ import { resolve } from 'node:path';
 const spec = JSON.parse(readFileSync(process.argv[2], 'utf8'));
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const photo = 'data:image/jpeg;base64,' + readFileSync('public/tamila-aspen.jpg').toString('base64');
+const PALETTES = [
+  ['#2f6d60', '#173a33'], // forest green (brand)
+  ['#2d4a7a', '#152238'], // navy
+  ['#b5583a', '#5e2a1c'], // terracotta
+  ['#6b3f7a', '#2e1a36'], // plum
+  ['#1f7a8c', '#0f3540'], // ocean teal
+  ['#a8761f', '#4f3510'], // amber
+  ['#8a2f4a', '#3b1220'], // berry
+];
+const seedOf = (s) => [...String(s)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+const bgLayers = (starts, seed) => starts.map((t, i) => {
+  const [a, b] = PALETTES[(seed + i) % PALETTES.length];
+  return `<div class="bgl" style="z-index:${i - 100};background:radial-gradient(ellipse at 30% 10%,${a} 0%,${b} 100%);animation:bgin .6s ${t}s both"></div>`;
+}).join('');
 const FPS = 30, HOOK = 3.2, SLIDE = 3.0, END = 5.5;
 const n = spec.slides.length;
 const endAt = HOOK + n * SLIDE;
@@ -27,11 +41,13 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box;margin:0}
 body{width:1080px;height:1920px;overflow:hidden;font-family:'Noto Sans','DejaVu Sans','Noto Color Emoji',Arial,sans-serif;color:#fff;
  background:radial-gradient(ellipse at 30% 10%,#2f6d60 0%,#255A4F 45%,#173a33 100%)}
+.bgl{position:absolute;inset:0}
+@keyframes bgin{from{opacity:0}to{opacity:1}}
 @keyframes inout{0%{opacity:0;transform:translateY(50px)}12%{opacity:1;transform:none}88%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-30px)}}
 @keyframes up{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes prog{from{width:0}to{width:100%}}
-.scr{position:absolute;left:90px;right:90px;top:430px;opacity:0}
+.scr{z-index:1;position:absolute;left:90px;right:90px;top:430px;opacity:0}
 .hook .big{font-size:104px;line-height:1.06}
 .hook .small{font-size:46px}
 .num{font-size:40px;color:#B3CAC7;letter-spacing:3px;font-weight:700}
@@ -40,7 +56,7 @@ body{width:1080px;height:1920px;overflow:hidden;font-family:'Noto Sans','DejaVu 
 .brand{position:absolute;top:120px;left:90px;font-size:34px;letter-spacing:4px;text-transform:uppercase;color:#B3CAC7;animation:fade .6s .2s both}
 .progress{position:absolute;top:190px;left:90px;right:90px;height:8px;background:rgba(255,255,255,.18);border-radius:4px;overflow:hidden}
 .progress i{display:block;height:100%;background:#B3CAC7;animation:prog ${endAt}s 0s linear both}
-.end{position:absolute;left:80px;right:80px;top:470px;background:#F7FAF9;color:#173a33;border-radius:40px;padding:60px 56px;animation:up .8s ${endAt}s both}
+.end{z-index:2;position:absolute;left:80px;right:80px;top:470px;background:#F7FAF9;color:#173a33;border-radius:40px;padding:60px 56px;animation:up .8s ${endAt}s both}
 .end h2{font-size:58px;line-height:1.18}
 .end .fol{font-size:40px;margin-top:28px;color:#255A4F;font-weight:700}
 .who{display:flex;align-items:center;gap:30px;margin-top:46px}
@@ -49,6 +65,7 @@ body{width:1080px;height:1920px;overflow:hidden;font-family:'Noto Sans','DejaVu 
 .rl{font-size:30px;color:#4d6b64;margin-top:6px}
 .foot{position:absolute;left:90px;right:90px;bottom:90px;font-size:26px;color:#B3CAC7;line-height:1.35}
 </style></head><body>
+${bgLayers([0, ...spec.slides.map((_, i) => HOOK + i * SLIDE), endAt], spec.seed ?? seedOf(spec.slug))}
 <div class="brand">Real-life real estate</div>
 <div class="progress"><i></i></div>
 ${screen(0, HOOK, `<div class="big">${esc(spec.hook)}</div>${spec.hookSub ? `<div class="small">${esc(spec.hookSub)}</div>` : ''}`, 'hook')}

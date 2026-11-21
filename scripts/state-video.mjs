@@ -28,6 +28,20 @@ const rows = [
   afford.price[st.s] && [`Median home price (${month(afford.priceMonth)})`, money(afford.price[st.s]), money(afford.price['Colorado'])],
 ].filter(Boolean);
 
+const PALETTES = [
+  ['#2f6d60', '#173a33'], // forest green (brand)
+  ['#2d4a7a', '#152238'], // navy
+  ['#b5583a', '#5e2a1c'], // terracotta
+  ['#6b3f7a', '#2e1a36'], // plum
+  ['#1f7a8c', '#0f3540'], // ocean teal
+  ['#a8761f', '#4f3510'], // amber
+  ['#8a2f4a', '#3b1220'], // berry
+];
+const seedOf = (s) => [...String(s)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+const bgLayers = (starts, seed) => starts.map((t, i) => {
+  const [a, b] = PALETTES[(seed + i) % PALETTES.length];
+  return `<div class="bgl" style="z-index:${i - 100};background:radial-gradient(ellipse at 30% 10%,${a} 0%,${b} 100%);animation:bgin .6s ${t}s both"></div>`;
+}).join('');
 const FPS = 30, ROW0 = 2.4, STEP = 2.1;
 const endAt = ROW0 + rows.length * STEP + 0.6;
 const DUR = endAt + 5.5;
@@ -36,11 +50,13 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box;margin:0}
 body{width:1080px;height:1920px;overflow:hidden;font-family:'Noto Sans','DejaVu Sans',Arial,sans-serif;color:#fff;
  background:radial-gradient(ellipse at 30% 10%,#2f6d60 0%,#255A4F 45%,#173a33 100%)}
+.bgl{position:absolute;inset:0}
+@keyframes bgin{from{opacity:0}to{opacity:1}}
 @keyframes up{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes out{from{opacity:1}to{opacity:.12}}
 @keyframes grow{from{width:0}to{width:100%}}
-.wrap{position:absolute;inset:0;padding:150px 80px 0}
+.wrap{z-index:1;position:absolute;inset:0;padding:150px 80px 0}
 .kick{font-size:40px;letter-spacing:5px;text-transform:uppercase;color:#B3CAC7;animation:fade .6s .1s both}
 h1{font-size:112px;line-height:1.02;font-weight:800;margin-top:22px;animation:up .8s .3s both}
 h1 span{font-weight:300;color:#B3CAC7}
@@ -51,7 +67,7 @@ h1 span{font-weight:300;color:#B3CAC7}
 .vals{display:flex;margin-top:10px}
 .vals div{flex:1;font-size:74px;font-weight:800;line-height:1.05}
 .main{animation:out .6s ${endAt}s both}
-.end{position:absolute;left:80px;right:80px;bottom:220px;background:#F7FAF9;color:#173a33;border-radius:40px;padding:56px 56px 60px;animation:up .8s ${endAt + 0.1}s both}
+.end{z-index:2;position:absolute;left:80px;right:80px;bottom:220px;background:#F7FAF9;color:#173a33;border-radius:40px;padding:56px 56px 60px;animation:up .8s ${endAt + 0.1}s both}
 .end h2{font-size:56px;line-height:1.15}
 .url{font-size:35px;font-weight:800;color:#255A4F;margin-top:18px;white-space:nowrap}
 .bar{height:8px;background:#255A4F;border-radius:4px;margin-top:26px;animation:grow 1.2s ${endAt + 0.8}s both}
@@ -60,8 +76,9 @@ h1 span{font-weight:300;color:#B3CAC7}
 .nm{font-size:48px;font-weight:800;color:#255A4F}
 .rl{font-size:30px;color:#4d6b64;margin-top:6px}
 .follow{font-size:36px;line-height:1.3;margin-top:36px;font-weight:700;animation:fade .6s ${endAt + 1.6}s both}
-.src{position:absolute;left:80px;right:80px;bottom:90px;font-size:24px;color:#B3CAC7;animation:fade .6s 1.4s both}
+.src{z-index:1;position:absolute;left:80px;right:80px;bottom:90px;font-size:24px;color:#B3CAC7;animation:fade .6s 1.4s both}
 </style></head><body>
+${bgLayers([0, ...rows.map((_, i) => ROW0 + i * STEP), endAt], seedOf(st.s))}
 <div class="wrap main">
   <div class="kick">Moving to Colorado?</div>
   <h1>${esc(st.s)} <span>vs</span><br>Colorado</h1>
