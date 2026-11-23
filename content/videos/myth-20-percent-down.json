@@ -1,0 +1,17 @@
+{
+  "slug": "myth-20-percent-down",
+  "topic": "The 20% down payment myth",
+  "source": "ClientCare Social row 15: You probably do not need 20% down to buy a home.",
+  "seed": 17,
+  "hook": "Myth: you need 20% down",
+  "hookSub": "One of the most persistent myths in home buying",
+  "slides": [
+    { "big": "Many loans start well below 20%", "small": "FHA can start at 3.5% down. Some conventional loans start at 3%." },
+    { "big": "VA and USDA can be zero down", "small": "For eligible veterans, service members and buyers in eligible areas." },
+    { "big": "Less than 20% usually means mortgage insurance", "small": "It is part of the monthly payment. On conventional loans it can be removed later." },
+    { "big": "Your numbers beat a rule of thumb", "small": "The right option depends on your income, credit, the property and your goals." }
+  ],
+  "comment": "Did you believe this myth? Yes or no?",
+  "follow": "Follow for real-life real estate answers every week.",
+  "footnote": "Not a commitment to lend. Tamila Aspen, Real Estate Agent & Mortgage Loan Officer · NMLS #2490507"
+}
