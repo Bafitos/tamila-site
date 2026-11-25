@@ -25,7 +25,7 @@ const schema = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
 ];
 ---
-<Base title="What Is My Home Worth? Free Denver Home Value" description="Free home value estimate for Denver and the Front Range, based on real recent MLS sales, not a computer model. Plus what you would take home. No obligation." schema={schema}>
+<Base title="What Is My Home Worth? Free Denver Home Value" description="Free home value estimate for Denver and the Front Range, based on real recent MLS sales, not a computer model. Plus what you would take home. No obligation." schema={schema} alternates={{ en: '/home-value', ru: '/ru/home-value', uk: '/uk/home-value' }}>
   <PageHero
     eyebrow="Free · No obligation"
     title="What Is Your Home Worth?"
@@ -52,6 +52,7 @@ const schema = [
       <h2>Thinking About Selling and Buying?</h2>
       <p>When you sell your home and buy your next one with Tamila, her listing fee is 1% instead of the usual up to 3%. If you only sell, the fee is the standard rate, up to 3%. Ask her to show both numbers on your net sheet.</p>
       <div class="btns"><a class="pill pill--line" href="/sell-for-1-percent">How the 1% listing works</a><a class="pill pill--line" href="/cost-to-sell-a-house-in-colorado">Cost to sell calculator</a></div>
+      <p lang="ru">По-русски: <a href="/ru/home-value">оценка дома</a> · <span lang="uk">Українською: <a href="/uk/home-value">оцінка будинку</a></span></p>
     </div>
   </section>
 

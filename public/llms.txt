@@ -21,6 +21,7 @@
 - [Cost to sell a house in Colorado](https://www.denver-real-estates.com/cost-to-sell-a-house-in-colorado): net proceeds calculator with commissions (1% vs 3%), title insurance and closing fee, property tax proration, payoff and HOA
 - [Free home value estimate](https://www.denver-real-estates.com/home-value): free price estimate from recent MLS sales plus a net sheet, no obligation
 - [Self-employed mortgage in Colorado](https://www.denver-real-estates.com/self-employed-mortgage-colorado): bank statement, 1099, P&L, asset depletion and DSCR loans for business owners, 1099 earners and investors
+- Russian and Ukrainian versions: [/ru/home-value](https://www.denver-real-estates.com/ru/home-value), [/uk/home-value](https://www.denver-real-estates.com/uk/home-value), [/ru/self-employed-mortgage-colorado](https://www.denver-real-estates.com/ru/self-employed-mortgage-colorado), [/uk/self-employed-mortgage-colorado](https://www.denver-real-estates.com/uk/self-employed-mortgage-colorado)
 - [Moving to Colorado: taxes and home costs vs your state](https://www.denver-real-estates.com/moving-to-colorado): pick any of the 50 states or D.C. and compare 2026 state income tax (with brackets), sales tax, property tax, homeowners insurance and typical home value with Colorado; sources: Tax Foundation, Insurify, Zillow
 - [VA loans & PCS](https://www.denver-real-estates.com/va-loans-pcs): military families
 - [Selling during a divorce](https://www.denver-real-estates.com/selling-house-during-divorce)

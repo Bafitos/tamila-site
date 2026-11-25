@@ -40,7 +40,7 @@ const schema = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
 ];
 ---
-<Base title="Self-Employed Mortgage in Colorado: Bank Statement Loans" description="Self-employed in Denver or Colorado? Bank statement, 1099 and P&L loans that look at what you really earn, not only your tax return. Talk to Tamila Aspen." schema={schema}>
+<Base title="Self-Employed Mortgage in Colorado: Bank Statement Loans" description="Self-employed in Denver or Colorado? Bank statement, 1099 and P&L loans that look at what you really earn, not only your tax return. Talk to Tamila Aspen." schema={schema} alternates={{ en: '/self-employed-mortgage-colorado', ru: '/ru/self-employed-mortgage-colorado', uk: '/uk/self-employed-mortgage-colorado' }}>
   <PageHero
     eyebrow={`Self-employed home loans · NMLS #${site.nmls}`}
     title="Self-Employed? Your Tax Return Is Not the Whole Story"
@@ -100,6 +100,7 @@ const schema = [
   <section class="section">
     <div class="wrap narrow center stack">
       <p>More on loans: <a href="/mortgage">all mortgage programs</a> · <a href="/mortgage-calculator">payment calculator</a> · <a href="/buy-a-home">buying a home</a></p>
+      <p><a href="/ru/self-employed-mortgage-colorado" lang="ru">По-русски</a> · <a href="/uk/self-employed-mortgage-colorado" lang="uk">Українською</a></p>
     </div>
   </section>
 </Base>
