@@ -1,0 +1,112 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import img from '../assets/tamila-aspen-loan-officer-laptop.jpg';
+import { site } from '../data/site.js';
+
+const go = '/go/self-employed';
+const who = [
+  ['Business owners', 'Contractors, salon and restaurant owners, trucking and cleaning companies. Write-offs lower your taxable income, so your tax return makes you look like you earn less than you do.'],
+  ['1099 and gig workers', 'Independent contractors, real estate agents, nurses on contract, rideshare and delivery drivers. Income that changes from month to month is hard to fit into a standard loan.'],
+  ['Mixed or new income', 'A salary plus a side business, commission income, or a business that grew fast in the last year or two.'],
+  ['Investors', 'You own rentals or want your first one. Some loans qualify on the rent the property brings in, not on your personal income.'],
+];
+const programs = [
+  ['Bank statement loans', 'Income is calculated from 12 or 24 months of personal or business bank deposits instead of tax returns.'],
+  ['1099 loans', 'Income is based on your 1099 forms, which can work well when you have steady clients but large write-offs.'],
+  ['P&L loans', 'Income is based on a profit and loss statement for your business, usually prepared or verified by a tax professional.'],
+  ['Asset depletion', 'Savings and investments are converted into a monthly qualifying income. Helpful for business owners who sold a company or have large reserves.'],
+  ['DSCR loans for investors', 'The loan qualifies on the expected rent compared with the payment. No personal income documents. Can close in an LLC.'],
+  ['A regular loan, if it fits', 'If your tax returns already show enough income, a conventional or FHA loan is usually cheaper. Tamila checks this first.'],
+];
+const ready = [
+  'How long you have been self-employed and what kind of business it is',
+  'Your last 12 to 24 months of bank statements (personal, business or both)',
+  'A business license, CPA letter or other proof the business is active, if you have it',
+  'Your 1099 forms or a profit and loss statement, if you use those programs',
+  'A rough idea of the price range and how much you have for the down payment',
+];
+const faq = [
+  ['Can I get a mortgage if I am self-employed in Colorado?', 'Yes. If your tax returns show enough income, you can use a regular conventional or FHA loan. If write-offs make your income look too low, Non-QM programs such as bank statement, 1099 or P&L loans calculate income in a different way.'],
+  ['How many months of bank statements do I need?', 'Usually 12 or 24 months, personal or business, depending on the program and your situation.'],
+  ['How long do I need to be self-employed?', 'Usually about two years in the same line of work. There are exceptions, for example when you worked in the same field as an employee before starting your business. Tell Tamila your situation and she will check.'],
+  ['Do bank statement loans cost more?', 'Often yes. Non-QM loans usually have a higher rate and may need a larger down payment than a conventional loan. Tamila compares a conventional option side by side when one is possible, so you can see the difference.'],
+  ['Does checking my options hurt my credit?', 'Starting the conversation does not. A soft credit check, which does not affect your score, is enough to see your options.'],
+  ['Can I talk in Russian or Ukrainian?', 'Yes. Tamila speaks English, Russian and Ukrainian, and many of her clients run their own businesses.'],
+];
+const schema = [
+  { '@context': 'https://schema.org', '@type': 'Service', name: 'Self-employed mortgage loans in Colorado', serviceType: 'Mortgage brokerage', provider: { '@id': `${site.url}/#tamila` }, areaServed: 'Colorado', description: 'Bank statement, 1099, P&L, asset depletion and DSCR loans for self-employed borrowers and investors, through Tamila Aspen, NMLS #2490507, Barrett Financial Group.' },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+];
+---
+<Base title="Self-Employed Mortgage in Colorado: Bank Statement Loans" description="Self-employed in Denver or Colorado? Bank statement, 1099 and P&L loans that look at what you really earn, not only your tax return. Talk to Tamila Aspen." schema={schema}>
+  <PageHero
+    eyebrow={`Self-employed home loans · NMLS #${site.nmls}`}
+    title="Self-Employed? Your Tax Return Is Not the Whole Story"
+    lead="Write-offs save you taxes but can make your income look too low for a regular mortgage. Bank statement and 1099 loans look at what actually comes into your accounts. Tamila spent 23 years in finance and accounting and reads business income the way an underwriter does."
+    image={img}
+    imageAlt="Tamila Aspen, mortgage loan officer, working on a laptop"
+    pos="50% 30%"
+    cta2={[go, 'Check if I qualify']}
+  />
+
+  <section class="section mist">
+    <div class="wrap">
+      <div class="narrow center stack"><h2>Who These Loans Are For</h2></div>
+      <div class="cards cards--2">
+        {who.map(([h, p]) => <article class="card"><h3>{h}</h3><p>{p}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="narrow center stack">
+        <h2>Loan Options for Self-Employed Borrowers</h2>
+        <p class="lead">Tamila is a mortgage broker with about 200 wholesale lenders, so she can compare these programs and choose the one that fits how you earn.</p>
+      </div>
+      <div class="cards">
+        {programs.map(([h, p]) => <article class="card"><h3>{h}</h3><p>{p}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section mist">
+    <div class="wrap prose">
+      <h2>What to Have Ready</h2>
+      <ul>{ready.map((r) => <li>{r}</li>)}</ul>
+      <p>You don't need all of it to start. A few details are enough for Tamila to tell you which programs are worth looking at.</p>
+      <h2>Bank Statement Loan vs Conventional Loan</h2>
+      <p>A conventional loan uses the income on your tax returns. It usually has the lower rate, so it is the first thing to check. A bank statement loan uses your deposits instead, which often shows a higher income for business owners with large write-offs, but it usually costs more. The right choice depends on your numbers, and Tamila shows both side by side when both are possible.</p>
+    </div>
+  </section>
+
+  <section class="section se-cta">
+    <div class="wrap narrow center stack">
+      <h2>See Where You Stand</h2>
+      <p class="lead">Answer a few questions about your business on Tamila's secure page at Barrett Financial Group. No credit pull to get started. Or just call or text her.</p>
+      <div class="btns">
+        <a class="pill" href={go}>Check if I qualify</a>
+        <a class="pill pill--line" href={`tel:${site.phoneHref}`}>Call {site.phone}</a>
+        <a class="pill pill--line" href={`sms:${site.phoneHref}`}>Text Tamila</a>
+      </div>
+      <p class="small">{site.lenderDisclaimer} <a href={`https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/${site.lenderNmls}`} target="_blank" rel="noopener">NMLS Consumer Access</a>. Rates, terms and programs are subject to change and to underwriting.</p>
+    </div>
+  </section>
+
+  <Faq items={faq} title="Self-Employed Mortgage Questions" />
+
+  <section class="section">
+    <div class="wrap narrow center stack">
+      <p>More on loans: <a href="/mortgage">all mortgage programs</a> · <a href="/mortgage-calculator">payment calculator</a> · <a href="/buy-a-home">buying a home</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .small { font-size: .8rem; opacity: .8; }
+  .cards--2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 620px) { .cards--2 { grid-template-columns: 1fr; } }
+  .se-cta { background: var(--sage); }
+</style>

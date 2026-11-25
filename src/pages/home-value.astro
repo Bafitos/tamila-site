@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Stories from '../components/Stories.astro';
+import Faq from '../components/Faq.astro';
+import ContactBand from '../components/ContactBand.astro';
+import img from '../assets/tamila-aspen-on-phone.jpg';
+import { site, stories } from '../data/site.js';
+
+const steps = [
+  ['Send your address', 'Name, phone and the address. Add anything that matters: a new roof, a finished basement, what still needs work.'],
+  ['Tamila looks at real sales', 'She pulls recent sales and active listings near you from the MLS, the same data agents use to set a price, and compares them with your home.'],
+  ['You get a price range and a net sheet', 'A realistic price range and an estimate of what you would take home after commissions, title, the property tax credit and your payoff. No pressure and no obligation.'],
+];
+const faq = [
+  ['Is the home value estimate really free?', 'Yes. There is no cost and no obligation to list your home with Tamila. Many people ask a year before they sell, just to plan.'],
+  ['How is this different from a Zillow estimate?', 'Online estimates are computer models that cannot see inside your home. Tamila compares your home with recent nearby sales from the MLS and adjusts for condition, upgrades, lot and location, the way a listing price is actually set.'],
+  ['Will Tamila need to see the house?', 'Not for a first estimate. Photos or a short call are usually enough. If you are getting ready to sell, a walk-through gives the most accurate number.'],
+  ['What areas does Tamila cover?', 'The Front Range, from Loveland to Colorado Springs, including Denver, Aurora, Centennial, Littleton, Parker, Highlands Ranch, Lakewood, Thornton and Brighton.'],
+  ['What is a net sheet?', 'An estimate of the cash you would receive at closing: the sale price minus commissions, title insurance and closing fee, the property tax credit to the buyer, HOA fees and your mortgage payoff.'],
+  ['Can I talk in Russian or Ukrainian?', 'Yes. Tamila speaks English, Russian and Ukrainian.'],
+];
+const schema = [
+  { '@context': 'https://schema.org', '@type': 'Service', name: 'Free home value estimate', serviceType: 'Comparative market analysis', provider: { '@id': `${site.url}/#agent` }, areaServed: 'Front Range, Colorado', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, description: 'Free home value estimate based on recent MLS sales, with an estimate of net proceeds, by Tamila Aspen, Colorado real estate agent.' },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+];
+---
+<Base title="What Is My Home Worth? Free Denver Home Value" description="Free home value estimate for Denver and the Front Range, based on real recent MLS sales, not a computer model. Plus what you would take home. No obligation." schema={schema}>
+  <PageHero
+    eyebrow="Free · No obligation"
+    title="What Is Your Home Worth?"
+    lead="Get a real price range from a local agent, based on recent sales near you, not a computer guess. Tamila also shows what you would take home after all selling costs. Free, with no pressure to list."
+    image={img}
+    imageAlt="Tamila Aspen, Denver real estate agent, on the phone"
+    cta2={['#contact', 'Get my free estimate']}
+  />
+
+  <section class="section mist">
+    <div class="wrap">
+      <h2 class="center">How It Works</h2>
+      <ol class="steps">
+        {steps.map(([h, p]) => <li><h3>{h}</h3><p>{p}</p></li>)}
+      </ol>
+      <p class="center btnrow"><a class="pill" href="#contact">Send my address</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>Why Online Estimates Are Often Off</h2>
+      <p>An online estimate does not know that your kitchen was redone, that the basement is finished, or that the house backs onto a busy road. Two homes on the same street can sell tens of thousands of dollars apart. A price based on comparable sales, adjusted by someone who knows the area, is what buyers and appraisers will actually go by.</p>
+      <h2>Thinking About Selling and Buying?</h2>
+      <p>When you sell your home and buy your next one with Tamila, her listing fee is 1% instead of the usual up to 3%. If you only sell, the fee is the standard rate, up to 3%. Ask her to show both numbers on your net sheet.</p>
+      <div class="btns"><a class="pill pill--line" href="/sell-for-1-percent">How the 1% listing works</a><a class="pill pill--line" href="/cost-to-sell-a-house-in-colorado">Cost to sell calculator</a></div>
+    </div>
+  </section>
+
+  <Stories items={[stories[0], stories[3]]} title="Sellers in their own words" />
+  <Faq items={faq} title="Home Value Questions" />
+  <ContactBand title="Get Your Free Home Value Estimate" lead="Send your address. Tamila will call to confirm a few details, then send you a price range and a net sheet. English, Russian or Ukrainian." goal="Free home value estimate" address={true} subject="Home value request" send="Get my free estimate" />
+</Base>
+
+<style>
+  .steps { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: s; }
+  .steps li { counter-increment: s; background: var(--white); border-radius: 20px; padding: 26px; display: flex; flex-direction: column; gap: 8px; }
+  .steps li::before { content: counter(s); width: 38px; height: 38px; border-radius: 50%; background: var(--green); color: var(--white); display: grid; place-items: center; font-weight: 800; }
+  .steps p { font-weight: 400; font-size: 1rem; }
+  .btnrow { margin-top: 32px; }
+  @media (max-width: 900px) { .steps { grid-template-columns: 1fr; } }
+</style>

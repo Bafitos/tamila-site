@@ -131,6 +131,12 @@ export default {
     }
     if (url.pathname === '/api/rates') return ratesResponse(request, ctx);
     if (url.pathname === '/api/lead') return leadResponse(request, env);
+    // Outbound links we want to count: logged here, sent on with a 302
+    const GO = { '/go/self-employed': 'https://www.barrettfinancial.com/taspen/self-employed-borrowers#contact' };
+    if (GO[url.pathname.replace(/\/$/, '')]) {
+      console.log('go click:', url.pathname, request.headers.get('referer') || '');
+      return new Response(null, { status: 302, headers: { location: GO[url.pathname.replace(/\/$/, '')], 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+    }
     const res = await env.ASSETS.fetch(request);
     // Declare the charset in the HTTP header, not only in the page.
     const type = res.headers.get('content-type') || '';

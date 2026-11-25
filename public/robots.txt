@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /go/
 Sitemap: https://www.denver-real-estates.com/sitemap.xml

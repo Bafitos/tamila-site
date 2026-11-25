@@ -21,7 +21,7 @@ const schema = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
 ];
 ---
-<Base title="Cost to Sell a House in Colorado & Denver: Calculator" description="Cost to sell a house in Colorado and Denver: free calculator for commissions, title, property tax credit and taxes, and what you take home." schema={schema}>
+<Base title="How Much Does It Cost to Sell a House in Colorado? 2026" description="Free calculator: what it costs to sell a house in Colorado, Denver or Highlands Ranch: commission, title, transfer fee, and what you take home." schema={schema}>
   <section class="section calc-hero">
     <div class="wrap narrow center stack">
       <p class="eyebrow">Free tool · For Colorado sellers</p>
@@ -93,9 +93,10 @@ const schema = [
         </dl>
         <p class="out__note save" id="save"></p>
         <div class="btns out__btns">
-          <a class="pill" href="#contact">Get a free home valuation</a>
+          <a class="pill" href="#contact" id="report">Send me an exact net sheet</a>
           <button type="button" class="pill pill--line" id="share">Copy link to this estimate</button>
         </div>
+        <p class="out__small">Tamila checks recent sales near you and sends a net sheet with real numbers. Free, no obligation.</p>
         <p class="out__small">Estimate only. Your title company prepares the final settlement statement. Commissions are negotiable. 1% listing fee applies when you sell and buy your next home with Tamila; listing only: standard rate, up to 3%. Not legal or tax advice.</p>
       </div>
     </div>
@@ -125,6 +126,19 @@ const schema = [
 
   <section class="section mist">
     <div class="wrap prose">
+      <h2>Colorado Transfer Tax Calculator</h2>
+      <p>Colorado has no percentage-based transfer tax. Instead, the county clerk collects a state <b>documentary fee</b> when the deed is recorded: 1 cent for every $100 of the price (C.R.S. 39-13-102). It is customarily paid by the buyer, but the contract can say otherwise.</p>
+      <p class="docfee" aria-live="polite">On a sale price of <b id="dfPrice">$600,000</b>, the documentary fee is <b id="dfFee">$60</b>.</p>
+      <table class="dftable">
+        <thead><tr><th>Sale price</th><th>Documentary fee</th></tr></thead>
+        <tbody>{[300000, 400000, 500000, 600000, 750000, 1000000].map((p) => <tr><td>${p.toLocaleString('en-US')}</td><td>${(Math.round(p / 100) * 0.01).toFixed(0)}</td></tr>)}</tbody>
+      </table>
+      <p><b>Mountain towns are different.</b> A few resort towns add their own real estate transfer tax, for example Aspen, Breckenridge, Telluride and Vail. Denver, Aurora, Colorado Springs, Lakewood and the rest of the Front Range do not.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
       <h2>Taxes When You Sell a House in Colorado</h2>
       <p><b>Capital gains on your main home.</b> Federal rules let you exclude up to $250,000 of gain, or $500,000 for a married couple filing jointly, if you owned the home and lived in it for at least 2 of the 5 years before the sale (IRS Publication 523). Many sellers owe no tax on the sale of their main home. Gain above the exclusion, or on a rental or second home, is taxable, and Colorado taxes it as part of your state income.</p>
       <p><b>Sellers who now live outside Colorado.</b> If your address is outside Colorado and the price is over $100,000, the title company withholds the lesser of 2% of the price or your net proceeds for the Colorado Department of Revenue (form DR 1083). You get it back as a credit on your Colorado tax return. Military families selling after a PCS move often see this line on the settlement statement, so plan for it in your cash at closing.</p>
@@ -133,7 +147,7 @@ const schema = [
     </div>
   </section>
 
-  <section class="section">
+  <section class="section mist">
     <div class="wrap prose">
       <h2>Sources</h2>
       <ul>
@@ -141,6 +155,7 @@ const schema = [
         <li><a href="https://www.hollandhart.com/files/38975_CREC-Approved-Contracts-Ordering-the-Title.pdf" rel="noopener" target="_blank">Holland &amp; Hart: CREC contracts, ordering the title</a></li>
         <li><a href="https://firstalliancetitle.com/how-are-property-taxes-prorated-at-closing/" rel="noopener" target="_blank">First Alliance Title: How property taxes are prorated at closing</a></li>
         <li><a href="https://www.deedclaim.com/colorado/deed-requirements/" rel="noopener" target="_blank">Colorado documentary fee, C.R.S. 39-13-102</a></li>
+        <li><a href="https://gilpincounty.colorado.gov/sites/gilpincounty/files/Recording%20Fees%20-%20GilpinClerk%20%28002%29.pdf" rel="noopener" target="_blank">Gilpin County Clerk and Recorder: recording fees and state documentary fee</a></li>
         <li><a href="https://www.rickjanson.com/blog/answers-which-colorado-towns-charge-a-real-estate-transfer-tax/" rel="noopener" target="_blank">Which Colorado towns charge a real estate transfer tax</a></li>
         <li><a href="https://www.highlandsranch.org/government/about-highlands-ranch/how-highlands-ranch-operates" rel="noopener" target="_blank">Highlands Ranch Metro District: How Highlands Ranch operates</a></li>
         <li><a href="https://www.irs.gov/publications/p523" rel="noopener" target="_blank">IRS Publication 523: Selling Your Home</a></li>
@@ -210,7 +225,24 @@ const schema = [
       : `If you also buy your next home with Tamila, the listing fee drops to 1% and you keep about ${fmt(diff)} more.`;
   }
 
-  document.getElementById('calc')!.addEventListener('input', calc);
+  function docFee() {
+    const price = Math.max(0, +$('price').value || 0);
+    (document.getElementById('dfPrice')!).textContent = fmt(price);
+    (document.getElementById('dfFee')!).textContent = fmt(Math.round(price / 100) * 0.01);
+  }
+
+  // "Send me an exact net sheet": put this estimate into the contact form
+  document.getElementById('report')!.addEventListener('click', () => {
+    const msg = document.getElementById('f-msg') as HTMLTextAreaElement | null;
+    const goal = document.getElementById('f-goal') as HTMLSelectElement | null;
+    const both = $('mode').value === 'both';
+    if (msg) msg.value = `Net sheet request. Price ${fmt(+$('price').value || 0)}, payoff ${fmt(+$('payoff').value || 0)}, ${both ? 'selling and buying (1%)' : 'only selling'}. Calculator estimate: ${(document.getElementById('net')!).textContent} to me at closing. My address: `;
+    if (goal) goal.value = both ? 'Sell my home and buy another (1%)' : 'Sell my home';
+    (window as any).gtag?.('event', 'net_sheet_click', { page_path: location.pathname, send_to: 'G-K590SS7F60' });
+    setTimeout(() => (document.getElementById('f-name') as HTMLInputElement | null)?.focus({ preventScroll: true }), 400);
+  });
+
+  document.getElementById('calc')!.addEventListener('input', () => { calc(); docFee(); });
   document.getElementById('share')!.addEventListener('click', async (e) => {
     const p = new URLSearchParams();
     for (const k of keys) p.set(k, $(k).value);
@@ -220,6 +252,7 @@ const schema = [
     catch { (e.target as HTMLElement).textContent = 'Link is in the address bar'; }
   });
   calc();
+  docFee();
 </script>
 
 <style>
@@ -260,5 +293,8 @@ const schema = [
   .out__small { font-size: .78rem; opacity: .75; }
   @media (max-width: 900px) { .calc { grid-template-columns: 1fr; } .calc__out { position: static; } }
   @media (max-width: 480px) { .row2 { grid-template-columns: 1fr; } }
+  .docfee { font-size: 1.1rem; }
+  .dftable { border-collapse: collapse; width: 100%; max-width: 420px; }
+  .dftable th, .dftable td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--green-soft); }
   .save { font-weight: 700; color: var(--green); }
 </style>
