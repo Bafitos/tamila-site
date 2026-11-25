@@ -69,7 +69,7 @@ h1 span{font-weight:300;color:#B3CAC7}
 .main{animation:out .6s ${endAt}s both}
 .end{z-index:2;position:absolute;left:80px;right:80px;bottom:220px;background:#F7FAF9;color:#173a33;border-radius:40px;padding:56px 56px 60px;animation:up .8s ${endAt + 0.1}s both}
 .end h2{font-size:56px;line-height:1.15}
-.url{font-size:35px;font-weight:800;color:#255A4F;margin-top:18px;white-space:nowrap}
+.url{font-size:31px;font-weight:800;color:#255A4F;margin-top:18px;white-space:nowrap}
 .bar{height:8px;background:#255A4F;border-radius:4px;margin-top:26px;animation:grow 1.2s ${endAt + 0.8}s both}
 .who{display:flex;align-items:center;gap:30px;margin-top:40px}
 .who img{width:150px;height:150px;border-radius:50%;object-fit:cover;object-position:top}
