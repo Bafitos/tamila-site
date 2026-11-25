@@ -72,7 +72,11 @@ const t = uk
           st.textContent = msg.ok; form.reset();
           if (tf) tf.value = String(Date.now());
           // Google Ads conversion: Website Lead Form (real leads only)
-          if (!res.filtered) (window as any).gtag?.('event', 'conversion', { send_to: 'AW-18513426131/3EmbCPzu9JwdENPt8ftE' });
+          if (!res.filtered) {
+            (window as any).gtag?.('event', 'conversion', { send_to: 'AW-18513426131/3EmbCPzu9JwdENPt8ftE' });
+            // GA4 key event: real form lead (spam filtered by /api/lead is not counted)
+            (window as any).gtag?.('event', 'generate_lead', { lead_source: 'website_form', form_language: lang, page_path: location.pathname, send_to: 'G-K590SS7F60' });
+          }
         }
         else {
           const data = await r.json().catch(() => null);
