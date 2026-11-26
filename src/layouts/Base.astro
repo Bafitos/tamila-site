@@ -5,7 +5,11 @@ import { site } from '../data/site.js';
 import ogImage from '../assets/tamila-aspen-on-phone.jpg';
 import { getImage } from 'astro:assets';
 
-const { title, description, schema = [], lang = 'en', alternates = null } = Astro.props;
+const { title, description, schema = [], lang = 'en', alternates = null, noindex = false } = Astro.props;
+// Thanksgiving game banner: shows on English pages until this moment (midnight Dec 3, Denver time), then hides itself.
+const PROMO_END = '2026-12-03T07:00:00Z';
+const showPromo = lang === 'en' && !cleanPathIs('/thanksgiving');
+function cleanPathIs(p) { return Astro.url.pathname.replace(/\.html$/, '') === p; }
 // alternates: { en: '/home-value', ru: '/ru/home-value', uk: '/uk/home-value' } -> hreflang links
 const bar = { en: ['Call Tamila', 'Text'], ru: ['Позвонить', 'Написать'], uk: ['Зателефонувати', 'Написати'] }[lang] ?? ['Call Tamila', 'Text'];
 // build.format 'file' gives paths like /areas/aurora.html; the live site serves clean URLs.
@@ -20,6 +24,7 @@ const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex" />}
   <link rel="canonical" href={canonical} />
   {alternates && Object.entries(alternates).map(([l, p]) => <link rel="alternate" hreflang={l} href={new URL(p as string, site.url).href} />)}
   {alternates?.en && <link rel="alternate" hreflang="x-default" href={new URL(alternates.en, site.url).href} />}
@@ -68,6 +73,10 @@ const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
+  {showPromo && (
+    <a class="promo" id="promo" href="/thanksgiving" hidden data-end={PROMO_END}>🦃 Thanksgiving game: how many turkeys can you catch in 20 seconds? <u>Play now</u></a>
+  )}
+  {showPromo && <script is:inline>(function(){var b=document.getElementById('promo');if(b&&Date.now()<Date.parse(b.dataset.end))b.hidden=false;})();</script>}
   <Header />
   <main id="main"><slot /></main>
   <Footer />
@@ -118,6 +127,8 @@ const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
   .rule { border: 0; border-top: 1px solid var(--green); max-width: var(--wrap); margin: 0 auto; opacity: .5; }
   .eyebrow { font-size: .8rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
   .lead { font-size: 1.2rem; }
+  .promo { display: block; padding: 9px 16px; background: #84421f; color: #fff; text-align: center; font-size: .95rem; font-weight: 700; text-decoration: none; }
+  .promo[hidden] { display: none; }
   .stack { display: flex; flex-direction: column; gap: 18px; }
   .pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 12px 28px; border-radius: 999px; background: var(--green); color: var(--white); font: 700 1rem/1.2 var(--font); text-decoration: none; border: 2px solid var(--green); cursor: pointer; transition: background .2s; }
   .pill:hover { background: var(--green-2); }

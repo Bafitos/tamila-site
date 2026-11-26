@@ -18,6 +18,6 @@ export default defineConfig({
   site: 'https://www.denver-real-estates.com',
   trailingSlash: 'never',
   build: { format: 'file' },
-  integrations: [sitemap({ lastmod: new Date() }), singleSitemap],
+  integrations: [sitemap({ lastmod: new Date(), filter: (page) => !page.includes('/thanksgiving') }), singleSitemap],
   image: { responsiveStyles: true },
 });

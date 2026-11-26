@@ -1,0 +1,159 @@
+---
+// Thanksgiving mini-game, live for one week only.
+// After END the worker sends /thanksgiving to the home page and the banner in Base.astro hides itself.
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site.js';
+---
+<Base title="Catch the Turkey! A Thanksgiving Game | Tamila Aspen" description="A 20-second Thanksgiving game from Tamila Aspen, Denver real estate agent. Catch the turkeys, grab the golden bonuses, dodge the pumpkins and challenge your friends." noindex={true}>
+  <section class="tg">
+    <div class="tg-card">
+      <div class="tg-emoji" aria-hidden="true">🍁 🦃 🍂</div>
+      <h1 class="tg-title">Catch the Turkey!</h1>
+      <p class="tg-sub">A little Thanksgiving fun with Tamila Aspen</p>
+
+      <div class="tg-stats" aria-live="polite">
+        <div><span>Score</span><b id="tg-score">0</b></div>
+        <div><span>Time</span><b id="tg-time">20s</b></div>
+        <div><span>Best</span><b id="tg-best">0</b></div>
+      </div>
+
+      <div class="tg-grid" id="tg-grid">
+        {Array.from({ length: 9 }, (_, i) => <button type="button" class="tg-hole" data-i={i} aria-label={`Spot ${i + 1}`}>🍂</button>)}
+      </div>
+
+      <p class="tg-legend"><span>🦃 +1 point</span><span>✨ +3 points</span><span>🎃 −2 points</span></p>
+      <p class="tg-msg" id="tg-msg">How many turkeys can you catch?</p>
+
+      <div class="tg-actions">
+        <button type="button" class="tg-btn" id="tg-start">Start challenge</button>
+        <button type="button" class="tg-btn tg-btn--line" id="tg-share" hidden>Challenge a friend</button>
+      </div>
+
+      <p class="tg-happy">Happy Thanksgiving! ♡</p>
+      <p class="tg-sign">Tamila Aspen</p>
+    </div>
+
+    <div class="tg-rules">
+      <h2>How to win</h2>
+      <ul>
+        <li>You have 20 seconds. Tap the turkeys as they pop out of the leaves.</li>
+        <li>Golden ✨ bonuses are worth 3 points. Grab them first.</li>
+        <li>Pumpkins 🎃 take away 2 points. Leave them alone.</li>
+        <li>Score 35 or more to become a Turkey Catching Champion.</li>
+        <li>Beat your own record, then send the game to friends and family to see who wins.</li>
+      </ul>
+      <p>No sign-up and nothing to download. Just your finger and a little Thanksgiving luck.</p>
+    </div>
+
+    <div class="tg-cta">
+      <p>Thinking about buying or selling in the new year? Tamila is a Denver real estate agent and mortgage loan officer, and she speaks English, Russian and Ukrainian.</p>
+      <div class="tg-actions">
+        <a class="tg-btn" href="/home-value">What is my home worth?</a>
+        <a class="tg-btn tg-btn--line" href={`tel:${site.phoneHref}`}>Call {site.phone}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script is:inline>
+(function () {
+  var GAME = 20, CHAMP = 35;
+  var holes = Array.prototype.slice.call(document.querySelectorAll('.tg-hole'));
+  var scoreEl = document.getElementById('tg-score'), timeEl = document.getElementById('tg-time'),
+      bestEl = document.getElementById('tg-best'), msg = document.getElementById('tg-msg'),
+      start = document.getElementById('tg-start'), share = document.getElementById('tg-share');
+  var score = 0, left = GAME, running = false, timers = [], tick = null, best = 0;
+  try { best = parseInt(localStorage.getItem('tg-best') || '0', 10) || 0; } catch (e) {}
+  bestEl.textContent = best;
+
+  function clearHole(h) { h.textContent = '🍂'; h.dataset.kind = ''; h.classList.remove('up'); }
+  function pop() {
+    if (!running) return;
+    var free = holes.filter(function (h) { return !h.dataset.kind; });
+    if (free.length) {
+      var h = free[Math.floor(Math.random() * free.length)];
+      var r = Math.random(), kind = r < 0.12 ? 'gold' : r < 0.32 ? 'pumpkin' : 'turkey';
+      h.dataset.kind = kind;
+      h.textContent = kind === 'gold' ? '✨' : kind === 'pumpkin' ? '🎃' : '🦃';
+      h.classList.add('up');
+      var stay = Math.max(550, 1100 - (GAME - left) * 25);
+      timers.push(setTimeout(function () { if (h.dataset.kind === kind) clearHole(h); }, stay));
+    }
+    var next = Math.max(280, 650 - (GAME - left) * 18);
+    timers.push(setTimeout(pop, next));
+  }
+  function hit(h) {
+    if (!running || !h.dataset.kind) return;
+    var k = h.dataset.kind;
+    score += k === 'gold' ? 3 : k === 'pumpkin' ? -2 : 1;
+    if (score < 0) score = 0;
+    scoreEl.textContent = score;
+    h.classList.add(k === 'pumpkin' ? 'bad' : 'good');
+    setTimeout(function () { h.classList.remove('good', 'bad'); }, 200);
+    clearHole(h);
+  }
+  holes.forEach(function (h) {
+    h.addEventListener('pointerdown', function (e) { e.preventDefault(); hit(h); });
+    h.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hit(h); } });
+  });
+  function end() {
+    running = false; clearInterval(tick); timers.forEach(clearTimeout); timers = [];
+    holes.forEach(clearHole);
+    if (score > best) { best = score; bestEl.textContent = best; try { localStorage.setItem('tg-best', best); } catch (e) {} }
+    msg.textContent = score >= CHAMP
+      ? '🏆 ' + score + ' points! You are a Turkey Catching Champion!'
+      : 'You scored ' + score + ' points! ' + (score >= 20 ? 'Great hands! Can you reach 35?' : 'Try again and beat your record.');
+    start.textContent = 'Play again'; start.disabled = false; share.hidden = false;
+    if (window.gtag) gtag('event', 'thanksgiving_game', { score: score, send_to: 'G-K590SS7F60' });
+  }
+  start.addEventListener('click', function () {
+    score = 0; left = GAME; running = true;
+    scoreEl.textContent = '0'; timeEl.textContent = GAME + 's';
+    msg.textContent = 'Go! Catch those turkeys!'; start.disabled = true; share.hidden = true;
+    tick = setInterval(function () { left--; timeEl.textContent = left + 's'; if (left <= 0) end(); }, 1000);
+    pop();
+  });
+  share.addEventListener('click', function () {
+    var url = 'https://www.denver-real-estates.com/thanksgiving';
+    var text = 'I caught ' + score + ' points in Catch the Turkey! 🦃 Can you beat me?';
+    if (navigator.share) { navigator.share({ title: 'Catch the Turkey!', text: text, url: url }).catch(function () {}); return; }
+    var done = function () { share.textContent = 'Link copied!'; setTimeout(function () { share.textContent = 'Challenge a friend'; }, 2000); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text + ' ' + url).then(done, function () { prompt('Copy this link:', url); });
+    else prompt('Copy this link:', url);
+  });
+})();
+</script>
+
+<style>
+  .tg { padding: 32px 16px 64px; background: linear-gradient(#fbf6ee, #fff); }
+  .tg-card { max-width: 480px; margin: 0 auto; padding: 24px 20px 28px; border-radius: 28px; text-align: center;
+    background: linear-gradient(#f8ead3, #efd6ad); color: #5a2e14; box-shadow: 0 10px 30px rgba(90,46,20,.15); }
+  .tg-emoji { font-size: 2.6rem; line-height: 1; }
+  .tg-title { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; color: #2a1608; font-size: clamp(2.2rem, 9vw, 3rem); margin-top: 8px; }
+  .tg-sub { margin-top: 6px; font-size: 1.05rem; }
+  .tg-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 18px 0; padding: 12px; border-radius: 18px; background: rgba(255,255,255,.55); }
+  .tg-stats span { display: block; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; }
+  .tg-stats b { font-size: 2rem; font-weight: 800; }
+  .tg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  .tg-hole { aspect-ratio: 1.3; border: 0; border-radius: 18px; background: #fdf5e8; font-size: clamp(2rem, 10vw, 3rem);
+    box-shadow: 0 5px 0 #e2c89f; cursor: pointer; transition: transform .08s, background .15s; -webkit-tap-highlight-color: transparent; }
+  .tg-hole.up { transform: translateY(-3px); background: #fffaf2; }
+  .tg-hole.good { background: #d9efd2; }
+  .tg-hole.bad { background: #f6cfc2; }
+  .tg-legend { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; font-size: .95rem; }
+  .tg-msg { margin-top: 12px; font-weight: 700; font-size: 1.1rem; min-height: 1.6em; }
+  .tg-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .tg-btn { display: inline-block; border: 2px solid #84421f; background: #84421f; color: #fff; font: 700 1.1rem var(--font);
+    padding: 12px 26px; border-radius: 999px; cursor: pointer; text-decoration: none; }
+  .tg-btn:disabled { opacity: .6; }
+  .tg-btn[hidden] { display: none; }
+  .tg-btn--line { background: transparent; color: #84421f; }
+  .tg-happy { margin-top: 22px; font-family: Georgia, serif; font-style: italic; font-size: 1.6rem; color: #3a1f0d; }
+  .tg-sign { font-size: .95rem; }
+  .tg-rules, .tg-cta { max-width: 480px; margin: 32px auto 0; color: #3a1f0d; }
+  .tg-rules h2 { font-size: 1.6rem; text-align: center; margin-bottom: 10px; }
+  .tg-rules ul { padding-left: 1.2em; margin: 0 0 10px; }
+  .tg-cta { text-align: center; padding: 20px; border-radius: 20px; background: var(--green-mist); color: var(--green); }
+  .tg-cta .tg-btn { background: var(--green); border-color: var(--green); }
+  .tg-cta .tg-btn--line { background: transparent; color: var(--green); }
+</style>

@@ -129,6 +129,10 @@ export default {
         '<p>This page was removed. <a href="https://www.denver-real-estates.com/">Go to the home page</a>.</p>',
         { status: 410, headers: { 'content-type': 'text/html; charset=utf-8' } });
     }
+    // Thanksgiving game page is live for one week only; afterwards it goes to the home page.
+    if (/^\/thanksgiving(\.html)?\/?$/.test(url.pathname) && Date.now() >= Date.parse('2026-12-03T07:00:00Z')) {
+      return new Response(null, { status: 302, headers: { location: '/', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/rates') return ratesResponse(request, ctx);
     if (url.pathname === '/api/lead') return leadResponse(request, env);
     // Outbound links we want to count: logged here, sent on with a 302
