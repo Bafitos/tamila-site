@@ -1,0 +1,16 @@
+{
+  "slug": "sell-and-buy-which-first",
+  "topic": "Selling and buying at the same time",
+  "seed": 3,
+  "hook": "Selling and buying at once. Which first?",
+  "hookSub": "3 ways to do it, and how to choose",
+  "slides": [
+    { "big": "Sell first: you know your budget", "small": "The money from your sale is in hand before you shop. You may need a short-term place to stay." },
+    { "big": "Buy first: you move only once", "small": "No rush to get out the door. Plan for paying for two homes for a while." },
+    { "big": "Or line up both closings", "small": "Put the sale and the purchase on one schedule, and ask for extra time to move out." },
+    { "big": "Start with real numbers", "small": "What your home will likely sell for and what the next one costs decide the order." }
+  ],
+  "comment": "Which would you pick: 1, 2 or 3? Tell us in the comments.",
+  "follow": "Follow for real-life real estate answers every week.",
+  "footnote": "Tamila Aspen, Real Estate Agent & Mortgage Loan Officer"
+}
