@@ -111,6 +111,35 @@ async function leadResponse(request, env) {
   return done({ ok: true });
 }
 
+// Video/audio files: answer byte-range requests (206 Partial Content).
+// The static asset server always sends the whole file with 200, and iPhone/Safari
+// and mobile Chrome then stop playing the social videos partway through.
+async function withRange(request, res) {
+  const type = res.headers.get('content-type') || '';
+  if (res.status !== 200 || !/^(video|audio)\//.test(type)) return res;
+  const buf = await res.arrayBuffer();
+  const size = buf.byteLength;
+  const headers = new Headers(res.headers);
+  headers.set('accept-ranges', 'bytes');
+  const head = request.method === 'HEAD';
+  const m = /^bytes=(\d*)-(\d*)$/.exec((request.headers.get('range') || '').trim());
+  if (!m || (m[1] === '' && m[2] === '')) {
+    headers.set('content-length', String(size));
+    return new Response(head ? null : buf, { status: 200, headers });
+  }
+  let start, end;
+  if (m[1] === '') { start = Math.max(0, size - Number(m[2])); end = size - 1; } // last N bytes
+  else { start = Number(m[1]); end = m[2] === '' ? size - 1 : Math.min(Number(m[2]), size - 1); }
+  if (start >= size || start > end) {
+    headers.delete('content-length');
+    headers.set('content-range', `bytes */${size}`);
+    return new Response(null, { status: 416, headers });
+  }
+  headers.set('content-range', `bytes ${start}-${end}/${size}`);
+  headers.set('content-length', String(end - start + 1));
+  return new Response(head ? null : buf.slice(start, end + 1), { status: 206, headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -141,7 +170,7 @@ export default {
       console.log('go click:', url.pathname, request.headers.get('referer') || '');
       return new Response(null, { status: 302, headers: { location: GO[url.pathname.replace(/\/$/, '')], 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
-    const res = await env.ASSETS.fetch(request);
+    const res = await withRange(request, await env.ASSETS.fetch(request));
     // Declare the charset in the HTTP header, not only in the page.
     const type = res.headers.get('content-type') || '';
     if ((type.startsWith('text/') || type.includes('xml') || type.includes('javascript')) && !/charset/i.test(type)) {
